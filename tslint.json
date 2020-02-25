@@ -1,0 +1,19 @@
+{
+  "extends": ["tslint:recommended"],
+  "rules": {
+    "object-literal-sort-keys": false,
+    "interface-name": false,
+    "jsx-boolean-value": false,
+    "ordered-imports": false,
+    "no-console": false,
+    "member-ordering": false,
+  },
+  "linterOptions": {
+    "exclude": [
+      "config/**/*.js",
+      "node_modules/**/*.ts",
+      "*.json",
+      "**/*.json"
+    ]
+  }
+}
