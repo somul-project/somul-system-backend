@@ -1,15 +1,14 @@
 import * as constants from "./common/constants";
 import * as program from "commander";
 import { Server } from "./server/server";
-import { getDatabase } from "./database/database";
-
+import getDatabase from "./database";
 
 program.version(constants.VERSION);
 
 program.command("serve").action(async () => {
-    getDatabase().sync();
+    getDatabase();
     const server = new Server();
-    server.start();
+    await server.start();
 });
 
 program.parse(process.argv);

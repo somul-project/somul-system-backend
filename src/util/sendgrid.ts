@@ -1,5 +1,5 @@
 import * as sgMail from "@sendgrid/mail";
-import * as constants from "./constants";
+import * as constants from "../common/constants";
 
 sgMail.setApiKey(constants.SENDGRID_API_KEY);
 

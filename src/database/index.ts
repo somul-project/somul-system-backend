@@ -1,7 +1,11 @@
 import * as constants from "../common/constants";
 import { Sequelize } from "sequelize-typescript";
 import { Logger } from "../common/logger";
-import { User } from "./user.model";
+import { EmailToken } from "./models/EmailToken.model";
+import { Session } from "./models/Session.model";
+import { Library } from "./models/Library.model";
+import { Volunteer } from "./models/Volunteer.model";
+import { Users } from "./models/Users.model";
 
 
 const log = Logger.createLogger("database.database");
@@ -20,20 +24,15 @@ export class Database {
       },
       logging: false,
     });
-    this.instance.addModels([User]);
-  }
-
-  public sync() {
-    // Before deploy, make sure the model is already applied to server.
-    User.sync();
-    log.info("Sync finished");
-    return this;
+    this.instance.addModels([EmailToken,Library, Session,Users ,Volunteer]);
   }
 }
 
 let database: Database;
 
-export const getDatabase = () => {
+const getDatabase = () => {
   if (!database) { database = new Database(); }
   return database;
 };
+
+export default getDatabase;
