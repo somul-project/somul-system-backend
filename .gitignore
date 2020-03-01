@@ -125,3 +125,6 @@ squad*
 # nodejs specific
 node_modules
 sockets
+
+
+.env.development
