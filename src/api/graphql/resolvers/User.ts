@@ -36,8 +36,9 @@ export class UserResolver {
         attributes: ['name', 'phone_number', 'email'],
         where: {name, phone_number}});
       if (!result) {return [];}
-     
-      return [{email: "sss"}];
+      const res: [User?] = [];
+      result.forEach((item) => {res.push({name: item.name, email: item.email, phone_number: item.phone_number})})
+      return res;
 
     } catch (error) {
       log.error(`[-] failed to query(users) - ${error}`);
