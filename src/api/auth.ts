@@ -36,7 +36,7 @@ passport.use(new LocalStrategy({
         admin: userInfo?.getDataValue("admin")
       });
     } else{
-      return done(false, null)
+      return done(false, null);
     }
   }
 ));
@@ -85,7 +85,7 @@ router.get("/verify", async (req, res) => {
     if (result) {
       await EmailToken.destroy({
         where: {email}
-      })
+      });
       await Users.build({
         email: result.email,
         name: result.name,

@@ -43,7 +43,7 @@ CREATE TABLE Session (
     library_id INT NOT NULL,
     user_email VARCHAR(50) NOT NULL,
     session_name VARCHAR(50) NOT NULL,
-    session_time DATE NOT NULL,
+    session_time VARCHAR(10) NOT NULL,
     introduce TEXT,
     history TEXT,
     session_explainer TEXT,
