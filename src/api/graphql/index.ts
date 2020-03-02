@@ -6,7 +6,6 @@ import { UserResolver } from './resolvers/User';
 import * as express from "express";
 
 async function getRouter() {
-  
   const router = express.Router();
   const { typeDefs, resolvers } = await buildTypeDefsAndResolvers({
     resolvers: [UserResolver],
@@ -19,7 +18,7 @@ async function getRouter() {
   router.use(
     "/",
     graphqlHTTP(async (request, response, graphQLParams) => ({
-      schema: schema,
+      schema,
       context: {request, response},
       graphiql: true
     })),
@@ -28,4 +27,3 @@ async function getRouter() {
 }
 
 export default getRouter;
-  

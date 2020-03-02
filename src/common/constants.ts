@@ -15,7 +15,7 @@ export const GITHUB_CLIENT_ID = envDev.GITHUB_CLIENT_ID;
 export const GITHUB_CLIENT_SECRET = envDev.GITHUB_CLIENT_SECRET;
 
 export const SENDGRID_API_KEY = envDev.SENDGRID_API_KEY;;
-
+export const EMAIL_SUBJECT = envDev.EMAIL_SUBJECT;
 export const DB_ENDPOINT = envDev.DB_ENDPOINT;
 export const DB_NAME = envDev.DB_NAME;
 export const DB_USERNAME = envDev.DB_USERNAME;

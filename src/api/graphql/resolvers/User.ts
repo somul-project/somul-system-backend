@@ -12,32 +12,33 @@ import { EmailToken } from "../../../database/models/EmailToken.model";
 import * as sendgrid from "../../../util/sendgrid";
 import * as constants from "../../../common/constants";
 import { Logger } from "../../../common/logger";
+import sha256 from "sha256";
+import randomstring from "randomstring";
 
 const log = Logger.createLogger("graphql.resolvers.User");
-const url_tem = "http://localhost/verify_email?email={email}&token={token}";
-const sha256 = require("sha256");
-const randomstring = require("randomstring");
+const EMAIL_TEMPLATE = "http://localhost/verify_email?email={email}&token={token}";
+const ERROR_MASSAGE = "invalid request";
 
 @Resolver()
 export class UserResolver {
 
   @Query(() => [User] || [])
   async users(
-    @Arg('phone_number', { nullable: true }) phone_number: string,
+    @Arg('phone_number', { nullable: true }) phoneNumber: string,
     @Arg('name', { nullable: true }) name: string,
     @Ctx() context: any
   ): Promise<[User?]> {
     try {
       const passportSession = context.request.session.passport;
       if (!passportSession || !passportSession.user.admin) {
-        throw "invalid request";
+        throw ERROR_MASSAGE;
       }
       const result = await Users.findAll({
         attributes: ['name', 'phone_number', 'email'],
-        where: {name, phone_number}});
+        where: {name, phoneNumber}});
       if (!result) {return [];}
       const res: [User?] = [];
-      result.forEach((item) => {res.push({name: item.name, email: item.email, phone_number: item.phone_number})})
+      result.forEach((item) => {res.push({name: item.name, email: item.email, phoneNumber: item.phone_number})})
       return res;
 
     } catch (error) {
@@ -54,13 +55,13 @@ export class UserResolver {
     try {
       const passportSession = context.request.session.passport;
       if (!passportSession || (passportSession.user.email !== email && !passportSession.user.admin)) {
-        throw "invalid request";
+        throw ERROR_MASSAGE;
       }
       const result = await Users.findOne({where: {email}});
       if (result === undefined) {return {};}
       if (passportSession.user.admin) {
         return {name: result!.name, email: result!.email!,
-          phone_number: result!.phone_number,};
+          phoneNumber: result!.phone_number,};
       } else {
         return {name: result!.name, email: result!.email!};
       }
@@ -75,7 +76,7 @@ export class UserResolver {
     @Arg('email') email: string,
     @Arg('name') name: string,
     @Arg('password', { nullable: true }) password: string,
-    @Arg('phone_number') phone_number: string,
+    @Arg('phone_number') phoneNumber: string,
     @Ctx() context: any
   ): Promise<MutationRes> {
     try {
@@ -85,10 +86,10 @@ export class UserResolver {
         await Users.build({
           email: passportSession.user.email,
           name,
-          phone_number,
+          phoneNumber,
           admin: false,
         }).save();
-        passportSession.user["admin"] = false;
+        passportSession.user.admin = false;
       } else if (password) {
         // Local Register
         const hashedPassword = await sha256(password);
@@ -97,17 +98,19 @@ export class UserResolver {
           email,
           name,
           token,
-          phone_number,
+          phoneNumber,
           password: hashedPassword
         }).save();
         // send email for verifying
         sendgrid.send({
           from: constants.ADMIN_EMAIL,
           to: email,
-          subject: "소물 이메일 인증!!",
-          text: url_tem.replace("{token}", token).replace("{email}", email),
+          subject: constants.EMAIL_SUBJECT,
+          text: EMAIL_TEMPLATE.replace("{token}", token).replace("{email}", email),
         })
-      } else {throw "invalid request"}
+      } else {
+        throw ERROR_MASSAGE;
+      }
       return {result: true};
     } catch (error) {
       log.error(`[-] failed to create user - ${error}`);
@@ -127,7 +130,7 @@ export class UserResolver {
           where: {email: passportInfo.user.email}
         })
       } else {
-        throw "Invalid request";
+        throw ERROR_MASSAGE;
       }
       return {result: true};
     } catch (error) {
@@ -141,7 +144,7 @@ export class UserResolver {
     @Arg('email') email: string,
     @Arg('name') name: string,
     @Arg('admin', { nullable: true }) admin: boolean,
-    @Arg('phone_number') phone_number: string,
+    @Arg('phone_number') phoneNumber: string,
     @Ctx() context: any
   ): Promise<MutationRes> {
     try {
@@ -150,13 +153,13 @@ export class UserResolver {
          const args = {
            admin: (passportInfo.user.admin)? admin: undefined,
            name,
-           phone_number,
+           phoneNumber,
          }
         await Users.update(args, {
           where: {email: (passportInfo.user.email)? email: passportInfo.user.email}
         });
       } else {
-        throw "Invalid request";
+        throw ERROR_MASSAGE;
       }
       return {result: true};
     } catch (error) {

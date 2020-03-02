@@ -6,20 +6,19 @@ import * as constants from "../common/constants";
 import { Users } from "../database/models/Users.model";
 import { EmailToken } from "../database/models/EmailToken.model";
 import * as express from "express";
+import sha256 from "sha256";
 
 const router = express.Router();
-
-const sha256 = require("sha256");
 const LocalStrategy = localPassport.Strategy;
 const GoogleStrategy = googlePassport.Strategy;
 const GithubStrategy = githubPassport.Strategy;
 
 passport.serializeUser(async (user: object, done) => {
-	done(null, user); // user객체가 deserializeUser로 전달됨.
+	done(null, user);
 });
 
 passport.deserializeUser((user, done) => {
-	done(null, user); // 여기의 user가 req.user가 됨
+	done(null, user);
 });
 
 passport.use(new LocalStrategy({
@@ -27,7 +26,7 @@ passport.use(new LocalStrategy({
 		passwordField: 'password',
 		passReqToCallback: true,
 	},
-	async function(req, email, password, done) {
+	async (req, email, password, done) => {
 		const userInfo = await Users.findOne({where: {email, password: sha256(password)}});
 		if(userInfo){
 			return done(null, {
@@ -45,7 +44,7 @@ passport.use(new GoogleStrategy({
 		clientSecret: constants.GOOGLE_CLIENT_SECRET,
 		callbackURL: `http://localhost:${constants.SERVER_PORT}/login/google/callback`
   },
-  async function(accessToken, refreshToken, profile, cb) {
+  async (accessToken, refreshToken, profile, cb) => {
 		const email = profile.emails![0].value;
     const userInfo = await Users.findOne({where: {email}});
 		if (userInfo) {
@@ -62,7 +61,7 @@ passport.use(new GithubStrategy({
 		callbackURL: `http://localhost:${constants.SERVER_PORT}/login/github/callback`,
 		scope: [ 'user:email' ]
 	},
-	async function(accessToken, refreshToken, profile, cb) {
+	async (accessToken, refreshToken, profile, cb) => {
 		const email = profile.emails![0].value;		
 		const userInfo = await Users.findOne({where: {email}});
 		if (userInfo) {
@@ -103,22 +102,27 @@ router.get("/verify_email", async (req, res) => {
 router.get("/google", passport.authenticate('google', { scope: ['profile', 'email'] }))
 router.get('/google/callback', 
   passport.authenticate('google', {
-    failureRedirect: '/login/google',
+    failureRedirect: '/auth/google',
     successRedirect: '/'
   }
 ));
 router.get("/github", passport.authenticate('github', { scope: ['profile', 'user:email'] }))
 router.get('/github/callback',
   passport.authenticate('github', {
-    failureRedirect: '/login/github',
+    failureRedirect: '/auth/github',
     successRedirect: '/'
   }
 ));
 
-router.post('/local', passport.authenticate('local', {failureRedirect: '/', failureFlash: true}),
+router.post('/login', passport.authenticate('local', {failureRedirect: '/', failureFlash: true}),
   (req, res) => {
     res.redirect('/');
   }
+);
+
+router.post('/logout', (req, res) => {
+		req.logout();
+	}
 );
 
 export default router;
