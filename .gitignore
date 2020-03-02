@@ -126,7 +126,5 @@ squad*
 node_modules
 sockets
 
-
 .env.development
-sample_views
 .DS_Store

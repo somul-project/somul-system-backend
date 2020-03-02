@@ -27,7 +27,7 @@ export class EmailToken extends Model<EmailToken> {
   @Comment('')
   @AllowNull(false)
   @Column
-  phone_number: string;
+  phonenumber: string;
 
   @Comment('')
   @AllowNull(false)
