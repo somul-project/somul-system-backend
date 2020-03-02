@@ -14,62 +14,62 @@ const GoogleStrategy = googlePassport.Strategy;
 const GithubStrategy = githubPassport.Strategy;
 
 passport.serializeUser(async (user: object, done) => {
-	done(null, user);
+  done(null, user);
 });
 
 passport.deserializeUser((user, done) => {
-	done(null, user);
+  done(null, user);
 });
 
 passport.use(new LocalStrategy({
-		usernameField: 'email',
-		passwordField: 'password',
-		passReqToCallback: true,
-	},
-	async (req, email, password, done) => {
-		const userInfo = await Users.findOne({where: {email, password: sha256(password)}});
-		if(userInfo){
-			return done(null, {
-				email,
-				admin: userInfo?.getDataValue("admin")
-			});
-		} else{
-			return done(false, null)
-		}
-	}
+    usernameField: 'email',
+    passwordField: 'password',
+    passReqToCallback: true,
+  },
+  async (req, email, password, done) => {
+    const userInfo = await Users.findOne({where: {email, password: sha256(password)}});
+    if(userInfo){
+      return done(null, {
+        email,
+        admin: userInfo?.getDataValue("admin")
+      });
+    } else{
+      return done(false, null)
+    }
+  }
 ));
 
 passport.use(new GoogleStrategy({
-		clientID: constants.GOOGLE_CLIENT_ID,
-		clientSecret: constants.GOOGLE_CLIENT_SECRET,
-		callbackURL: `http://localhost:${constants.SERVER_PORT}/login/google/callback`
+    clientID: constants.GOOGLE_CLIENT_ID,
+    clientSecret: constants.GOOGLE_CLIENT_SECRET,
+    callbackURL: `http://localhost:${constants.SERVER_PORT}/login/google/callback`
   },
   async (accessToken, refreshToken, profile, cb) => {
-		const email = profile.emails![0].value;
+    const email = profile.emails![0].value;
     const userInfo = await Users.findOne({where: {email}});
-		if (userInfo) {
-			profile["admin"] = userInfo.getDataValue("admin");
-		}
-		profile["email"] = email;
+    if (userInfo) {
+      profile["admin"] = userInfo.getDataValue("admin");
+    }
+    profile["email"] = email;
     return cb(undefined, profile);
   }
 ));
 
 passport.use(new GithubStrategy({
-		clientID: constants.GITHUB_CLIENT_ID,
-		clientSecret: constants.GITHUB_CLIENT_SECRET,
-		callbackURL: `http://localhost:${constants.SERVER_PORT}/login/github/callback`,
-		scope: [ 'user:email' ]
-	},
-	async (accessToken, refreshToken, profile, cb) => {
-		const email = profile.emails![0].value;		
-		const userInfo = await Users.findOne({where: {email}});
-		if (userInfo) {
-			process["admin"] = userInfo.getDataValue("admin");
-		}
-		profile["email"] = email;
-		return cb(undefined, profile);
-	}
+    clientID: constants.GITHUB_CLIENT_ID,
+    clientSecret: constants.GITHUB_CLIENT_SECRET,
+    callbackURL: `http://localhost:${constants.SERVER_PORT}/login/github/callback`,
+    scope: [ 'user:email' ]
+  },
+  async (accessToken, refreshToken, profile, cb) => {
+    const email = profile.emails![0].value;		
+    const userInfo = await Users.findOne({where: {email}});
+    if (userInfo) {
+      process["admin"] = userInfo.getDataValue("admin");
+    }
+    profile["email"] = email;
+    return cb(undefined, profile);
+  }
 ));
 
 router.use(passport.initialize());
@@ -100,7 +100,7 @@ router.get("/verify_email", async (req, res) => {
   }
 })
 router.get("/google", passport.authenticate('google', { scope: ['profile', 'email'] }))
-router.get('/google/callback', 
+router.get('/google/callback',
   passport.authenticate('google', {
     failureRedirect: '/auth/google',
     successRedirect: '/'
@@ -121,8 +121,8 @@ router.post('/login', passport.authenticate('local', {failureRedirect: '/', fail
 );
 
 router.post('/logout', (req, res) => {
-		req.logout();
-	}
+    req.logout();
+  }
 );
 
 export default router;
