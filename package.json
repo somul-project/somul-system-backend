@@ -1,9 +1,5 @@
 {
   "name": "somul-system-backend",
-  "graphdoc": {
-    "endpoint": "http://localhost:80/graphql",
-    "output": "./doc/schema"
-  },
   "version": "1.0.0",
   "main": "index.js",
   "repository": "",

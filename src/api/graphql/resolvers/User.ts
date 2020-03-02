@@ -37,7 +37,6 @@ export class UserResolver {
       const result = await Users.findAll({
         attributes: ['name', 'phonenumber', 'email'],
         where: {name, phonenumber}});
-      if (!result) {return [];}
       const res: [User?] = [];
       result.forEach((item) => {
         res.push({name: item.name, email: item.email, phonenumber: item.phonenumber});
