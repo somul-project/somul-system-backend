@@ -3,7 +3,7 @@ CREATE TABLE Users (
     name VARCHAR(15) NOT NULL,
     phone_number VARCHAR(15) NOT NULL,
     admin BOOLEAN NOT NULL,
-    password VARCHAR(300),
+    password VARCHAR(100),
     createdAt TIMESTAMP NOT NULL,
     updatedAt TIMESTAMP NOT NULL,
     PRIMARY KEY (email)
@@ -15,7 +15,7 @@ CREATE TABLE Email_Token (
     token VARCHAR(100) NOT NULL,
     name VARCHAR(15) NOT NULL,
     phone_number VARCHAR(15) NOT NULL,
-    password VARCHAR(300) NOT NULL,
+    password VARCHAR(100) NOT NULL,
     createdAt TIMESTAMP NOT NULL,
     updatedAt TIMESTAMP NOT NULL,
     PRIMARY KEY (id)
@@ -39,7 +39,7 @@ CREATE TABLE Library (
     createdAt TIMESTAMP NOT NULL,
     updatedAt TIMESTAMP NOT NULL,
     PRIMARY KEY (id), 
-    FOREIGN KEY (manager_email) REFERENCES Users (email)
+    FOREIGN KEY (manager_email) REFERENCES Users (email) ON UPDATE CASCADE
 );
 
 CREATE TABLE Session (
@@ -56,8 +56,8 @@ CREATE TABLE Session (
     createdAt TIMESTAMP NOT NULL,
     updatedAt TIMESTAMP NOT NULL,
     PRIMARY KEY (id), 
-    FOREIGN KEY (library_id) REFERENCES Library (id),
-    FOREIGN KEY (user_email) REFERENCES Users (email)
+    FOREIGN KEY (library_id) REFERENCES Library (id) ON UPDATE CASCADE,
+    FOREIGN KEY (user_email) REFERENCES Users (email) ON UPDATE CASCADE
 );
 
 CREATE TABLE Volunteer (
@@ -72,6 +72,6 @@ CREATE TABLE Volunteer (
     createdAt TIMESTAMP NOT NULL,
     updatedAt TIMESTAMP NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (library_id) REFERENCES Library (id),
-    FOREIGN KEY (user_email) REFERENCES Users (email)
+    FOREIGN KEY (library_id) REFERENCES Library (id) ON UPDATE CASCADE,
+    FOREIGN KEY (user_email) REFERENCES Users (email) ON UPDATE CASCADE
 );

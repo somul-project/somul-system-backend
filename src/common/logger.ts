@@ -9,7 +9,6 @@ const myFormat = winston.format.printf(({ level, message, label, timestamp }) =>
   log file name is time that server start.
 */
 export class Logger {
-
   static createLogger(label: string): winston.Logger {
     return winston.createLogger({
       format:  winston.format.combine(
