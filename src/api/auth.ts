@@ -13,6 +13,8 @@ const LocalStrategy = localPassport.Strategy;
 const GoogleStrategy = googlePassport.Strategy;
 const GithubStrategy = githubPassport.Strategy;
 
+const ERROR_MESSAGE = "invalid request";
+
 passport.serializeUser(async (user: object, done) => {
   done(null, user);
 });
@@ -62,7 +64,7 @@ passport.use(new GithubStrategy({
     scope: [ 'user:email' ]
   },
   async (accessToken, refreshToken, profile, cb) => {
-    const email = profile.emails![0].value;		
+    const email = profile.emails![0].value;
     const userInfo = await Users.findOne({where: {email}});
     if (userInfo) {
       process["admin"] = userInfo.getDataValue("admin");
@@ -75,7 +77,7 @@ passport.use(new GithubStrategy({
 router.use(passport.initialize());
 router.use(passport.session());
 
-router.get("/verify_email", async (req, res) => {
+router.get("/verify", async (req, res) => {
   try {
     const email = req.query.email;
     const result = await EmailToken.findOne({
@@ -87,26 +89,28 @@ router.get("/verify_email", async (req, res) => {
       await Users.build({
         email: result.email,
         name: result.name,
-        phone_number: result.phone_number,
+        phonenumber: result.phonenumber,
         admin: false,
         password: result.password
       }).save();
     } else {
-      throw "invalid request";
+      throw ERROR_MESSAGE;
     }
-    res.send("성공")
+    res.send({result: 0});
   } catch (error){
     res.send({result: -1, error});
   }
-})
-router.get("/google", passport.authenticate('google', { scope: ['profile', 'email'] }))
+});
+
+router.get("/google", passport.authenticate('google', { scope: ['profile', 'email'] }));
 router.get('/google/callback',
   passport.authenticate('google', {
     failureRedirect: '/auth/google',
     successRedirect: '/'
   }
 ));
-router.get("/github", passport.authenticate('github', { scope: ['profile', 'user:email'] }))
+
+router.get("/github", passport.authenticate('github', { scope: ['profile', 'user:email'] }));
 router.get('/github/callback',
   passport.authenticate('github', {
     failureRedirect: '/auth/github',

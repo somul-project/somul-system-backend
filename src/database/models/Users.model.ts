@@ -17,7 +17,7 @@ export class Users extends Model<Users> {
   @Comment('')
   @AllowNull(false)
   @Column
-  phone_number: string;
+  phonenumber: string;
 
   @Comment('')
   @AllowNull(false)

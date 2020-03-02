@@ -9,5 +9,5 @@ export class User {
   name?: string;
 
   @Field({ nullable: true })
-  phoneNumber?: string;
+  phonenumber?: string;
 }

@@ -16,7 +16,7 @@ export class Server {
   public async start() {
     await this.addEvent();
     this.app.listen(constants.SERVER_PORT,
-      () => log.info(`Example app listening on port ${constants.SERVER_PORT}!`))
+      () => log.info(`Example app listening on port ${constants.SERVER_PORT}!`));
   }
   public authenticateUser = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     if (req.session && req.session.passport && req.session.passport.user !== undefined) {
@@ -28,7 +28,7 @@ export class Server {
     } else {
       res.send({code: -1});
     }
-  };
+  }
 
   private async addEvent() {
     this.app.use(bodyParser.json());
