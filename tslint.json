@@ -6,7 +6,7 @@
     "jsx-boolean-value": false,
     "ordered-imports": false,
     "no-console": false,
-    "member-ordering": false,
+    "member-ordering": false
   },
   "linterOptions": {
     "exclude": [

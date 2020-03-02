@@ -20,12 +20,12 @@ export class Library extends Model<Library> {
   @AllowNull(false)
   @Column
   location_road: string;
-  
+
   @Comment('')
   @AllowNull(false)
   @Column
   location_number: string;
- 
+
   @Comment('')
   @AllowNull(false)
   @Column
@@ -41,7 +41,7 @@ export class Library extends Model<Library> {
   @AllowNull(false)
   @Column
   fac_beam_screan: boolean;
-  
+
   @Comment('')
   @AllowNull(false)
   @Column
@@ -66,7 +66,7 @@ export class Library extends Model<Library> {
   @AllowNull(false)
   @Column
   fac_need_volunteer: boolean;
-  
+
   @Comment('')
   @AllowNull(false)
   @Column
@@ -76,7 +76,7 @@ export class Library extends Model<Library> {
   @AllowNull(false)
   @Column
   longitude: number;
-  
+
   @Comment('')
   @AllowNull(false)
   @Column

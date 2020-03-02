@@ -2,7 +2,6 @@ import { Model, Table, Column, AllowNull, AutoIncrement, PrimaryKey, Comment } f
 
 @Table({ tableName: 'Email_Token' })
 export class EmailToken extends Model<EmailToken> {
-  
   @Comment('')
   @AllowNull(false)
   @PrimaryKey

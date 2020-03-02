@@ -2,7 +2,6 @@ import { ObjectType, Field } from 'type-graphql';
 
 @ObjectType()
 export class User {
-  
   @Field({ nullable: true })
   email?: string;
 
@@ -10,5 +9,5 @@ export class User {
   name?: string;
 
   @Field({ nullable: true })
-  phone_number?: string;
+  phoneNumber?: string;
 }
