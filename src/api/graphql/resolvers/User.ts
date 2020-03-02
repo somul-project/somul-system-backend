@@ -16,29 +16,32 @@ import sha256 from "sha256";
 import randomstring from "randomstring";
 
 const log = Logger.createLogger("graphql.resolvers.User");
-const EMAIL_TEMPLATE = "http://localhost/verify_email?email={email}&token={token}";
-const ERROR_MASSAGE = "invalid request";
+
+const EMAIL_TEMPLATE = constants.EMAIL_TEMPLATE;
+const ERROR_MESSAGE = "invalid request";
 
 @Resolver()
 export class UserResolver {
 
   @Query(() => [User] || [])
   async users(
-    @Arg('phone_number', { nullable: true }) phoneNumber: string,
+    @Arg('phonenumber', { nullable: true }) phonenumber: string,
     @Arg('name', { nullable: true }) name: string,
     @Ctx() context: any
   ): Promise<[User?]> {
     try {
       const passportSession = context.request.session.passport;
       if (!passportSession || !passportSession.user.admin) {
-        throw ERROR_MASSAGE;
+        throw ERROR_MESSAGE;
       }
       const result = await Users.findAll({
-        attributes: ['name', 'phone_number', 'email'],
-        where: {name, phoneNumber}});
+        attributes: ['name', 'phonenumber', 'email'],
+        where: {name, phonenumber}});
       if (!result) {return [];}
       const res: [User?] = [];
-      result.forEach((item) => {res.push({name: item.name, email: item.email, phoneNumber: item.phone_number})})
+      result.forEach((item) => {
+        res.push({name: item.name, email: item.email, phonenumber: item.phonenumber});
+      });
       return res;
 
     } catch (error) {
@@ -55,13 +58,13 @@ export class UserResolver {
     try {
       const passportSession = context.request.session.passport;
       if (!passportSession || (passportSession.user.email !== email && !passportSession.user.admin)) {
-        throw ERROR_MASSAGE;
+        throw ERROR_MESSAGE;
       }
       const result = await Users.findOne({where: {email}});
       if (result === undefined) {return {};}
       if (passportSession.user.admin) {
         return {name: result!.name, email: result!.email!,
-          phoneNumber: result!.phone_number,};
+          phonenumber: result!.phonenumber,};
       } else {
         return {name: result!.name, email: result!.email!};
       }
@@ -76,7 +79,7 @@ export class UserResolver {
     @Arg('email') email: string,
     @Arg('name') name: string,
     @Arg('password', { nullable: true }) password: string,
-    @Arg('phone_number') phoneNumber: string,
+    @Arg('phonenumber') phonenumber: string,
     @Ctx() context: any
   ): Promise<MutationRes> {
     try {
@@ -86,7 +89,7 @@ export class UserResolver {
         await Users.build({
           email: passportSession.user.email,
           name,
-          phoneNumber,
+          phonenumber,
           admin: false,
         }).save();
         passportSession.user.admin = false;
@@ -98,7 +101,7 @@ export class UserResolver {
           email,
           name,
           token,
-          phoneNumber,
+          phonenumber,
           password: hashedPassword
         }).save();
         // send email for verifying
@@ -107,9 +110,9 @@ export class UserResolver {
           to: email,
           subject: constants.EMAIL_SUBJECT,
           text: EMAIL_TEMPLATE.replace("{token}", token).replace("{email}", email),
-        })
+        });
       } else {
-        throw ERROR_MASSAGE;
+        throw ERROR_MESSAGE;
       }
       return {result: true};
     } catch (error) {
@@ -128,9 +131,9 @@ export class UserResolver {
       if (passportInfo && (passportInfo.user.email === email || passportInfo.user.admin)) {
         await Users.destroy({
           where: {email: passportInfo.user.email}
-        })
+        });
       } else {
-        throw ERROR_MASSAGE;
+        throw ERROR_MESSAGE;
       }
       return {result: true};
     } catch (error) {
@@ -144,7 +147,7 @@ export class UserResolver {
     @Arg('email') email: string,
     @Arg('name') name: string,
     @Arg('admin', { nullable: true }) admin: boolean,
-    @Arg('phone_number') phoneNumber: string,
+    @Arg('phonenumber') phonenumber: string,
     @Ctx() context: any
   ): Promise<MutationRes> {
     try {
@@ -153,13 +156,13 @@ export class UserResolver {
          const args = {
            admin: (passportInfo.user.admin)? admin: undefined,
            name,
-           phoneNumber,
-         }
+           phonenumber,
+         };
         await Users.update(args, {
           where: {email: (passportInfo.user.email)? email: passportInfo.user.email}
         });
       } else {
-        throw ERROR_MASSAGE;
+        throw ERROR_MESSAGE;
       }
       return {result: true};
     } catch (error) {

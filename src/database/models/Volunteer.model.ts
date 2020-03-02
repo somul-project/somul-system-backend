@@ -47,7 +47,7 @@ export class Volunteer extends Model<Volunteer> {
   @Comment('')
   @AllowNull(true)
   @Column
-  admin_approved?: '0' | '1' | '2' | '3' ;;
+  admin_approved?: '0' | '1' | '2' | '3' ;
 
   @Comment('')
   @AllowNull(false)

@@ -1,4 +1,3 @@
-
 import { buildTypeDefsAndResolvers } from 'type-graphql';
 import * as graphqlHTTP from 'express-graphql';
 import { makeExecutableSchema } from "graphql-tools";

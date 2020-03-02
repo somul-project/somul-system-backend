@@ -1,7 +1,7 @@
 CREATE TABLE Users (
-    email VARCHAR(25) NOT NULL ,
-    name VARCHAR(15) NOT NULL,
-    phone_number VARCHAR(15) NOT NULL,
+    email VARCHAR(50) NOT NULL ,
+    name VARCHAR(30) NOT NULL,
+    phonenumber VARCHAR(15) NOT NULL,
     admin BOOLEAN NOT NULL,
     password VARCHAR(100),
     createdAt TIMESTAMP NOT NULL,
@@ -11,22 +11,18 @@ CREATE TABLE Users (
 
 CREATE TABLE Email_Token (
     id INT NOT NULL AUTO_INCREMENT,
-    email VARCHAR(25) NOT NULL,
+    email VARCHAR(50) NOT NULL,
     token VARCHAR(100) NOT NULL,
-    name VARCHAR(15) NOT NULL,
-    phone_number VARCHAR(15) NOT NULL,
-    password VARCHAR(100) NOT NULL,
-    createdAt TIMESTAMP NOT NULL,
-    updatedAt TIMESTAMP NOT NULL,
     PRIMARY KEY (id)
+    FOREIGN KEY (email) REFERENCES Users (email) ON UPDATE CASCADE
 );
 
-CREATE TABLE Library (
+CREATE TABLE Library2 (
     id INT NOT NULL AUTO_INCREMENT,
-    name VARCHAR(15) NOT NULL,
-    location_road VARCHAR(30) NOT NULL,
-    location_number VARCHAR(30) NOT NULL,
-    location_detail VARCHAR(30) NOT NULL,
+    name VARCHAR(30) NOT NULL,
+    location_road TEXT NOT NULL,
+    location_number TEXT NOT NULL,
+    location_detail TEXT NOT NULL,
     manager_email VARCHAR(25) NOT NULL,
     fac_beam_screan BOOLEAN NOT NULL,
     fac_sound BOOLEAN NOT NULL,
@@ -34,8 +30,8 @@ CREATE TABLE Library (
     fac_placard BOOLEAN NOT NULL,
     fac_self_promo BOOLEAN NOT NULL,
     fac_need_volunteer BOOLEAN NOT NULL,
-    latitude INT NOT NULL,
-    longitude INT NOT NULL,
+    latitude FLOAT NULL,
+    longitude FLOAT NOT NULL,
     createdAt TIMESTAMP NOT NULL,
     updatedAt TIMESTAMP NOT NULL,
     PRIMARY KEY (id), 
@@ -45,13 +41,13 @@ CREATE TABLE Library (
 CREATE TABLE Session (
     id INT NOT NULL AUTO_INCREMENT,
     library_id INT NOT NULL,
-    user_email VARCHAR(25) NOT NULL,
-    session_name VARCHAR(15) NOT NULL,
+    user_email VARCHAR(50) NOT NULL,
+    session_name VARCHAR(50) NOT NULL,
     session_time DATE NOT NULL,
     introduce TEXT,
     history TEXT,
     session_explainer TEXT,
-    document VARCHAR(25) NOT NULL,
+    document VARCHAR(50) NOT NULL,
     admin_approved ENUM('0','1','2','3'),
     createdAt TIMESTAMP NOT NULL,
     updatedAt TIMESTAMP NOT NULL,
@@ -63,9 +59,7 @@ CREATE TABLE Session (
 CREATE TABLE Volunteer (
     id INT NOT NULL AUTO_INCREMENT,
     library_id INT NOT NULL,
-    user_email VARCHAR(25) NOT NULL,
-    session_name VARCHAR(15) NOT NULL,
-    session_time DATE NOT NULL,
+    user_email VARCHAR(50) NOT NULL,
     introduce TEXT,
     history TEXT,
     admin_approved ENUM('0','1','2','3'),
