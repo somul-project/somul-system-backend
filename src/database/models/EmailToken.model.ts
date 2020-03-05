@@ -1,7 +1,9 @@
-import { Model, Table, Column, AllowNull, AutoIncrement, PrimaryKey, Comment } from 'sequelize-typescript';
+import {
+  Model, Table, Column, AllowNull, AutoIncrement, PrimaryKey, Comment,
+} from 'sequelize-typescript';
 
 @Table({ tableName: 'Email_Token' })
-export class EmailToken extends Model<EmailToken> {
+export default class EmailToken extends Model<EmailToken> {
   @Comment('')
   @AllowNull(false)
   @PrimaryKey

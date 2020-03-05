@@ -1,0 +1,19 @@
+module.exports = {
+  "env": {
+    "es6": true,
+    "node": true
+  },
+  "extends": [
+    "airbnb-base",
+    "plugin:@typescript-eslint/eslint-recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "rules": {
+    "import/no-unresolved": 0,
+    "camelcase": 0,
+    "import/extensions": [0, "ignorePackages"],
+  }
+};
