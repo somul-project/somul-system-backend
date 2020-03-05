@@ -1,8 +1,9 @@
-import { Model, Table, Column, AllowNull, PrimaryKey, Comment } from 'sequelize-typescript';
+import {
+  Model, Table, Column, AllowNull, PrimaryKey, Comment,
+} from 'sequelize-typescript';
 
 @Table({ tableName: 'Users' })
-export class Users extends Model<Users> {
-
+export default class Users extends Model<Users> {
   @Comment('')
   @AllowNull(false)
   @PrimaryKey

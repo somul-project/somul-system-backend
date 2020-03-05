@@ -1,9 +1,10 @@
-import { Model, Table, Column, AllowNull, AutoIncrement, PrimaryKey, Comment, ForeignKey } from 'sequelize-typescript';
-import { Users } from './Users.model';
+import {
+  Model, Table, Column, AllowNull, AutoIncrement, PrimaryKey, Comment, ForeignKey,
+} from 'sequelize-typescript';
+import Users from './Users.model';
 
 @Table({ tableName: 'Library' })
-export class Library extends Model<Library> {
-
+export default class Library extends Model<Library> {
   @Comment('')
   @AllowNull(false)
   @PrimaryKey

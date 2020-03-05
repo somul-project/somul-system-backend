@@ -1,25 +1,24 @@
-import * as winston from "winston";
+import * as winston from 'winston';
 
-const myFormat = winston.format.printf(({ level, message, label, timestamp }) => {
-  return `${timestamp} [${label}] ${level}: ${message}`;
-});
+const myFormat = winston.format.printf(({
+  level, message, label, timestamp,
+}) => `${timestamp} [${label}] ${level}: ${message}`);
 
 /*
   records only debug log and error log.
   log file name is time that server start.
 */
-export class Logger {
+export default class Logger {
   static createLogger(label: string): winston.Logger {
     return winston.createLogger({
-      format:  winston.format.combine(
+      format: winston.format.combine(
         winston.format.label({ label }),
         winston.format.timestamp(),
         myFormat,
       ),
       transports: [
-        new (winston.transports.Console)({
-          level: 'debug'}),
-      ]
+        new (winston.transports.Console)({ level: 'debug' }),
+      ],
     });
   }
 }

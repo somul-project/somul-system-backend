@@ -5,29 +5,28 @@ import {
   Arg,
   Ctx,
 } from 'type-graphql';
-import { User } from '../objectTypes/User';
-import { MutationRes } from '../objectTypes/MutationRes';
-import { Users } from "../../../database/models/Users.model";
-import { EmailToken } from "../../../database/models/EmailToken.model";
-import * as sendgrid from "../../../util/sendgrid";
-import * as constants from "../../../common/constants";
-import { Logger } from "../../../common/logger";
-import sha256 from "sha256";
-import randomstring from "randomstring";
+import sha256 from 'sha256';
+import randomstring from 'randomstring';
+import User from '../objectTypes/User';
+import MutationRes from '../objectTypes/MutationRes';
+import Users from '../../../database/models/Users.model';
+import EmailToken from '../../../database/models/EmailToken.model';
+import sendgrid from '../../../util/sendgrid';
+import * as constants from '../../../common/constants';
+import Logger from '../../../common/logger';
 
-const log = Logger.createLogger("graphql.resolvers.User");
+const log = Logger.createLogger('graphql.resolvers.User');
 
-const EMAIL_TEMPLATE = constants.EMAIL_TEMPLATE;
-const ERROR_MESSAGE = "invalid request";
+const { EMAIL_TEMPLATE } = constants;
+const ERROR_MESSAGE = 'invalid request';
 
 @Resolver()
-export class UserResolver {
-
+export default class UserResolver {
   @Query(() => [User] || [])
-  async users(
+  static async users(
     @Arg('phonenumber', { nullable: true }) phonenumber: string,
     @Arg('name', { nullable: true }) name: string,
-    @Ctx() context: any
+    @Ctx() context: any,
   ): Promise<[User?]> {
     try {
       const passportSession = context.request.session.passport;
@@ -36,13 +35,13 @@ export class UserResolver {
       }
       const result = await Users.findAll({
         attributes: ['name', 'phonenumber', 'email'],
-        where: {name, phonenumber}});
+        where: { name, phonenumber },
+      });
       const res: [User?] = [];
       result.forEach((item) => {
-        res.push({name: item.name, email: item.email, phonenumber: item.phonenumber});
+        res.push({ name: item.name, email: item.email, phonenumber: item.phonenumber });
       });
       return res;
-
     } catch (error) {
       log.error(`[-] failed to query(users) - ${error}`);
       return [];
@@ -50,23 +49,26 @@ export class UserResolver {
   }
 
   @Query(() => User)
-  async user(
+  static async user(
     @Arg('email') email: string,
-    @Ctx() context: any
+    @Ctx() context: any,
   ): Promise<User> {
     try {
       const passportSession = context.request.session.passport;
-      if (!passportSession || (passportSession.user.email !== email && !passportSession.user.admin)) {
+      if (!passportSession
+          || (passportSession.user.email !== email && !passportSession.user.admin)) {
         throw ERROR_MESSAGE;
       }
-      const result = await Users.findOne({where: {email}});
-      if (result === undefined) {return {};}
+      const result = await Users.findOne({ where: { email } });
+      if (result === undefined) { return {}; }
       if (passportSession.user.admin) {
-        return {name: result!.name, email: result!.email!,
-          phonenumber: result!.phonenumber,};
-      } else {
-        return {name: result!.name, email: result!.email!};
+        return {
+          name: result!.name,
+          email: result!.email!,
+          phonenumber: result!.phonenumber,
+        };
       }
+      return { name: result!.name, email: result!.email! };
     } catch (error) {
       log.error(`[-] failed to query - ${error}`);
       return {};
@@ -74,12 +76,12 @@ export class UserResolver {
   }
 
   @Mutation(() => MutationRes)
-  async createUser(
+  static async createUser(
     @Arg('email') email: string,
     @Arg('name') name: string,
     @Arg('password', { nullable: true }) password: string,
     @Arg('phonenumber') phonenumber: string,
-    @Ctx() context: any
+    @Ctx() context: any,
   ): Promise<MutationRes> {
     try {
       const passportSession = context.request.session.passport;
@@ -101,72 +103,72 @@ export class UserResolver {
           name,
           token,
           phonenumber,
-          password: hashedPassword
+          password: hashedPassword,
         }).save();
         // send email for verifying
-        sendgrid.send({
+        sendgrid({
           from: constants.ADMIN_EMAIL,
           to: email,
           subject: constants.EMAIL_SUBJECT,
-          text: EMAIL_TEMPLATE.replace("{token}", token).replace("{email}", email),
+          text: EMAIL_TEMPLATE.replace('{token}', token).replace('{email}', email),
         });
       } else {
         throw ERROR_MESSAGE;
       }
-      return {result: true};
+      return { result: true };
     } catch (error) {
       log.error(`[-] failed to create user - ${error}`);
-      return {result: false, error};
+      return { result: false, error };
     }
   }
 
   @Mutation(() => MutationRes)
-  async deleteUser(
+  static async deleteUser(
     @Arg('email') email: string,
-    @Ctx() context: any
+    @Ctx() context: any,
   ): Promise<MutationRes> {
     try {
       const passportInfo = context.request.session.passport;
       if (passportInfo && (passportInfo.user.email === email || passportInfo.user.admin)) {
         await Users.destroy({
-          where: {email: passportInfo.user.email}
+          where: { email: passportInfo.user.email },
         });
       } else {
         throw ERROR_MESSAGE;
       }
-      return {result: true};
+      return { result: true };
     } catch (error) {
       log.error(`[-] failed to delete user - ${error}`);
-      return {result: false, error};
+      return { result: false, error };
     }
   }
 
   @Mutation(() => Boolean)
-  async updateUser(
+  static async updateUser(
     @Arg('email') email: string,
     @Arg('name') name: string,
     @Arg('admin', { nullable: true }) admin: boolean,
     @Arg('phonenumber') phonenumber: string,
-    @Ctx() context: any
+    @Ctx() context: any,
   ): Promise<MutationRes> {
     try {
       const passportInfo = context.request.session.passport;
       if (passportInfo && (passportInfo.user.email === email || passportInfo.user.admin)) {
-         const args = {
-           admin: (passportInfo.user.admin)? admin: undefined,
-           name,
-           phonenumber,
-         };
+        const args = {
+          admin: (passportInfo.user.admin) ? admin : undefined,
+          name,
+          phonenumber,
+        };
         await Users.update(args, {
-          where: {email: (passportInfo.user.email)? email: passportInfo.user.email}
+          where: { email: (passportInfo.user.email) ? email : passportInfo.user.email },
         });
       } else {
         throw ERROR_MESSAGE;
       }
-      return {result: true};
+      return { result: true };
     } catch (error) {
       log.error(`[-] failed to update user - ${error}`);
-      return {result: false, error};
+      return { result: false, error };
     }
   }
 }

@@ -1,12 +1,10 @@
 
-
-describe("sendgrid", () => {
-
-  beforeAll( () => {
+describe('sendgrid', () => {
+  beforeAll(() => {
     jest.setTimeout(10000);
   });
-  
-  it("init", async () => {
+
+  it('init', async () => {
     expect(0).toEqual(0);
   });
 });
