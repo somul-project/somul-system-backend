@@ -1,12 +1,6 @@
 name: Node.js CI
 
-on:
-  push:
-    branches: 
-      - feature/*
-      - master 
-  pull_request:
-    branches: [ master ]
+on: [pull_request]
     
 jobs:
   build:
@@ -21,7 +15,10 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - name: lib install
       - run: yarn
+      - name: code check
       - run: yarn test
+      - name: lint check
       - run: yarn lint
 
