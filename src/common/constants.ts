@@ -1,24 +1,29 @@
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
 
+const NODE_ENV = process.env.NODE_ENV;
+const envDev = dotenv.parse(fs.readFileSync(`./.env.${NODE_ENV}`));
 
-const envDev = dotenv.parse(fs.readFileSync('./.env.development'));
-export const { VERSION } = envDev;
-export const { SERVER_PORT } = envDev;
-export const { ADMIN_EMAIL } = envDev;
-export const { SECRET_CODE } = envDev;
-
-export const { GOOGLE_CLIENT_ID } = envDev;
-export const { GOOGLE_CLIENT_SECRET } = envDev;
-
-export const { GITHUB_CLIENT_ID } = envDev;
-export const { GITHUB_CLIENT_SECRET } = envDev;
-
-export const { SENDGRID_API_KEY } = envDev;
-export const { EMAIL_SUBJECT } = envDev;
+// Email config
 export const EMAIL_TEMPLATE = `http://${envDev.DOMAIN}/verify?email={email}&token={token}`;
 
-export const { DB_ENDPOINT } = envDev;
-export const { DB_NAME } = envDev;
-export const { DB_USERNAME } = envDev;
-export const { DB_PASSWORD } = envDev;
+export const {
+  // Server config
+  VERSION,
+  SERVER_PORT,
+  SECRET_CODE,
+  // Email config
+  ADMIN_EMAIL,
+  SENDGRID_API_KEY,
+  // OAuth config
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  GITHUB_CLIENT_ID,
+  GITHUB_CLIENT_SECRET,
+  // DB config
+  DB_ENDPOINT,
+  DB_NAME,
+  DB_USERNAME,
+  DB_PASSWORD,
+} = envDev;
+
