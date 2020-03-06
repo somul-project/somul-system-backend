@@ -1,8 +1,7 @@
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
 
-const NODE_ENV = process.env.NODE_ENV;
-const envDev = dotenv.parse(fs.readFileSync(`./.env.${NODE_ENV}`));
+const envDev = dotenv.parse(fs.readFileSync(`./.env.${process.env.NODE_ENV}`));
 
 // Email config
 export const EMAIL_TEMPLATE = `http://${envDev.DOMAIN}/verify?email={email}&token={token}`;
@@ -26,4 +25,3 @@ export const {
   DB_USERNAME,
   DB_PASSWORD,
 } = envDev;
-
