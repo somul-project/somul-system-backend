@@ -1,7 +1,9 @@
-import * as express from 'express';
-import * as session from 'express-session';
-import * as bodyParser from 'body-parser';
+import express from 'express';
+import session from 'express-session';
+import bodyParser from 'body-parser';
+import swaggerUi from 'swagger-ui-express';
 import * as constants from '../common/constants';
+import * as specs from './swagger';
 import Logger from '../common/logger';
 import getGraphQlserver from '../api/graphql';
 import loginRouter from '../api/auth';
@@ -25,12 +27,12 @@ export default class Server {
     res: express.Response, next: express.NextFunction) => {
     if (req.session && req.session.passport && req.session.passport.user !== undefined) {
       if (req.session.passport.user.admin === undefined) {
-        res.send({ code: -2 });
+        res.send({ result: -1, errorCode: 105, errorMessage: constants.ERROR_MESSAGE[105] });
       } else {
         next();
       }
     } else {
-      res.send({ code: -1 });
+      res.send({ result: -1, errorCode: 104, errorMessage: constants.ERROR_MESSAGE[104] });
     }
   }
 
@@ -47,9 +49,21 @@ export default class Server {
     this.app.get('/', this.authenticateUser, async (req, res) => {
       res.send({ result: 0 });
     });
-
     this.app.use('/auth', loginRouter);
     const graphQlserver = await getGraphQlserver();
-    this.app.use('/graphql', graphQlserver);
+
+    /**
+     * @swagger
+     * /graphql:
+     *    post:
+     *      tags:
+     *          - graphql
+     *      summary: graphql.
+     *      description: you have to request using json
+     *      consumes:
+     *        - application/json
+     */
+    this.app.use('/graphql', this.authenticateUser, graphQlserver);
+    this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs.default));
   }
 }

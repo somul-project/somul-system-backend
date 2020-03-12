@@ -1,7 +1,8 @@
 CREATE TABLE Users (
-    email VARCHAR(50) NOT NULL ,
+    email VARCHAR(50) NOT NULL,
     name VARCHAR(30) NOT NULL,
     phonenumber VARCHAR(15) NOT NULL,
+    verify_email BOOLEAN NOT NULL,
     admin BOOLEAN NOT NULL,
     password VARCHAR(100),
     createdAt TIMESTAMP NOT NULL,
@@ -13,11 +14,13 @@ CREATE TABLE Email_Token (
     id INT NOT NULL AUTO_INCREMENT,
     email VARCHAR(50) NOT NULL,
     token VARCHAR(100) NOT NULL,
-    PRIMARY KEY (id)
-    FOREIGN KEY (email) REFERENCES Users (email) ON UPDATE CASCADE
+    createdAt TIMESTAMP NOT NULL,
+    updatedAt TIMESTAMP NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (email) REFERENCES Users (email) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-CREATE TABLE Library2 (
+CREATE TABLE Library (
     id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(30) NOT NULL,
     location_road TEXT NOT NULL,
@@ -30,12 +33,13 @@ CREATE TABLE Library2 (
     fac_placard BOOLEAN NOT NULL,
     fac_self_promo BOOLEAN NOT NULL,
     fac_need_volunteer BOOLEAN NOT NULL,
-    latitude FLOAT NULL,
+    latitude FLOAT NOT NULL,
     longitude FLOAT NOT NULL,
+    admin_approved ENUM('0','1','2','3')  NOT NULL,
     createdAt TIMESTAMP NOT NULL,
     updatedAt TIMESTAMP NOT NULL,
     PRIMARY KEY (id), 
-    FOREIGN KEY (manager_email) REFERENCES Users (email) ON UPDATE CASCADE
+    FOREIGN KEY (manager_email) REFERENCES Users (email) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE Session (
@@ -48,12 +52,12 @@ CREATE TABLE Session (
     history TEXT,
     session_explainer TEXT,
     document VARCHAR(50) NOT NULL,
-    admin_approved ENUM('0','1','2','3'),
+    admin_approved ENUM('0','1','2','3') NOT NULL,
     createdAt TIMESTAMP NOT NULL,
     updatedAt TIMESTAMP NOT NULL,
     PRIMARY KEY (id), 
-    FOREIGN KEY (library_id) REFERENCES Library (id) ON UPDATE CASCADE,
-    FOREIGN KEY (user_email) REFERENCES Users (email) ON UPDATE CASCADE
+    FOREIGN KEY (library_id) REFERENCES Library (id) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (user_email) REFERENCES Users (email) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE Volunteer (
@@ -62,10 +66,10 @@ CREATE TABLE Volunteer (
     user_email VARCHAR(50) NOT NULL,
     introduce TEXT,
     history TEXT,
-    admin_approved ENUM('0','1','2','3'),
+    admin_approved ENUM('0','1','2','3')  NOT NULL,
     createdAt TIMESTAMP NOT NULL,
     updatedAt TIMESTAMP NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (library_id) REFERENCES Library (id) ON UPDATE CASCADE,
-    FOREIGN KEY (user_email) REFERENCES Users (email) ON UPDATE CASCADE
+    FOREIGN KEY (library_id) REFERENCES Library (id) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (user_email) REFERENCES Users (email) ON UPDATE CASCADE ON DELETE CASCADE
 );

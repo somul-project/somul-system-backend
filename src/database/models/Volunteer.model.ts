@@ -1,5 +1,5 @@
 import {
-  Model, Table, Column, AllowNull, AutoIncrement, PrimaryKey, Comment, ForeignKey,
+  Model, Table, Column, AllowNull, AutoIncrement, PrimaryKey, Comment, ForeignKey, BelongsTo,
 } from 'sequelize-typescript';
 import Library from './Library.model';
 import Users from './Users.model';
@@ -59,4 +59,7 @@ export default class Volunteer extends Model<Volunteer> {
   @AllowNull(false)
   @Column
   updatedAt: Date;
+
+  @BelongsTo(() => Users)
+  user: Users;
 }

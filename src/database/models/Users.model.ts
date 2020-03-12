@@ -1,6 +1,10 @@
 import {
-  Model, Table, Column, AllowNull, PrimaryKey, Comment,
+  Model, Table, Column, AllowNull, PrimaryKey, Comment, HasMany,
 } from 'sequelize-typescript';
+import Library from './Library.model';
+import Session from './Session.model';
+import Volunteer from './Volunteer.model';
+
 
 @Table({ tableName: 'Users' })
 export default class Users extends Model<Users> {
@@ -26,6 +30,11 @@ export default class Users extends Model<Users> {
   admin: boolean;
 
   @Comment('')
+  @AllowNull(false)
+  @Column
+  verify_email: boolean;
+
+  @Comment('')
   @AllowNull(true)
   @Column
   password?: string;
@@ -39,4 +48,13 @@ export default class Users extends Model<Users> {
   @AllowNull(false)
   @Column
   updatedAt: Date;
+
+  @HasMany(() => Library)
+  librarys: Library[];
+
+  @HasMany(() => Volunteer)
+  volunteers: Volunteer[];
+
+  @HasMany(() => Session)
+  sessions: Session[];
 }
