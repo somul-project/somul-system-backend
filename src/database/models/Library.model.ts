@@ -1,7 +1,10 @@
 import {
-  Model, Table, Column, AllowNull, AutoIncrement, PrimaryKey, Comment, ForeignKey,
+  Model, Table, Column, AllowNull, AutoIncrement,
+  PrimaryKey, Comment, ForeignKey, BelongsTo, HasMany,
 } from 'sequelize-typescript';
 import Users from './Users.model';
+import Session from './Session.model';
+import Volunteer from './Volunteer.model';
 
 @Table({ tableName: 'Library' })
 export default class Library extends Model<Library> {
@@ -87,4 +90,13 @@ export default class Library extends Model<Library> {
   @AllowNull(false)
   @Column
   updatedAt: Date;
+
+  @BelongsTo(() => Users)
+  user: Users;
+
+  @HasMany(() => Volunteer)
+  volunteers: Volunteer[];
+
+  @HasMany(() => Session)
+  sessions: Session[];
 }

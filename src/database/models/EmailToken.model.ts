@@ -24,21 +24,6 @@ export default class EmailToken extends Model<EmailToken> {
   @Comment('')
   @AllowNull(false)
   @Column
-  name: string;
-
-  @Comment('')
-  @AllowNull(false)
-  @Column
-  phonenumber: string;
-
-  @Comment('')
-  @AllowNull(false)
-  @Column
-  password: string;
-
-  @Comment('')
-  @AllowNull(false)
-  @Column
   createdAt: Date;
 
   @Comment('')

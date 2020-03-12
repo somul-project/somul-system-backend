@@ -1,7 +1,8 @@
 import { ObjectType, Field } from 'type-graphql';
+import 'reflect-metadata';
 
 @ObjectType()
-export default class User {
+export default class UserType {
   @Field({ nullable: true })
   email?: string;
 

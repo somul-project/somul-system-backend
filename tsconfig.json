@@ -19,7 +19,8 @@
     "experimentalDecorators": true,
     "resolveJsonModule": true,
     "emitDecoratorMetadata": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true, 
   },
   "exclude": [
     "node_modules",

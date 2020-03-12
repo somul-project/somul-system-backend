@@ -1,7 +1,7 @@
 import { buildTypeDefsAndResolvers } from 'type-graphql';
-import * as graphqlHTTP from 'express-graphql';
+import graphqlHTTP from 'express-graphql';
 import { makeExecutableSchema } from 'graphql-tools';
-import * as express from 'express';
+import express from 'express';
 import UserResolver from './resolvers/User';
 
 async function getRouter() {

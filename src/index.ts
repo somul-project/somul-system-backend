@@ -1,4 +1,4 @@
-import * as program from 'commander';
+import program from 'commander';
 import * as constants from './common/constants';
 import Server from './server/server';
 import getDatabase from './database';
