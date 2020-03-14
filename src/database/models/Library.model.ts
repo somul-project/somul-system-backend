@@ -82,6 +82,11 @@ export default class Library extends Model<Library> {
   longitude: number;
 
   @Comment('')
+  @AllowNull(true)
+  @Column
+  admin_approved?: '0' | '1' | '2' | '3' ;
+
+  @Comment('')
   @AllowNull(false)
   @Column
   createdAt: Date;
@@ -92,11 +97,11 @@ export default class Library extends Model<Library> {
   updatedAt: Date;
 
   @BelongsTo(() => Users)
-  user: Users;
+  User: Users;
 
   @HasMany(() => Volunteer)
-  volunteers: Volunteer[];
+  Volunteer: Volunteer[];
 
   @HasMany(() => Session)
-  sessions: Session[];
+  Session: Session[];
 }

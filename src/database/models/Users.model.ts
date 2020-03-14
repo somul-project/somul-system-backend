@@ -50,11 +50,11 @@ export default class Users extends Model<Users> {
   updatedAt: Date;
 
   @HasMany(() => Library)
-  librarys: Library[];
+  Library: Library[];
 
   @HasMany(() => Volunteer)
-  volunteers: Volunteer[];
+  Volunteer: Volunteer[];
 
   @HasMany(() => Session)
-  sessions: Session[];
+  Session: Session[];
 }

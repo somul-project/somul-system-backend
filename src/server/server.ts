@@ -63,7 +63,7 @@ export default class Server {
      *      consumes:
      *        - application/json
      */
-    this.app.use('/graphql', this.authenticateUser, graphQlserver);
+    this.app.use('/graphql', graphQlserver);
     this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs.default));
   }
 }
