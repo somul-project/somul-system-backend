@@ -33,7 +33,7 @@ export default class Session extends Model<Session> {
   @Comment('')
   @AllowNull(false)
   @Column
-  session_time: Date;
+  session_time: string;
 
   @Comment('')
   @AllowNull(true)
@@ -71,5 +71,8 @@ export default class Session extends Model<Session> {
   updatedAt: Date;
 
   @BelongsTo(() => Users)
-  user: Users;
+  User: Users;
+
+  @BelongsTo(() => Library)
+  Library: Library;
 }

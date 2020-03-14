@@ -12,6 +12,7 @@ module.exports = {
     "@typescript-eslint"
   ],
   "rules": {
+    "max-classes-per-file": 0,
     "no-unused-vars": 0,
     "import/no-unresolved": 0,
     "camelcase": 0,

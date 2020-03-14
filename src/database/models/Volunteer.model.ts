@@ -26,16 +26,6 @@ export default class Volunteer extends Model<Volunteer> {
   user_email: string;
 
   @Comment('')
-  @AllowNull(false)
-  @Column
-  session_name: string;
-
-  @Comment('')
-  @AllowNull(false)
-  @Column
-  session_time: Date;
-
-  @Comment('')
   @AllowNull(true)
   @Column
   introduce?: string;
@@ -61,5 +51,5 @@ export default class Volunteer extends Model<Volunteer> {
   updatedAt: Date;
 
   @BelongsTo(() => Users)
-  user: Users;
+  User: Users;
 }
