@@ -12,8 +12,11 @@ const log = Logger.createLogger('database.database');
 export class Database {
   protected instance: Sequelize;
 
-  constructor() {
+  constructor(test: boolean = false) {
     log.info('Initialize MySQL Connection');
+    if (test) {
+      return;
+    }
     this.instance = new Sequelize(constants.DB_NAME, constants.DB_USERNAME, constants.DB_PASSWORD, {
       host: constants.DB_ENDPOINT,
       dialect: 'mysql',
@@ -25,12 +28,32 @@ export class Database {
     });
     this.instance.addModels([EmailToken, Library, Session, Users, Volunteer]);
   }
+
+  getEmailToken() {
+    return EmailToken;
+  }
+
+  getSession() {
+    return Session;
+  }
+
+  getLibrary() {
+    return Library;
+  }
+
+  getVolunteer() {
+    return Volunteer;
+  }
+
+  getUsers() {
+    return Users;
+  }
 }
 
 let database: Database;
 
-const getDatabase = () => {
-  if (!database) { database = new Database(); }
+const getDatabase = (test: boolean = false) => {
+  if (!database) { database = new Database(test); }
   return database;
 };
 

@@ -15,7 +15,6 @@ import * as LibraryTypes from '../types/Library';
 import * as UsersHandlers from '../resolver_handler/User';
 import * as VolunteerHandlers from '../resolver_handler/Volunteer';
 import * as LibraryHandlers from '../resolver_handler/Library';
-import Volunteer from '../../../database/models/Volunteer.model';
 
 @Resolver((of) => VolunteerTypes.VolunteerObject)
 export default class VolunteerResolver {
@@ -65,7 +64,7 @@ export default class VolunteerResolver {
 
   @FieldResolver(() => UsersTypes.UserObject)
   async user(
-    @Root() volunteer: Volunteer,
+    @Root() volunteer: VolunteerTypes.VolunteerArgs,
   ): Promise<UsersTypes.UserObject> {
     if (!volunteer.user_email) {
       return {};
@@ -76,7 +75,7 @@ export default class VolunteerResolver {
 
   @FieldResolver(() => LibraryTypes.LibraryObject)
   async library(
-    @Root() volunteer: Volunteer,
+    @Root() volunteer: VolunteerTypes.VolunteerArgs,
   ): Promise<LibraryTypes.LibraryObject> {
     if (!volunteer.library_id) {
       return {};

@@ -2,8 +2,6 @@ import sgMail from '@sendgrid/mail';
 import * as constants from '../common/constants';
 
 sgMail.setApiKey(constants.SENDGRID_API_KEY);
-
-
 export const VERIFY_TEMPLATE = {
   html: `http://${constants.DOMAIN}/auth/verify?email={email}&token={token}`,
   subject: '이메일 인증!',
@@ -43,7 +41,8 @@ export const RESET_TEMPLATE = {
   subject: 'reset',
 };
 
-
-export default function send(msg: any) {
-  sgMail.send(msg);
+export default class EmailServise {
+  static send(msg: any) {
+    sgMail.send(msg);
+  }
 }

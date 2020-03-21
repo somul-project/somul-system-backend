@@ -1,13 +1,17 @@
+import { Mutex } from 'async-mutex';
 import * as VolunteerTypes from '../types/Volunteer';
-import Volunteer from '../../../database/models/Volunteer.model';
 import Logger from '../../../common/logger';
 import * as constants from '../../../common/constants';
+import getDatabase from '../../../database';
 
+const Volunteer = getDatabase().getVolunteer();
 const log = Logger.createLogger('graphql.resolver_handler.Volunteer');
+const mutex = new Mutex();
+let Release;
 
 export const queryVolunteer = async (id: number) => {
   try {
-    const result = await Volunteer.findOne({ where: { id } });
+    const result = await Volunteer.findOne({ where: { id, admin_approved: '3' } });
     if (!result) {
       return {};
     }
@@ -24,7 +28,7 @@ export const queryVolunteers = async (args: VolunteerTypes.VolunteerArgs, contex
     const email = context.request.session?.passport?.user.email;
     const where = JSON.parse(JSON.stringify(args));
     const admin_approved = (!admin
-      && (args.user_email && args.user_email !== email)) ? '0' : args.admin_approved;
+      && (args.user_email && args.user_email !== email)) ? '3' : args.admin_approved;
     if (admin_approved) where.admin_approved = admin_approved;
     const result = await Volunteer.findAll({
       where,
@@ -41,11 +45,25 @@ export const queryVolunteers = async (args: VolunteerTypes.VolunteerArgs, contex
 
 export const createVolunteer = async (args: VolunteerTypes.VolunteerCreateArgs) => {
   try {
-    await Volunteer.build({ ...args, admin_approved: '0' }).save();
-    return { result: true };
+    Release = await mutex.acquire();
+    try {
+      const result = await Volunteer.findAll({
+        where: { library_id: args.library_id },
+      });
+      if (result.length >= 2) {
+        throw '106';
+      }
+      Release();
+    } catch (error) {
+      Release();
+      throw error;
+    }
+    await Volunteer.create({ ...args, admin_approved: '0' });
+    return { result: 0 };
   } catch (error) {
     log.error(`[-] failed to create user - ${error}`);
-    return { result: false, error };
+    const errorCode = (constants.ERROR_MESSAGE[error]) ? error : 500;
+    return { result: -1, errorCode, errorMessage: constants.ERROR_MESSAGE[errorCode] };
   }
 };
 
@@ -56,16 +74,21 @@ export const updateVolunteer = async (
     const email = context.request.session?.passport?.user.email;
 
     if (!admin && (args.user_email && args.user_email !== email)) {
-      throw new Error(constants.ERROR_MESSAGE['104']);
+      throw '104';
     }
+
     const where = JSON.parse(JSON.stringify(args));
+    if (!admin && changeValues.admin_approved) {
+      delete where.admin_approved;
+    }
     await Volunteer.update(changeValues, {
       where,
     });
-    return { result: true };
+    return { result: 0 };
   } catch (error) {
     log.error(`[-] failed to create user - ${error}`);
-    return { result: false, error };
+    const errorCode = (constants.ERROR_MESSAGE[error]) ? error : 500;
+    return { result: -1, errorCode, errorMessage: constants.ERROR_MESSAGE[errorCode] };
   }
 };
 
@@ -74,15 +97,16 @@ export const deleteVolunteer = async (args: VolunteerTypes.VolunteerArgs, contex
     const admin = !!context.request.session.passport.user.admin;
     const email = context.request.session?.passport?.user.email;
     if (!admin && (args.user_email && args.user_email !== email)) {
-      throw new Error(constants.ERROR_MESSAGE['104']);
+      throw '104';
     }
     const where = JSON.parse(JSON.stringify(args));
     await Volunteer.destroy({
       where,
     });
-    return { result: true };
+    return { result: 0 };
   } catch (error) {
     log.error(`[-] failed to delete user - ${error}`);
-    return { result: false, error };
+    const errorCode = (constants.ERROR_MESSAGE[error]) ? error : 500;
+    return { result: -1, errorCode, errorMessage: constants.ERROR_MESSAGE[errorCode] };
   }
 };
