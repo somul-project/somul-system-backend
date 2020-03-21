@@ -34,5 +34,6 @@ export const ERROR_MESSAGE = {
   103: 'failed to reset password',
   104: 'you do not have permission',
   105: 'you have to register',
+  106: 'The Session is full',
   500: 'it is an unexpected error',
 };

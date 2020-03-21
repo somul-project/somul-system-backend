@@ -1,0 +1,164 @@
+import express from 'express';
+import EmailService, { VERIFY_TEMPLATE, RESET_TEMPLATE } from '../util/emailService';
+import getDatabase from '../database';
+import * as constants from '../common/constants';
+
+const EmailToken = getDatabase().getEmailToken();
+const Users = getDatabase().getUsers();
+const randomstring = require('randomstring');
+const sha256 = require('sha256');
+
+
+export class PassportUtil {
+  static getPassportSession = (req: express.Request) => {
+    const result = (req.session && req.session.passport) ? req.session.passport.user : undefined;
+    return result;
+  };
+}
+
+export const verifyRegisterHandler = async (req: express.Request, res: express.Response) => {
+  try {
+    const { email, token } = req.query;
+    const result = await EmailToken.findOne({ where: { email, token } });
+    if (result) {
+      await EmailToken.destroy({
+        where: { email },
+      });
+      await Users.update({
+        verify_email: true,
+      }, {
+        where: { email: result.email },
+      });
+    } else {
+      throw '101';
+    }
+    res.send({ result: 0 });
+  } catch (error) {
+    const errorCode = (constants.ERROR_MESSAGE[error]) ? error : 500;
+    res.send({ result: -1, errorCode, errorMessage: constants.ERROR_MESSAGE[errorCode] });
+  }
+};
+
+export const registerHandler = async (req: express.Request, res: express.Response) => {
+  const {
+    email, name, phonenumber, password,
+  } = req.body;
+
+  const passportUser = PassportUtil.getPassportSession(req);
+  const passportEmail = (passportUser) ? passportUser.email : undefined;
+  // validation check
+  // @TODO check email, phonenumber, password naming rule.
+
+  try {
+    if (
+      // OAuth
+      !(passportEmail && name && phonenumber)
+      // local
+      && !(email && name && phonenumber && password)
+    ) {
+      throw '1';
+    }
+    const updateDate = {
+      email: (!passportEmail) ? email : passportEmail,
+      name,
+      phonenumber,
+      verify_email: !!passportEmail,
+      password: (!passportEmail) ? sha256(password) : undefined,
+      admin: false,
+    };
+    const result = await Users.findOne({ where: { email: updateDate.email } });
+    if (result) {
+      throw '102';
+    }
+    await Users.create(updateDate);
+    // local register
+    if (!passportEmail) {
+      const token = randomstring.generate();
+      await EmailToken.create({
+        email,
+        token,
+      });
+      // send email for verifying
+      EmailService.send({
+        from: constants.ADMIN_EMAIL,
+        to: email,
+        subject: VERIFY_TEMPLATE.subject,
+        text: VERIFY_TEMPLATE.html.replace('{token}', token).replace('{email}', email),
+      });
+    }
+    res.send({ result: 0 });
+  } catch (error) {
+    const errorCode = (constants.ERROR_MESSAGE[error]) ? error : 500;
+    res.send({ result: -1, errorCode, errorMessage: constants.ERROR_MESSAGE[errorCode] });
+  }
+};
+
+export const secessionHandler = async (req: express.Request, res: express.Response) => {
+  const passportUser = PassportUtil.getPassportSession(req);
+  const passportEmail = (passportUser) ? passportUser.email : undefined;
+  try {
+    if (passportEmail) {
+      await Users.destroy({
+        where: { email: passportEmail },
+      });
+    } else {
+      throw '104';
+    }
+    res.send({ result: 0 });
+  } catch (error) {
+    const errorCode = (constants.ERROR_MESSAGE[error]) ? error : 500;
+    res.send({ result: -1, errorCode, errorMessage: constants.ERROR_MESSAGE[errorCode] });
+  }
+};
+
+export const verifyResetPwdHandler = async (req: express.Request, res: express.Response) => {
+  const { password } = req.body;
+
+  try {
+    // @TODO add password rule
+    if (
+      !(password)
+    ) {
+      throw '1';
+    }
+    const result = await EmailToken.findOne({ where: { ...req.query } });
+    if (result) {
+      await EmailToken.destroy({
+        where: { email: result.email },
+      });
+    } else {
+      throw '101';
+    }
+    await Users.update({
+      password: sha256(password),
+    }, {
+      where: { email: result.email },
+    });
+    res.send({ result: 0 });
+  } catch (error) {
+    const errorCode = (constants.ERROR_MESSAGE[error]) ? error : 500;
+    res.send({ result: -1, errorCode, errorMessage: constants.ERROR_MESSAGE[errorCode] });
+  }
+};
+
+export const resetPwdHandler = async (req: express.Request, res: express.Response) => {
+  const {
+    email,
+  } = req.body;
+  try {
+    const token = randomstring.generate();
+    await EmailToken.create({
+      email,
+      token,
+    });
+    EmailService.send({
+      from: constants.ADMIN_EMAIL,
+      to: email,
+      subject: RESET_TEMPLATE.subject,
+      html: RESET_TEMPLATE.html.replace('{token}', token).replace('{email}', email),
+    });
+    res.send({ result: 0 });
+  } catch (error) {
+    res.send({ result: -1, errorCode: 103, errorMessage: constants.ERROR_MESSAGE[103] });
+  }
+};

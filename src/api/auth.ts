@@ -4,11 +4,11 @@ import localPassport from 'passport-local';
 import githubPassport from 'passport-github';
 import express from 'express';
 import * as constants from '../common/constants';
-import Users from '../database/models/Users.model';
-import EmailToken from '../database/models/EmailToken.model';
-import sendgrid, { VERIFY_TEMPLATE, RESET_TEMPLATE } from '../util/sendgrid';
+import getDatabase from '../database';
+import * as authHandler from './authHandler';
 
-const randomstring = require('randomstring');
+const Users = getDatabase().getUsers();
+
 const sha256 = require('sha256');
 
 const router = express.Router();
@@ -75,30 +75,6 @@ async (accessToken, refreshToken, profile, cb) => {
 
 router.use(passport.initialize());
 router.use(passport.session());
-
-router.get('/verify', async (req, res) => {
-  try {
-    const { email } = req.query;
-    const result = await EmailToken.findOne({ where: { ...req.query } });
-    if (result) {
-      await EmailToken.destroy({
-        where: { email },
-      });
-      await Users.update({
-        verify_email: true,
-      }, {
-        where: { email: result.email },
-      });
-    } else {
-      throw new Error('1');
-    }
-    res.send({ result: 0 });
-  } catch (error) {
-    const errorCode = (constants.ERROR_MESSAGE[error]) ? error : 500;
-    res.send({ result: -1, errorCode, errorMessage: constants.ERROR_MESSAGE[errorCode] });
-  }
-});
-
 /**
  * @swagger
  * /auth/google:
@@ -175,6 +151,8 @@ router.get('/logout', (req, res) => {
   res.send({ result: 0 });
 });
 
+router.get('/verify_register', authHandler.verifyRegisterHandler);
+
 /**
  * @swagger
  * /auth/register:
@@ -202,50 +180,7 @@ router.get('/logout', (req, res) => {
  *        200:
  *          description: Receive back flavor and flavor Id.
  */
-router.post('/register', async (req, res) => {
-  const verify_email = !!(req.session && req.session.passport);
-  const PassportEmail = (req.session
-    && req.session.passport) ? req.session!.passport.user.email : undefined;
-  const {
-    email,
-    name,
-    phonenumber,
-    password,
-  } = req.body;
-  try {
-    const result = await Users.findOne({ where: { email } });
-    if (result) {
-      throw new Error('102');
-    }
-    await Users.build({
-      email: (verify_email) ? PassportEmail : email,
-      name,
-      phonenumber,
-      admin: false,
-      verify_email,
-      password: (password) ? sha256(password) : undefined,
-    }).save();
-    // local register
-    if (!verify_email) {
-      const token = randomstring.generate();
-      await EmailToken.build({
-        email,
-        token,
-      }).save();
-      // send email for verifying
-      sendgrid({
-        from: constants.ADMIN_EMAIL,
-        to: email,
-        subject: VERIFY_TEMPLATE.subject,
-        text: VERIFY_TEMPLATE.html.replace('{token}', token).replace('{email}', email),
-      });
-    }
-    res.send({ result: 0 });
-  } catch (error) {
-    const errorCode = (constants.ERROR_MESSAGE[error]) ? error : 500;
-    res.send({ result: -1, errorCode, errorMessage: constants.ERROR_MESSAGE[errorCode] });
-  }
-});
+router.post('/register', authHandler.registerHandler);
 
 /**
  * @swagger
@@ -258,50 +193,13 @@ router.post('/register', async (req, res) => {
  *        200:
  *          description: Receive back flavor and flavor Id.
  */
-router.post('/secession', async (req, res) => {
-  const PassportEmail = (req.session
-    && req.session.passport) ? req.session!.passport.user.email : undefined;
-  try {
-    if (PassportEmail) {
-      await Users.destroy({
-        where: { email: PassportEmail },
-      });
-    } else {
-      throw new Error('1');
-    }
-  } catch (error) {
-    const errorCode = (constants.ERROR_MESSAGE[error]) ? error : 500;
-    res.send({ result: -1, errorCode, errorMessage: constants.ERROR_MESSAGE[errorCode] });
-  }
-});
+router.post('/secession', authHandler.secessionHandler);
 
-router.post('/resetPwd', async (req, res) => {
-  const { password } = req.body;
-
-  try {
-    const result = await EmailToken.findOne({ where: { ...req.query } });
-    if (result) {
-      await EmailToken.destroy({
-        where: { email: result.email },
-      });
-    } else {
-      res.send({ result: -1 });
-      return;
-    }
-    await Users.update({
-      password: sha256(password),
-    }, {
-      where: { email: result.email },
-    });
-    res.send({ result: 0 });
-  } catch (error) {
-    res.send({ result: -1, errorCode: 103, errorMessage: constants.ERROR_MESSAGE[103] });
-  }
-});
+router.post('/verify_resetPwd', authHandler.verifyResetPwdHandler);
 
 /**
  * @swagger
- * /auth/request_resetPwd:
+ * /auth/resetPwd:
  *    post:
  *      tags:
  *          - Reset password
@@ -320,26 +218,6 @@ router.post('/resetPwd', async (req, res) => {
  *        200:
  *          description: Receive back flavor and flavor Id.
  */
-router.post('/request_resetPwd', async (req, res) => {
-  const {
-    email,
-  } = req.body;
-  try {
-    const token = randomstring.generate();
-    await EmailToken.build({
-      email,
-      token,
-    }).save();
-    sendgrid({
-      from: constants.ADMIN_EMAIL,
-      to: email,
-      subject: RESET_TEMPLATE.subject,
-      html: RESET_TEMPLATE.html.replace('{token}', token).replace('{email}', email),
-    });
-    res.send({ result: 0 });
-  } catch (error) {
-    res.send({ result: -1, errorCode: 103, errorMessage: constants.ERROR_MESSAGE[103] });
-  }
-});
+router.post('/resetPwd', authHandler.resetPwdHandler);
 
 export default router;

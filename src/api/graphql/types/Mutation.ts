@@ -5,8 +5,11 @@ import 'reflect-metadata';
 @ObjectType()
 export default class MutationObject {
   @Field({ nullable: true })
-  result?: boolean;
+  result?: number;
 
   @Field({ nullable: true })
-  error?: string;
+  errorCode?: string;
+
+  @Field({ nullable: true })
+  errorMessage?: string;
 }

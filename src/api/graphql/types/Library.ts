@@ -148,6 +148,6 @@ export class LibraryCreateArgs {
   @Field()
   longitude: number;
 
-  @Field()
-  admin_approved: '0' | '1' | '2' | '3';
+  @Field({ nullable: true })
+  admin_approved?: '0' | '1' | '2' | '3';
 }
