@@ -4,7 +4,7 @@ import getDatabase from '../../database';
 import * as constants from '../../common/constants';
 
 const database = getDatabase(true);
-
+const db = database.getInstance();
 const sessionDatas = [
   {
     id: 1,
@@ -41,6 +41,9 @@ describe('resolver_handler [Session]', () => {
         }
         return {};
       });
+
+    sinon.stub(db, 'query' as any)
+      .resolves(0);
 
     sinon.stub(database.getSession(), 'create' as any)
       .resolves(0);
