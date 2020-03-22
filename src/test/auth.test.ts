@@ -128,36 +128,6 @@ describe('auth', () => {
     expect(res._getData()).toEqual({ result: -1, errorCode: '1', errorMessage: constants.ERROR_MESSAGE['1'] });
   });
 
-  it('is a successful case <secessionHandler>', async () => {
-    const req = httpMocks.createRequest();
-    const res = httpMocks.createResponse();
-    sinon.stub(authHandler.PassportUtil, 'getPassportSession' as any)
-      .returns({
-        email: 'test@gmail.com',
-      });
-    await authHandler.secessionHandler(req, res);
-    expect(res._getData()).toEqual({ result: 0 });
-  });
-
-  it('is a failed case <secessionHandler>', async () => {
-    const req = httpMocks.createRequest();
-    const res = httpMocks.createResponse();
-
-    await authHandler.secessionHandler(req, res);
-    expect(res._getData()).toEqual({ result: -1, errorCode: '104', errorMessage: constants.ERROR_MESSAGE['104'] });
-  });
-
-  it('is a successful case <verifyResetPwdHandler>', async () => {
-    const req = httpMocks.createRequest();
-    const res = httpMocks.createResponse();
-    req.query = {
-      email: 'test@gmail.com',
-      token: 'testToken',
-    };
-
-    await authHandler.verifyRegisterHandler(req, res);
-    expect(res._getData()).toEqual({ result: 0 });
-  });
 
   it('is a failed case <verifyResetPwdHandler>', async () => {
     const req = httpMocks.createRequest();

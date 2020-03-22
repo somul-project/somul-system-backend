@@ -16,7 +16,9 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
 # copy ain-v1-worker code.
 RUN mkdir /somul-server
 ADD package.json /somul-server
-ADD ./ /somul-server
+ADD ./src /somul-server/src
+ADD ./tsconfig.json /somul-server/tsconfig.json
+ADD ./jest.config.js /somul-server/jest.config.js
 
 WORKDIR /somul-server
 RUN yarn

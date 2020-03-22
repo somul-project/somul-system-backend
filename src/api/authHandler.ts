@@ -104,6 +104,7 @@ export const secessionHandler = async (req: express.Request, res: express.Respon
     } else {
       throw '104';
     }
+    req.logout();
     res.send({ result: 0 });
   } catch (error) {
     const errorCode = (constants.ERROR_MESSAGE[error]) ? error : 500;
@@ -146,6 +147,10 @@ export const resetPwdHandler = async (req: express.Request, res: express.Respons
     email,
   } = req.body;
   try {
+    const result = await Users.findOne({ where: { email } });
+    if (!result || !result.password) {
+      throw '107';
+    }
     const token = randomstring.generate();
     await EmailToken.create({
       email,

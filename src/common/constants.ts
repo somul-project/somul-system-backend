@@ -1,7 +1,7 @@
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
 
-const envDev = dotenv.parse(fs.readFileSync(`./.env.${process.env.NODE_ENV}`));
+const envDev = dotenv.parse(fs.readFileSync('./.env'));
 
 export const {
   // Server config
@@ -35,5 +35,6 @@ export const ERROR_MESSAGE = {
   104: 'you do not have permission',
   105: 'you have to register',
   106: 'The Session is full',
+  107: 'invalid email',
   500: 'it is an unexpected error',
 };
