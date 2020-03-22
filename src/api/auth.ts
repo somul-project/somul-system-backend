@@ -193,7 +193,7 @@ router.post('/register', authHandler.registerHandler);
  *        200:
  *          description: Receive back flavor and flavor Id.
  */
-router.post('/secession', authHandler.secessionHandler);
+router.get('/secession', authHandler.secessionHandler);
 
 router.post('/verify_resetPwd', authHandler.verifyResetPwdHandler);
 
