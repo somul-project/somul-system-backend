@@ -5,9 +5,15 @@ import * as constants from '../../../common/constants';
 import getDatabase from '../../../database';
 
 const Session = getDatabase().getSession();
+const db = getDatabase().getInstance();
 const log = Logger.createLogger('graphql.resolver_handler.Session');
 const mutex = new Mutex();
 let Release;
+
+const SCHEDULE_TEMPLATE = {
+  create: 'CREATE EVENT {evant_name} ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 2 DAYS DO UPDATE somul.Session SET `admin_approved` = "2" WHERE (`library_id` = "{library_id}" AND `user_email` = "{user_email}");',
+  delete: 'DROP EVENT {event_name}',
+};
 
 export const querySession = async (id: number) => {
   try {
@@ -59,6 +65,13 @@ export const createSession = async (args: SessionTypes.SessionCreateArgs) => {
       throw error;
     }
     await Session.create({ ...args, admin_approved: '0' });
+    if (!args.document) {
+      const query = SCHEDULE_TEMPLATE.create
+        .replace('{event_name}', `${args.library_id}_${args.user_email}`)
+        .replace('{user_email}', args.user_email)
+        .replace('{library_id}', String(args.library_id));
+      await db.query(query);
+    }
     return { result: 0 };
   } catch (error) {
     log.error(`[-] failed to create user - ${error}`);
@@ -83,6 +96,11 @@ export const updateSession = async (
     await Session.update(changeValues, {
       where,
     });
+    if (args.document) {
+      const query = SCHEDULE_TEMPLATE.delete
+        .replace('{event_name}', `${args.library_id}_${args.user_email}`);
+      await db.query(query).catch(() => {});
+    }
     return { result: 0 };
   } catch (error) {
     const errorCode = (constants.ERROR_MESSAGE[error]) ? error : 500;

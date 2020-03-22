@@ -29,6 +29,10 @@ export class Database {
     this.instance.addModels([EmailToken, Library, Session, Users, Volunteer]);
   }
 
+  getInstance() {
+    return this.instance;
+  }
+
   getEmailToken() {
     return EmailToken;
   }
