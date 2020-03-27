@@ -6,7 +6,7 @@ import * as constants from '../common/constants';
 import * as specs from './swagger';
 import Logger from '../common/logger';
 import getGraphQlserver from '../api/graphql';
-import loginRouter from '../api/auth';
+import authRouter from '../api/auth';
 
 const log = Logger.createLogger('server.server');
 
@@ -49,7 +49,7 @@ export default class Server {
     this.app.get('/', this.authenticateUser, async (req, res) => {
       res.send({ result: 0 });
     });
-    this.app.use('/auth', loginRouter);
+    this.app.use('/auth', authRouter);
     const graphQlserver = await getGraphQlserver();
 
     /**

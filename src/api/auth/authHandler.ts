@@ -1,7 +1,7 @@
 import express from 'express';
-import EmailService, { VERIFY_TEMPLATE, RESET_TEMPLATE } from '../util/emailService';
-import getDatabase from '../database';
-import * as constants from '../common/constants';
+import EmailService, { VERIFY_TEMPLATE, RESET_TEMPLATE } from '../../util/emailService';
+import getDatabase from '../../database';
+import * as constants from '../../common/constants';
 
 const EmailToken = getDatabase().getEmailToken();
 const Users = getDatabase().getUsers();
@@ -79,12 +79,12 @@ export const registerHandler = async (req: express.Request, res: express.Respons
         token,
       });
       // send email for verifying
-      EmailService.send({
-        from: constants.ADMIN_EMAIL,
-        to: email,
-        subject: VERIFY_TEMPLATE.subject,
-        text: VERIFY_TEMPLATE.html.replace('{token}', token).replace('{email}', email),
-      });
+      EmailService.send(
+        [email],
+        constants.ADMIN_EMAIL,
+        VERIFY_TEMPLATE.html.replace('{token}', token).replace('{email}', email),
+        VERIFY_TEMPLATE.subject,
+      );
     }
     res.send({ result: 0 });
   } catch (error) {
@@ -156,12 +156,12 @@ export const resetPwdHandler = async (req: express.Request, res: express.Respons
       email,
       token,
     });
-    EmailService.send({
-      from: constants.ADMIN_EMAIL,
-      to: email,
-      subject: RESET_TEMPLATE.subject,
-      html: RESET_TEMPLATE.html.replace('{token}', token).replace('{email}', email),
-    });
+    EmailService.send(
+      [email],
+      constants.ADMIN_EMAIL,
+      RESET_TEMPLATE.html.replace('{token}', token).replace('{email}', email),
+      RESET_TEMPLATE.subject,
+    );
     res.send({ result: 0 });
   } catch (error) {
     res.send({ result: -1, errorCode: 103, errorMessage: constants.ERROR_MESSAGE[103] });

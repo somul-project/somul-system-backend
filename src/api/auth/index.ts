@@ -3,8 +3,8 @@ import googlePassport from 'passport-google-oauth20';
 import localPassport from 'passport-local';
 import githubPassport from 'passport-github';
 import express from 'express';
-import * as constants from '../common/constants';
-import getDatabase from '../database';
+import * as constants from '../../common/constants';
+import getDatabase from '../../database';
 import * as authHandler from './authHandler';
 
 const Users = getDatabase().getUsers();

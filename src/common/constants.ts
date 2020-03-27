@@ -22,8 +22,10 @@ export const {
   DB_NAME,
   DB_USERNAME,
   DB_PASSWORD,
+  AWS_REGION,
+  AWS_ACCESS_KEY_ID,
+  AWS_SECRET_ACCESS_KEY,
 } = envDev;
-
 
 export const ERROR_MESSAGE = {
   0: 'success',

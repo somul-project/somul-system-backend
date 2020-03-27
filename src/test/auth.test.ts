@@ -1,7 +1,7 @@
 import httpMocks from 'node-mocks-http';
 import sinon from 'sinon';
 import getDatabase from '../database';
-import * as authHandler from '../api/authHandler';
+import * as authHandler from '../api/auth/authHandler';
 import * as constants from '../common/constants';
 import EmailService from '../util/emailService';
 
