@@ -1,7 +1,15 @@
-import sgMail from '@sendgrid/mail';
+import AWS from 'aws-sdk';
 import * as constants from '../common/constants';
 
-sgMail.setApiKey(constants.SENDGRID_API_KEY);
+AWS.config.update({
+  region: constants.AWS_REGION,
+  accessKeyId: constants.AWS_ACCESS_KEY_ID,
+  secretAccessKey: constants.AWS_SECRET_ACCESS_KEY,
+});
+
+
+const ses = new AWS.SES();
+
 export const VERIFY_TEMPLATE = {
   html: `http://${constants.DOMAIN}/auth/verify?email={email}&token={token}`,
   subject: '이메일 인증!',
@@ -42,7 +50,26 @@ export const RESET_TEMPLATE = {
 };
 
 export default class EmailServise {
-  static send(msg: any) {
-    sgMail.send(msg);
+  static send(to: string[], from: string, html: string, subject: string) {
+    const params = {
+      Destination: {
+        ToAddresses: to,
+      },
+      Message: {
+        Body: {
+          Html: {
+            Data: html,
+            Charset: 'utf-8',
+          },
+        },
+        Subject: {
+          Data: subject,
+          Charset: 'utf-8',
+        },
+      },
+      Source: from,
+      ReplyToAddresses: [from],
+    };
+    ses.sendEmail(params);
   }
 }
