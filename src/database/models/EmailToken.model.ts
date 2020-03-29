@@ -1,32 +1,28 @@
 import {
-  Model, Table, Column, AllowNull, AutoIncrement, PrimaryKey, Comment,
+  Model, Table, Column, AllowNull, AutoIncrement, PrimaryKey,
 } from 'sequelize-typescript';
 
 @Table({ tableName: 'Email_Token' })
 export default class EmailToken extends Model<EmailToken> {
-  @Comment('')
   @AllowNull(false)
   @PrimaryKey
   @AutoIncrement
   @Column
   id: number;
 
-  @Comment('')
   @AllowNull(false)
   @Column
   email: string;
 
-  @Comment('')
+
   @AllowNull(false)
   @Column
   token: string;
 
-  @Comment('')
   @AllowNull(false)
   @Column
   createdAt: Date;
 
-  @Comment('')
   @AllowNull(false)
   @Column
   updatedAt: Date;

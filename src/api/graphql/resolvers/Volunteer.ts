@@ -8,13 +8,14 @@ import {
   Root,
   Args,
 } from 'type-graphql';
-import MutationType from '../types/Mutation';
+import ResultType from '../types/Result';
 import * as UsersTypes from '../types/User';
 import * as VolunteerTypes from '../types/Volunteer';
 import * as LibraryTypes from '../types/Library';
 import * as UsersHandlers from '../resolver_handler/User';
 import * as VolunteerHandlers from '../resolver_handler/Volunteer';
 import * as LibraryHandlers from '../resolver_handler/Library';
+import * as constants from '../../../common/constants';
 
 @Resolver((of) => VolunteerTypes.VolunteerObject)
 export default class VolunteerResolver {
@@ -22,8 +23,13 @@ export default class VolunteerResolver {
   async volunteer(
     @Arg('id') id: number,
   ): Promise<VolunteerTypes.VolunteerObject> {
-    const result = await VolunteerHandlers.queryVolunteer(id);
-    return result;
+    try {
+      const result = await VolunteerHandlers.queryVolunteer(id);
+      return result;
+    } catch (error) {
+      const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
+      throw new Error(constants.ERROR.MESSAGE[errorCode]);
+    }
   }
 
   @Query(() => [VolunteerTypes.VolunteerObject])
@@ -31,33 +37,38 @@ export default class VolunteerResolver {
     @Args() args: VolunteerTypes.VolunteerArgs,
     @Ctx() context: any,
   ): Promise<VolunteerTypes.VolunteerObject[]> {
-    const result = await VolunteerHandlers.queryVolunteers(args, context);
-    return result;
+    try {
+      const result = await VolunteerHandlers.queryVolunteers(args, context);
+      return result;
+    } catch (error) {
+      const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
+      throw new Error(constants.ERROR.MESSAGE[errorCode]);
+    }
   }
 
-  @Mutation(() => MutationType)
+  @Mutation(() => ResultType)
   async createVolunteer(
     @Args() args: VolunteerTypes.VolunteerCreateArgs,
-  ): Promise<MutationType> {
+  ): Promise<ResultType> {
     const result = await VolunteerHandlers.createVolunteer(args);
     return result;
   }
 
-  @Mutation(() => MutationType)
+  @Mutation(() => ResultType)
   async updateVolunteer(
     @Args() changeValues: VolunteerTypes.VolunteerArgs,
     @Args() args: VolunteerTypes.VolunteerArgs,
     @Ctx() context: any,
-  ): Promise<MutationType> {
+  ): Promise<ResultType> {
     const result = await VolunteerHandlers.updateVolunteer(changeValues, args, context);
     return result;
   }
 
-  @Mutation(() => MutationType)
+  @Mutation(() => ResultType)
   async deleteVolunteer(
     @Args() args: VolunteerTypes.VolunteerArgs,
     @Ctx() context: any,
-  ): Promise<MutationType> {
+  ): Promise<ResultType> {
     const result = await VolunteerHandlers.deleteVolunteer(args, context);
     return result;
   }

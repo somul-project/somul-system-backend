@@ -48,7 +48,7 @@ describe('auth', () => {
     sinon.restore();
   });
 
-  it('succeded to find emailToken <verifyRegisterHandler> ', async () => {
+  it('succeed to find emailToken <verifyRegisterHandler> ', async () => {
     const req = httpMocks.createRequest();
     const res = httpMocks.createResponse();
     req.query = {
@@ -60,7 +60,7 @@ describe('auth', () => {
     expect(res._getData()).toEqual({ result: 0 });
   });
 
-  it('falied to find emailToken <verifyRegisterHandler> ', async () => {
+  it('failed to find emailToken <verifyRegisterHandler> ', async () => {
     const req = httpMocks.createRequest();
     const res = httpMocks.createResponse();
     req.query = {
@@ -69,7 +69,7 @@ describe('auth', () => {
     };
 
     await authHandler.verifyRegisterHandler(req, res);
-    expect(res._getData()).toEqual({ result: -1, errorCode: '101', errorMessage: constants.ERROR_MESSAGE['101'] });
+    expect(res._getData()).toEqual({ result: -1, errorCode: '101', errorMessage: constants.ERROR.MESSAGE['101'] });
   });
 
   it('is a successful case <registerHandler>', async () => {
@@ -97,7 +97,7 @@ describe('auth', () => {
     };
 
     await authHandler.registerHandler(req, res);
-    expect(res._getData()).toEqual({ result: -1, errorCode: '102', errorMessage: constants.ERROR_MESSAGE['102'] });
+    expect(res._getData()).toEqual({ result: -1, errorCode: '102', errorMessage: constants.ERROR.MESSAGE['102'] });
   });
 
   it('is invalid params[local] <registerHandler>', async () => {
@@ -110,7 +110,7 @@ describe('auth', () => {
     };
 
     await authHandler.registerHandler(req, res);
-    expect(res._getData()).toEqual({ result: -1, errorCode: '1', errorMessage: constants.ERROR_MESSAGE['1'] });
+    expect(res._getData()).toEqual({ result: -1, errorCode: '1', errorMessage: constants.ERROR.MESSAGE['1'] });
   });
 
   it('is invalid params[OAuth] <registerHandler>', async () => {
@@ -125,7 +125,7 @@ describe('auth', () => {
       });
 
     await authHandler.registerHandler(req, res);
-    expect(res._getData()).toEqual({ result: -1, errorCode: '1', errorMessage: constants.ERROR_MESSAGE['1'] });
+    expect(res._getData()).toEqual({ result: -1, errorCode: '1', errorMessage: constants.ERROR.MESSAGE['1'] });
   });
 
 
@@ -138,6 +138,6 @@ describe('auth', () => {
     };
 
     await authHandler.verifyRegisterHandler(req, res);
-    expect(res._getData()).toEqual({ result: -1, errorCode: '101', errorMessage: constants.ERROR_MESSAGE['101'] });
+    expect(res._getData()).toEqual({ result: -1, errorCode: '101', errorMessage: constants.ERROR.MESSAGE['101'] });
   });
 });

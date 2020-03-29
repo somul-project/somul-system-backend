@@ -1,4 +1,3 @@
-import { Mutex } from 'async-mutex';
 import * as VolunteerTypes from '../types/Volunteer';
 import Logger from '../../../common/logger';
 import * as constants from '../../../common/constants';
@@ -6,19 +5,23 @@ import getDatabase from '../../../database';
 
 const Volunteer = getDatabase().getVolunteer();
 const log = Logger.createLogger('graphql.resolver_handler.Volunteer');
-const mutex = new Mutex();
-let Release;
-
 export const queryVolunteer = async (id: number) => {
   try {
-    const result = await Volunteer.findOne({ where: { id, admin_approved: '3' } });
+    const result = await Volunteer.findOne(
+      {
+        where:
+        {
+          id, admin_approved: constants.ADMIN_APPROVED.APPROVAL,
+        },
+      },
+    );
     if (!result) {
       return {};
     }
     return result;
   } catch (error) {
     log.error(`[-] failed to query - ${error}`);
-    return {};
+    throw error;
   }
 };
 
@@ -28,7 +31,8 @@ export const queryVolunteers = async (args: VolunteerTypes.VolunteerArgs, contex
     const email = context.request.session?.passport?.user.email;
     const where = JSON.parse(JSON.stringify(args));
     const admin_approved = (!admin
-      && (args.user_email && args.user_email !== email)) ? '3' : args.admin_approved;
+      && (args.user_email && args.user_email !== email))
+      ? constants.ADMIN_APPROVED.APPROVAL : args.admin_approved;
     if (admin_approved) where.admin_approved = admin_approved;
     const result = await Volunteer.findAll({
       where,
@@ -39,31 +43,18 @@ export const queryVolunteers = async (args: VolunteerTypes.VolunteerArgs, contex
     return result;
   } catch (error) {
     log.error(`[-] failed to query - ${error}`);
-    return [];
+    throw error;
   }
 };
 
 export const createVolunteer = async (args: VolunteerTypes.VolunteerCreateArgs) => {
   try {
-    Release = await mutex.acquire();
-    try {
-      const result = await Volunteer.findAll({
-        where: { library_id: args.library_id },
-      });
-      if (result.length >= 2) {
-        throw '106';
-      }
-      Release();
-    } catch (error) {
-      Release();
-      throw error;
-    }
-    await Volunteer.create({ ...args, admin_approved: '0' });
+    await Volunteer.create({ ...args, admin_approved: constants.ADMIN_APPROVED.PROCESS });
     return { result: 0 };
   } catch (error) {
     log.error(`[-] failed to create user - ${error}`);
-    const errorCode = (constants.ERROR_MESSAGE[error]) ? error : 500;
-    return { result: -1, errorCode, errorMessage: constants.ERROR_MESSAGE[errorCode] };
+    const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
+    return { result: -1, errorCode, errorMessage: constants.ERROR.MESSAGE[errorCode] };
   }
 };
 
@@ -74,7 +65,7 @@ export const updateVolunteer = async (
     const email = context.request.session?.passport?.user.email;
 
     if (!admin && (args.user_email && args.user_email !== email)) {
-      throw '104';
+      throw constants.ERROR.CODE.notPermission;
     }
 
     const where = JSON.parse(JSON.stringify(args));
@@ -87,8 +78,8 @@ export const updateVolunteer = async (
     return { result: 0 };
   } catch (error) {
     log.error(`[-] failed to create user - ${error}`);
-    const errorCode = (constants.ERROR_MESSAGE[error]) ? error : 500;
-    return { result: -1, errorCode, errorMessage: constants.ERROR_MESSAGE[errorCode] };
+    const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
+    return { result: -1, errorCode, errorMessage: constants.ERROR.MESSAGE[errorCode] };
   }
 };
 
@@ -97,7 +88,7 @@ export const deleteVolunteer = async (args: VolunteerTypes.VolunteerArgs, contex
     const admin = !!context.request.session.passport.user.admin;
     const email = context.request.session?.passport?.user.email;
     if (!admin && (args.user_email && args.user_email !== email)) {
-      throw '104';
+      throw constants.ERROR.CODE.notPermission;
     }
     const where = JSON.parse(JSON.stringify(args));
     await Volunteer.destroy({
@@ -106,7 +97,7 @@ export const deleteVolunteer = async (args: VolunteerTypes.VolunteerArgs, contex
     return { result: 0 };
   } catch (error) {
     log.error(`[-] failed to delete user - ${error}`);
-    const errorCode = (constants.ERROR_MESSAGE[error]) ? error : 500;
-    return { result: -1, errorCode, errorMessage: constants.ERROR_MESSAGE[errorCode] };
+    const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
+    return { result: -1, errorCode, errorMessage: constants.ERROR.MESSAGE[errorCode] };
   }
 };

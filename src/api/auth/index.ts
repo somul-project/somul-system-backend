@@ -128,7 +128,7 @@ router.get('/github/callback',
  *                type: string
  *      responses:
  *        200:
- *          description: Receive back flavor and flavor Id.
+ *          description: '{ result: number, errorCode: number, errorMessage: string }'
  */
 router.post('/login', passport.authenticate('local', { failureRedirect: '/', failureFlash: true }),
   (req, res) => {
@@ -144,14 +144,14 @@ router.post('/login', passport.authenticate('local', { failureRedirect: '/', fai
  *      summary: logout.
  *      responses:
  *        200:
- *          description: Receive back flavor and flavor Id.
+ *          description: '{ result: number, errorCode: number, errorMessage: string }'
  */
 router.get('/logout', (req, res) => {
   req.logout();
   res.send({ result: 0 });
 });
 
-router.get('/verify_register', authHandler.verifyRegisterHandler);
+router.get('/verify/register', authHandler.verifyRegisterHandler);
 
 /**
  * @swagger
@@ -164,21 +164,22 @@ router.get('/verify_register', authHandler.verifyRegisterHandler);
  *        - multipart/form-data
  *      parameters:
  *        - name: data
+ *          description: 'you have to send only name and phonenumber then you register using OAuth.'
  *          in: body
  *          schema:
  *            type: object
  *            properties:
  *              email:
- *               type: string?
+ *               type: string
  *              password:
- *                type: string?
+ *                type: string
  *              phonenumber:
  *                type: string
  *              name:
  *                type: string
  *      responses:
  *        200:
- *          description: Receive back flavor and flavor Id.
+ *          description: '{ result: number, errorCode: number, errorMessage: string }'
  */
 router.post('/register', authHandler.registerHandler);
 
@@ -191,15 +192,15 @@ router.post('/register', authHandler.registerHandler);
  *      summary: secession
  *      responses:
  *        200:
- *          description: Receive back flavor and flavor Id.
+ *          description: '{ result: number, errorCode: number, errorMessage: string }'
  */
 router.get('/secession', authHandler.secessionHandler);
 
-router.post('/verify_resetPwd', authHandler.verifyResetPwdHandler);
+router.post('/verify/reset_password', authHandler.verifyResetPwdHandler);
 
 /**
  * @swagger
- * /auth/resetPwd:
+ * /auth/reset_password:
  *    post:
  *      tags:
  *          - Reset password
@@ -216,8 +217,8 @@ router.post('/verify_resetPwd', authHandler.verifyResetPwdHandler);
  *                type: string
  *      responses:
  *        200:
- *          description: Receive back flavor and flavor Id.
+ *          description: '{ result: number, errorCode: number, errorMessage: string }'
  */
-router.post('/resetPwd', authHandler.resetPwdHandler);
+router.post('/reset_password', authHandler.resetPwdHandler);
 
 export default router;

@@ -8,7 +8,6 @@ const Session = getDatabase().getSession();
 const db = getDatabase().getInstance();
 const log = Logger.createLogger('graphql.resolver_handler.Session');
 const mutex = new Mutex();
-let Release;
 
 const SCHEDULE_TEMPLATE = {
   create: 'CREATE EVENT {evant_name} ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 2 DAYS DO UPDATE somul.Session SET `admin_approved` = "2" WHERE (`library_id` = "{library_id}" AND `user_email` = "{user_email}");',
@@ -17,14 +16,21 @@ const SCHEDULE_TEMPLATE = {
 
 export const querySession = async (id: number) => {
   try {
-    const result = await Session.findOne({ where: { id, admin_approved: '3' } });
+    const result = await Session.findOne(
+      {
+        where:
+        {
+          id, admin_approved: constants.ADMIN_APPROVED.APPROVAL,
+        },
+      },
+    );
     if (!result) {
       return {};
     }
     return result;
   } catch (error) {
     log.error(`[-] failed to query - ${error}`);
-    return {};
+    throw error;
   }
 };
 
@@ -34,7 +40,8 @@ export const querySessions = async (args: SessionTypes.SessionArgs, context: any
     const email = context.request.session?.passport?.user.email;
     const where = JSON.parse(JSON.stringify(args));
     const admin_approved = (!admin
-      && (args.user_email && args.user_email !== email)) ? '3' : args.admin_approved;
+      && (args.user_email && args.user_email !== email))
+      ? constants.ADMIN_APPROVED.APPROVAL : args.admin_approved;
     if (admin_approved) where.admin_approved = admin_approved;
     const result = await Session.findAll({
       where,
@@ -45,26 +52,26 @@ export const querySessions = async (args: SessionTypes.SessionArgs, context: any
     return result;
   } catch (error) {
     log.error(`[-] failed to query - ${error}`);
-    return [];
+    throw error;
   }
 };
 
 export const createSession = async (args: SessionTypes.SessionCreateArgs) => {
   try {
-    Release = await mutex.acquire();
+    const Release = await mutex.acquire();
     try {
       const result = await Session.findAll({
         where: { library_id: args.library_id },
       });
       if (result.length >= 2) {
-        throw '106';
+        throw constants.ERROR.CODE.sessionFull;
       }
       Release();
     } catch (error) {
       Release();
       throw error;
     }
-    await Session.create({ ...args, admin_approved: '0' });
+    await Session.create({ ...args, admin_approved: constants.ADMIN_APPROVED.PROCESS });
     if (!args.document) {
       const query = SCHEDULE_TEMPLATE.create
         .replace('{event_name}', `${args.library_id}_${args.user_email}`)
@@ -75,8 +82,8 @@ export const createSession = async (args: SessionTypes.SessionCreateArgs) => {
     return { result: 0 };
   } catch (error) {
     log.error(`[-] failed to create user - ${error}`);
-    const errorCode = (constants.ERROR_MESSAGE[error]) ? error : 500;
-    return { result: -1, errorCode, errorMessage: constants.ERROR_MESSAGE[errorCode] };
+    const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
+    return { result: -1, errorCode, errorMessage: constants.ERROR.MESSAGE[errorCode] };
   }
 };
 
@@ -87,7 +94,7 @@ export const updateSession = async (
     const email = context.request.session?.passport?.user.email;
 
     if (!admin && (args.user_email && args.user_email !== email)) {
-      throw '104';
+      throw constants.ERROR.CODE.notPermission;
     }
     const where = JSON.parse(JSON.stringify(args));
     if (!admin && changeValues.admin_approved) {
@@ -103,8 +110,8 @@ export const updateSession = async (
     }
     return { result: 0 };
   } catch (error) {
-    const errorCode = (constants.ERROR_MESSAGE[error]) ? error : 500;
-    return { result: -1, errorCode, errorMessage: constants.ERROR_MESSAGE[errorCode] };
+    const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
+    return { result: -1, errorCode, errorMessage: constants.ERROR.MESSAGE[errorCode] };
   }
 };
 
@@ -113,7 +120,7 @@ export const deleteSession = async (args: SessionTypes.SessionArgs, context: any
     const admin = !!context.request.session.passport.user.admin;
     const email = context.request.session?.passport?.user.email;
     if (!admin && (args.user_email && args.user_email !== email)) {
-      throw '104';
+      throw constants.ERROR.CODE.notPermission;
     }
     const where = JSON.parse(JSON.stringify(args));
     await Session.destroy({
@@ -121,7 +128,7 @@ export const deleteSession = async (args: SessionTypes.SessionArgs, context: any
     });
     return { result: 0 };
   } catch (error) {
-    const errorCode = (constants.ERROR_MESSAGE[error]) ? error : 500;
-    return { result: -1, errorCode, errorMessage: constants.ERROR_MESSAGE[errorCode] };
+    const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
+    return { result: -1, errorCode, errorMessage: constants.ERROR.MESSAGE[errorCode] };
   }
 };

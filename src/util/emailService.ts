@@ -49,7 +49,7 @@ export const RESET_TEMPLATE = {
   subject: 'reset',
 };
 
-export default class EmailServise {
+export default class EmailService {
   static send(to: string[], from: string, html: string, subject: string) {
     const params = {
       Destination: {

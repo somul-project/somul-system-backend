@@ -8,13 +8,14 @@ import {
   Root,
   Args,
 } from 'type-graphql';
-import MutationType from '../types/Mutation';
+import ResultType from '../types/Result';
 import * as UsersTypes from '../types/User';
 import * as SessionTypes from '../types/Session';
 import * as LibraryTypes from '../types/Library';
 import * as UsersHandlers from '../resolver_handler/User';
 import * as SessionHandlers from '../resolver_handler/Session';
 import * as LibraryHandlers from '../resolver_handler/Library';
+import * as constants from '../../../common/constants';
 
 @Resolver((of) => SessionTypes.SessionObject)
 export default class SessionResolver {
@@ -22,8 +23,13 @@ export default class SessionResolver {
   async session(
     @Arg('id') id: number,
   ): Promise<SessionTypes.SessionObject> {
-    const result = await SessionHandlers.querySession(id);
-    return result;
+    try {
+      const result = await SessionHandlers.querySession(id);
+      return result;
+    } catch (error) {
+      const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
+      throw new Error(constants.ERROR.MESSAGE[errorCode]);
+    }
   }
 
   @Query(() => [SessionTypes.SessionObject])
@@ -31,33 +37,38 @@ export default class SessionResolver {
     @Args() args: SessionTypes.SessionArgs,
     @Ctx() context: any,
   ): Promise<SessionTypes.SessionObject[]> {
-    const result = await SessionHandlers.querySessions(args, context);
-    return result;
+    try {
+      const result = await SessionHandlers.querySessions(args, context);
+      return result;
+    } catch (error) {
+      const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
+      throw new Error(constants.ERROR.MESSAGE[errorCode]);
+    }
   }
 
-  @Mutation(() => MutationType)
+  @Mutation(() => ResultType)
   async createSession(
     @Args() args: SessionTypes.SessionCreateArgs,
-  ): Promise<MutationType> {
+  ): Promise<ResultType> {
     const result = await SessionHandlers.createSession(args);
     return result;
   }
 
-  @Mutation(() => MutationType)
+  @Mutation(() => ResultType)
   async updateUser(
     @Args() changeValues: SessionTypes.SessionArgs,
     @Args() args: SessionTypes.SessionArgs,
     @Ctx() context: any,
-  ): Promise<MutationType> {
+  ): Promise<ResultType> {
     const result = await SessionHandlers.updateSession(changeValues, args, context);
     return result;
   }
 
-  @Mutation(() => MutationType)
+  @Mutation(() => ResultType)
   async deleteUser(
     @Args() args: SessionTypes.SessionArgs,
     @Ctx() context: any,
-  ): Promise<MutationType> {
+  ): Promise<ResultType> {
     const result = await SessionHandlers.deleteSession(args, context);
     return result;
   }
