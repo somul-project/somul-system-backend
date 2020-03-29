@@ -8,7 +8,7 @@ import {
   Root,
   Args,
 } from 'type-graphql';
-import MutationType from '../types/Mutation';
+import ResultType from '../types/Result';
 import * as UsersTypes from '../types/User';
 import * as VolunteerTypes from '../types/Volunteer';
 import * as SessionTypes from '../types/Session';
@@ -17,6 +17,7 @@ import * as UsersHandlers from '../resolver_handler/User';
 import * as VolunteerHandlers from '../resolver_handler/Volunteer';
 import * as SessionHandlers from '../resolver_handler/Session';
 import * as LibraryHandlers from '../resolver_handler/Library';
+import * as constants from '../../../common/constants';
 
 @Resolver((of) => UsersTypes.UserObject)
 export default class UserResolver {
@@ -24,8 +25,13 @@ export default class UserResolver {
   async user(
     @Arg('email') email: string,
   ): Promise<UsersTypes.UserObject> {
-    const result = await UsersHandlers.queryUser(email);
-    return result;
+    try {
+      const result = await UsersHandlers.queryUser(email);
+      return result;
+    } catch (error) {
+      const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
+      throw new Error(constants.ERROR.MESSAGE[errorCode]);
+    }
   }
 
   @Query(() => [UsersTypes.UserObject])
@@ -33,25 +39,30 @@ export default class UserResolver {
     @Args() args: UsersTypes.UserArgs,
     @Ctx() context: any,
   ): Promise<UsersTypes.UserObject[]> {
-    const result = await UsersHandlers.queryUsers(args, context);
-    return result;
+    try {
+      const result = await UsersHandlers.queryUsers(args, context);
+      return result;
+    } catch (error) {
+      const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
+      throw new Error(constants.ERROR.MESSAGE[errorCode]);
+    }
   }
 
-  @Mutation(() => MutationType)
+  @Mutation(() => ResultType)
   async updateUser(
     @Args() changeValues: UsersTypes.UserArgs,
     @Args() args: UsersTypes.UserArgs,
     @Ctx() context: any,
-  ): Promise<MutationType> {
+  ): Promise<ResultType> {
     const result = await UsersHandlers.updateUser(changeValues, args, context);
     return result;
   }
 
-  @Mutation(() => MutationType)
+  @Mutation(() => ResultType)
   async deleteUser(
     @Args() args: UsersTypes.UserArgs,
     @Ctx() context: any,
-  ): Promise<MutationType> {
+  ): Promise<ResultType> {
     const result = await UsersHandlers.deleteUser(args, context);
     return result;
   }
@@ -61,7 +72,7 @@ export default class UserResolver {
     @Root() user: UsersTypes.UserArgs,
     @Ctx() context: any,
   ): Promise<LibraryTypes.LibraryObject[]> {
-    const result = await LibraryHandlers.queryLibrarys({ manager_email: user.email }, context);
+    const result = await LibraryHandlers.queryLibraries({ manager_email: user.email }, context);
     return result;
   }
 

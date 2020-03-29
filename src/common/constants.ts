@@ -27,16 +27,39 @@ export const {
   AWS_SECRET_ACCESS_KEY,
 } = envDev;
 
-export const ERROR_MESSAGE = {
-  0: 'success',
-  1: 'invalid parameter',
-  100: 'failed to login',
-  101: 'failed to verify token',
-  102: 'it is already registered',
-  103: 'failed to reset password',
-  104: 'you do not have permission',
-  105: 'you have to register',
-  106: 'The Session is full',
-  107: 'invalid email',
-  500: 'it is an unexpected error',
-};
+export class ERROR {
+  static MESSAGE = {
+    0: 'success',
+    1: 'invalid parameter',
+    100: 'failed to login',
+    101: 'failed to verify token',
+    102: 'it is already registered',
+    103: 'failed to reset password',
+    104: 'you do not have permission',
+    105: 'you have to register',
+    106: 'The Session is full',
+    107: 'invalid email',
+    500: 'it is an unexpected error',
+  };
+
+  static CODE = {
+    success: '0',
+    invalidParams: '1',
+    failedToLogin: '100',
+    failedToVerify: '101',
+    alreadyRegistered: '102',
+    failedToResetPwd: '103',
+    notPermission: '104',
+    notRegistered: '105',
+    sessionFull: '106',
+    invalidEmail: '107',
+    unexpected: '500',
+  }
+}
+
+export enum ADMIN_APPROVED {
+  PROCESS = '0',
+  ADMIN_DISAPPROVAL = '1',
+  AUTO_DISAPPROVALUE = '2',
+  APPROVAL = '3',
+}

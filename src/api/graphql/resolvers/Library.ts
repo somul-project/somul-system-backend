@@ -8,7 +8,7 @@ import {
   Root,
   Args,
 } from 'type-graphql';
-import MutationType from '../types/Mutation';
+import ResultType from '../types/Result';
 import * as UsersTypes from '../types/User';
 import * as VolunteerTypes from '../types/Volunteer';
 import * as SessionTypes from '../types/Session';
@@ -17,6 +17,7 @@ import * as UsersHandlers from '../resolver_handler/User';
 import * as VolunteerHandlers from '../resolver_handler/Volunteer';
 import * as SessionHandlers from '../resolver_handler/Session';
 import * as LibraryHandlers from '../resolver_handler/Library';
+import * as constants from '../../../common/constants';
 
 @Resolver((of) => LibraryTypes.LibraryObject)
 export default class LibraryResolver {
@@ -24,8 +25,13 @@ export default class LibraryResolver {
   async library(
     @Arg('id') id: number,
   ): Promise<LibraryTypes.LibraryObject> {
-    const result = await LibraryHandlers.queryLibrary(id);
-    return result;
+    try {
+      const result = await LibraryHandlers.queryLibrary(id);
+      return result;
+    } catch (error) {
+      const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
+      throw new Error(constants.ERROR.MESSAGE[errorCode]);
+    }
   }
 
   @Query(() => [LibraryTypes.LibraryObject])
@@ -33,33 +39,38 @@ export default class LibraryResolver {
     @Args() args: LibraryTypes.LibraryArgs,
     @Ctx() context: any,
   ): Promise<LibraryTypes.LibraryObject[]> {
-    const result = await LibraryHandlers.queryLibrarys(args, context);
-    return result;
+    try {
+      const result = await LibraryHandlers.queryLibraries(args, context);
+      return result;
+    } catch (error) {
+      const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
+      throw new Error(constants.ERROR.MESSAGE[errorCode]);
+    }
   }
 
-  @Mutation(() => MutationType)
+  @Mutation(() => ResultType)
   async creteLibrary(
     @Args() args: LibraryTypes.LibraryCreateArgs,
-  ): Promise<MutationType> {
+  ): Promise<ResultType> {
     const result = await LibraryHandlers.createLibrary(args);
     return result;
   }
 
-  @Mutation(() => MutationType)
+  @Mutation(() => ResultType)
   async updateLibrary(
     @Args() changeValues: LibraryTypes.LibraryArgs,
     @Args() args: LibraryTypes.LibraryArgs,
     @Ctx() context: any,
-  ): Promise<MutationType> {
+  ): Promise<ResultType> {
     const result = await LibraryHandlers.updateLibrary(changeValues, args, context);
     return result;
   }
 
-  @Mutation(() => MutationType)
+  @Mutation(() => ResultType)
   async deleteULibrary(
     @Args() args: LibraryTypes.LibraryArgs,
     @Ctx() context: any,
-  ): Promise<MutationType> {
+  ): Promise<ResultType> {
     const result = await LibraryHandlers.deleteLibrary(args, context);
     return result;
   }

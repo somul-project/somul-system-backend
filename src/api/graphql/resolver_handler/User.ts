@@ -17,7 +17,7 @@ export const queryUser = async (email: string) => {
     return result;
   } catch (error) {
     log.error(`[-] failed to query - ${error}`);
-    return {};
+    throw error;
   }
 };
 
@@ -33,7 +33,7 @@ export const queryUsers = async (args: UserTypes.UserArgs, context: any) => {
     return result;
   } catch (error) {
     log.error(`[-] failed to query(users) - ${error}`);
-    return [];
+    throw error;
   }
 };
 
@@ -44,7 +44,7 @@ export const updateUser = async (
     const email = context.request.session?.passport?.user.email;
 
     if (!admin && (!args.email || args.email !== email)) {
-      throw '104';
+      throw constants.ERROR.CODE.notPermission;
     }
     const where = JSON.parse(JSON.stringify(args));
 
@@ -54,8 +54,8 @@ export const updateUser = async (
     return { result: 0 };
   } catch (error) {
     log.error(`[-] failed to update user - ${error}`);
-    const errorCode = (constants.ERROR_MESSAGE[error]) ? error : 500;
-    return { result: -1, errorCode, errorMessage: constants.ERROR_MESSAGE[errorCode] };
+    const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
+    return { result: -1, errorCode, errorMessage: constants.ERROR.MESSAGE[errorCode] };
   }
 };
 
@@ -64,7 +64,7 @@ export const deleteUser = async (args: UserTypes.UserArgs, context: any) => {
     const admin = !!context.request.session?.passport?.user.admin;
 
     if (!admin) {
-      throw '104';
+      throw constants.ERROR.CODE.notPermission;
     }
     const where = JSON.parse(JSON.stringify(args));
     await Users.destroy({
@@ -72,7 +72,7 @@ export const deleteUser = async (args: UserTypes.UserArgs, context: any) => {
     });
     return { result: 0 };
   } catch (error) {
-    const errorCode = (constants.ERROR_MESSAGE[error]) ? error : 500;
-    return { result: -1, errorCode, errorMessage: constants.ERROR_MESSAGE[errorCode] };
+    const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
+    return { result: -1, errorCode, errorMessage: constants.ERROR.MESSAGE[errorCode] };
   }
 };

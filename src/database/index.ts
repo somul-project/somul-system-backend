@@ -12,6 +12,7 @@ const log = Logger.createLogger('database.database');
 export class Database {
   protected instance: Sequelize;
 
+
   constructor(test: boolean = false) {
     log.info('Initialize MySQL Connection');
     if (test) {

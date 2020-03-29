@@ -130,7 +130,7 @@ describe('resolver_handler [Session]', () => {
       session_explainer: 'temp',
       document: 'temp',
     });
-    expect({ result: -1, errorCode: '106', errorMessage: constants.ERROR_MESSAGE['106'] }).toEqual(result);
+    expect({ result: -1, errorCode: '106', errorMessage: constants.ERROR.MESSAGE['106'] }).toEqual(result);
   });
 
   it('is the case when user have permission <updateSession>', async () => {
@@ -142,7 +142,7 @@ describe('resolver_handler [Session]', () => {
   it('is the case when user do not have permission <updateSession>', async () => {
     const context = { request: { session: { passport: { user: { email: 'test2@gmail.com' } } } } };
     const result = await sessionHandler.updateSession({}, { user_email: 'test@gmail.com' }, context);
-    expect({ result: -1, errorCode: '104', errorMessage: constants.ERROR_MESSAGE['104'] }).toEqual(result);
+    expect({ result: -1, errorCode: '104', errorMessage: constants.ERROR.MESSAGE['104'] }).toEqual(result);
   });
 
   it('is the case when user have permission <deleteSession>', async () => {
@@ -154,6 +154,6 @@ describe('resolver_handler [Session]', () => {
   it('is the case when user do not have permission <deleteSession>', async () => {
     const context = { request: { session: { passport: { user: { email: 'test2@gmail.com' } } } } };
     const result = await sessionHandler.deleteSession({ user_email: 'test@gmail.com' }, context);
-    expect({ result: -1, errorCode: '104', errorMessage: constants.ERROR_MESSAGE['104'] }).toEqual(result);
+    expect({ result: -1, errorCode: '104', errorMessage: constants.ERROR.MESSAGE['104'] }).toEqual(result);
   });
 });

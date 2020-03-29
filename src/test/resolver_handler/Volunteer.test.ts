@@ -88,7 +88,7 @@ describe('resolver_handler [Volunteer]', () => {
     expect(volunteerDatas).toEqual(result);
   });
 
-  it('is the case when user who is not admin makes a request about Other users <querySessions>', async () => {
+  it('is the case when user who is not admin makes a request about Other users <queryVolunteers>', async () => {
     const context = { request: { session: { passport: { user: { email: 'test2@gmail.com' } } } } };
     const result = await volunteerHandler.queryVolunteers({ user_email: 'test@gmail.com' }, context);
     expect([volunteerDatas[0]]).toEqual(result);
@@ -104,16 +104,6 @@ describe('resolver_handler [Volunteer]', () => {
     expect({ result: 0 }).toEqual(result);
   });
 
-  it('is the case when the session is full <createVolunteer>', async () => {
-    const result = await volunteerHandler.createVolunteer({
-      library_id: 1,
-      user_email: 'test@gmail.com',
-      introduce: 'temp',
-      history: 'temp',
-    });
-    expect({ result: -1, errorCode: '106', errorMessage: constants.ERROR_MESSAGE['106'] }).toEqual(result);
-  });
-
   it('is the case when user have permission <updateVolunteer>', async () => {
     const context = { request: { session: { passport: { user: { email: 'test@gmail.com' } } } } };
     const result = await volunteerHandler.updateVolunteer({}, { user_email: 'test@gmail.com' }, context);
@@ -123,7 +113,7 @@ describe('resolver_handler [Volunteer]', () => {
   it('is the case when user do not have permission <updateVolunteer>', async () => {
     const context = { request: { session: { passport: { user: { email: 'test2@gmail.com' } } } } };
     const result = await volunteerHandler.updateVolunteer({}, { user_email: 'test@gmail.com' }, context);
-    expect({ result: -1, errorCode: '104', errorMessage: constants.ERROR_MESSAGE['104'] }).toEqual(result);
+    expect({ result: -1, errorCode: '104', errorMessage: constants.ERROR.MESSAGE['104'] }).toEqual(result);
   });
 
   it('is the case when user have permission <deleteVolunteer>', async () => {
@@ -135,6 +125,6 @@ describe('resolver_handler [Volunteer]', () => {
   it('is the case when user do not have permission <deleteVolunteer>', async () => {
     const context = { request: { session: { passport: { user: { email: 'test2@gmail.com' } } } } };
     const result = await volunteerHandler.deleteVolunteer({ user_email: 'test@gmail.com' }, context);
-    expect({ result: -1, errorCode: '104', errorMessage: constants.ERROR_MESSAGE['104'] }).toEqual(result);
+    expect({ result: -1, errorCode: '104', errorMessage: constants.ERROR.MESSAGE['104'] }).toEqual(result);
   });
 });

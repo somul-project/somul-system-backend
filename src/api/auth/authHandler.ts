@@ -30,12 +30,12 @@ export const verifyRegisterHandler = async (req: express.Request, res: express.R
         where: { email: result.email },
       });
     } else {
-      throw '101';
+      throw constants.ERROR.CODE.failedToVerify;
     }
     res.send({ result: 0 });
   } catch (error) {
-    const errorCode = (constants.ERROR_MESSAGE[error]) ? error : 500;
-    res.send({ result: -1, errorCode, errorMessage: constants.ERROR_MESSAGE[errorCode] });
+    const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
+    res.send({ result: -1, errorCode, errorMessage: constants.ERROR.MESSAGE[errorCode] });
   }
 };
 
@@ -56,7 +56,7 @@ export const registerHandler = async (req: express.Request, res: express.Respons
       // local
       && !(email && name && phonenumber && password)
     ) {
-      throw '1';
+      throw constants.ERROR.CODE.invalidParams;
     }
     const updateDate = {
       email: (!passportEmail) ? email : passportEmail,
@@ -68,7 +68,7 @@ export const registerHandler = async (req: express.Request, res: express.Respons
     };
     const result = await Users.findOne({ where: { email: updateDate.email } });
     if (result) {
-      throw '102';
+      throw constants.ERROR.CODE.alreadyRegistered;
     }
     await Users.create(updateDate);
     // local register
@@ -88,8 +88,8 @@ export const registerHandler = async (req: express.Request, res: express.Respons
     }
     res.send({ result: 0 });
   } catch (error) {
-    const errorCode = (constants.ERROR_MESSAGE[error]) ? error : 500;
-    res.send({ result: -1, errorCode, errorMessage: constants.ERROR_MESSAGE[errorCode] });
+    const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
+    res.send({ result: -1, errorCode, errorMessage: constants.ERROR.MESSAGE[errorCode] });
   }
 };
 
@@ -102,13 +102,13 @@ export const secessionHandler = async (req: express.Request, res: express.Respon
         where: { email: passportEmail },
       });
     } else {
-      throw '104';
+      throw constants.ERROR.CODE.notPermission;
     }
     req.logout();
     res.send({ result: 0 });
   } catch (error) {
-    const errorCode = (constants.ERROR_MESSAGE[error]) ? error : 500;
-    res.send({ result: -1, errorCode, errorMessage: constants.ERROR_MESSAGE[errorCode] });
+    const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
+    res.send({ result: -1, errorCode, errorMessage: constants.ERROR.MESSAGE[errorCode] });
   }
 };
 
@@ -120,7 +120,7 @@ export const verifyResetPwdHandler = async (req: express.Request, res: express.R
     if (
       !(password)
     ) {
-      throw '1';
+      throw constants.ERROR.CODE.invalidParams;
     }
     const result = await EmailToken.findOne({ where: { ...req.query } });
     if (result) {
@@ -128,7 +128,7 @@ export const verifyResetPwdHandler = async (req: express.Request, res: express.R
         where: { email: result.email },
       });
     } else {
-      throw '101';
+      throw constants.ERROR.CODE.failedToVerify;
     }
     await Users.update({
       password: sha256(password),
@@ -137,8 +137,8 @@ export const verifyResetPwdHandler = async (req: express.Request, res: express.R
     });
     res.send({ result: 0 });
   } catch (error) {
-    const errorCode = (constants.ERROR_MESSAGE[error]) ? error : 500;
-    res.send({ result: -1, errorCode, errorMessage: constants.ERROR_MESSAGE[errorCode] });
+    const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
+    res.send({ result: -1, errorCode, errorMessage: constants.ERROR.MESSAGE[errorCode] });
   }
 };
 
@@ -149,7 +149,7 @@ export const resetPwdHandler = async (req: express.Request, res: express.Respons
   try {
     const result = await Users.findOne({ where: { email } });
     if (!result || !result.password) {
-      throw '107';
+      throw constants.ERROR.CODE.invalidEmail;
     }
     const token = randomstring.generate();
     await EmailToken.create({
@@ -164,6 +164,6 @@ export const resetPwdHandler = async (req: express.Request, res: express.Respons
     );
     res.send({ result: 0 });
   } catch (error) {
-    res.send({ result: -1, errorCode: 103, errorMessage: constants.ERROR_MESSAGE[103] });
+    res.send({ result: -1, errorCode: 103, errorMessage: constants.ERROR.MESSAGE[103] });
   }
 };

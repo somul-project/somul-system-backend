@@ -27,12 +27,12 @@ export default class Server {
     res: express.Response, next: express.NextFunction) => {
     if (req.session && req.session.passport && req.session.passport.user !== undefined) {
       if (req.session.passport.user.admin === undefined) {
-        res.send({ result: -1, errorCode: 105, errorMessage: constants.ERROR_MESSAGE[105] });
+        res.send({ result: -1, errorCode: 105, errorMessage: constants.ERROR.MESSAGE[105] });
       } else {
         next();
       }
     } else {
-      res.send({ result: -1, errorCode: 104, errorMessage: constants.ERROR_MESSAGE[104] });
+      res.send({ result: -1, errorCode: 104, errorMessage: constants.ERROR.MESSAGE[104] });
     }
   }
 
@@ -59,11 +59,11 @@ export default class Server {
      *      tags:
      *          - graphql
      *      summary: graphql.
-     *      description: you have to request using json
+     *      description: you have to send message that fits grapthql format
      *      consumes:
      *        - application/json
      */
-    this.app.use('/graphql', this.authenticateUser, graphQlserver);
+    this.app.use('/graphql', graphQlserver);
     this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs.default));
   }
 }
