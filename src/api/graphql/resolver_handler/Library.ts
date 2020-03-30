@@ -1,7 +1,7 @@
-import * as LibraryTypes from '../types/Library';
 import * as constants from '../../../common/constants';
 import Logger from '../../../common/logger';
 import getDatabase from '../../../database';
+import * as LibraryTypes from '../types/Library';
 
 const Library = getDatabase().getLibrary();
 

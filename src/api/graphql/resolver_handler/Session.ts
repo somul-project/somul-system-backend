@@ -1,8 +1,8 @@
 import { Mutex } from 'async-mutex';
-import * as SessionTypes from '../types/Session';
 import Logger from '../../../common/logger';
 import * as constants from '../../../common/constants';
 import getDatabase from '../../../database';
+import * as SessionTypes from '../types/Session';
 
 const Session = getDatabase().getSession();
 const db = getDatabase().getInstance();

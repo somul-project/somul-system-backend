@@ -3,10 +3,10 @@ import session from 'express-session';
 import bodyParser from 'body-parser';
 import swaggerUi from 'swagger-ui-express';
 import * as constants from '../common/constants';
-import * as specs from './swagger';
 import Logger from '../common/logger';
 import getGraphQlserver from '../api/graphql';
 import authRouter from '../api/auth';
+import * as specs from './swagger';
 
 const log = Logger.createLogger('server.server');
 
