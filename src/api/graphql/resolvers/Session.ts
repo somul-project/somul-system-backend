@@ -8,6 +8,7 @@ import {
   Root,
   Args,
 } from 'type-graphql';
+import * as constants from '../../../common/constants';
 import ResultType from '../types/Result';
 import * as UsersTypes from '../types/User';
 import * as SessionTypes from '../types/Session';
@@ -15,7 +16,6 @@ import * as LibraryTypes from '../types/Library';
 import * as UsersHandlers from '../resolver_handler/User';
 import * as SessionHandlers from '../resolver_handler/Session';
 import * as LibraryHandlers from '../resolver_handler/Library';
-import * as constants from '../../../common/constants';
 
 @Resolver((of) => SessionTypes.SessionObject)
 export default class SessionResolver {

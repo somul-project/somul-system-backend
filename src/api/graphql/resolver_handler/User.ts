@@ -1,7 +1,7 @@
-import * as UserTypes from '../types/User';
 import Logger from '../../../common/logger';
 import * as constants from '../../../common/constants';
 import getDatabase from '../../../database';
+import * as UserTypes from '../types/User';
 
 const Users = getDatabase().getUsers();
 const log = Logger.createLogger('graphql.resolver_handler.User');

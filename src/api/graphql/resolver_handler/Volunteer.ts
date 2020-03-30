@@ -1,7 +1,7 @@
-import * as VolunteerTypes from '../types/Volunteer';
 import Logger from '../../../common/logger';
 import * as constants from '../../../common/constants';
 import getDatabase from '../../../database';
+import * as VolunteerTypes from '../types/Volunteer';
 
 const Volunteer = getDatabase().getVolunteer();
 const log = Logger.createLogger('graphql.resolver_handler.Volunteer');
