@@ -59,7 +59,6 @@ export default class Server {
      *      tags:
      *          - graphql
      *      summary: graphql.
-     *      description: you have to send message that fits grapthql format
      *      consumes:
      *        - application/json
      */

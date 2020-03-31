@@ -33,13 +33,13 @@ export class ERROR {
     1: 'invalid parameter',
     100: 'failed to login',
     101: 'failed to verify token',
-    102: 'it is already registered',
+    102: 'already registered',
     103: 'failed to reset password',
-    104: 'you do not have permission',
+    104: 'Insufficient permission',
     105: 'you have to register',
-    106: 'The Session is full',
+    106: 'Session already filled',
     107: 'invalid email',
-    500: 'it is an unexpected error',
+    500: 'Unexpected error occurred',
   };
 
   static CODE = {
@@ -60,6 +60,6 @@ export class ERROR {
 export enum ADMIN_APPROVED {
   PROCESS = '0',
   ADMIN_DISAPPROVAL = '1',
-  AUTO_DISAPPROVALUE = '2',
+  AUTO_DISAPPROVAL = '2',
   APPROVAL = '3',
 }

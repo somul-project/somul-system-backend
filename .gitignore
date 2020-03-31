@@ -130,3 +130,5 @@ sockets
 .env.development
 .env.production
 .DS_Store
+
+package-lock.json
