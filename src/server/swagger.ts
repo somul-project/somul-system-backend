@@ -6,7 +6,7 @@ const options = {
   basePath: '/',
   swaggerDefinition: {
     info: {
-      description: 'Somul Backend API about Authenticate',
+      description: 'Somul Backend API',
       swagger: '2.0',
       title: 'Somul Backend API',
       version: constants.VERSION,

@@ -1,6 +1,7 @@
 # 서버 도커라이징 하는 방법
 ```
-TAG={Docker Tag} ./dockerbuild.sh
+sudo docker build -t somul/backend:{tag} .
+sudo docker push somul/backend:{tag}
 ```
 - staging 인 경우 tag를 staging으로 명시
 - prod 인 경우 특정 version 명으로 태그를 명시하고, latest 라는 이름으로 태그를 중복으로 명시해야 함.

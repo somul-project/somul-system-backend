@@ -5,7 +5,7 @@ import githubPassport from 'passport-github';
 import express from 'express';
 import * as constants from '../../common/constants';
 import getDatabase from '../../database';
-import * as authHandler from './authHandler';
+import AuthHandler from './authHandler';
 
 const Users = getDatabase().getUsers();
 
@@ -151,7 +151,7 @@ router.get('/logout', (req, res) => {
   res.send({ result: 0 });
 });
 
-router.get('/verify/register', authHandler.verifyRegisterHandler);
+router.get('/verify/register', AuthHandler.verifyRegisterHandler);
 
 /**
  * @swagger
@@ -181,7 +181,7 @@ router.get('/verify/register', authHandler.verifyRegisterHandler);
  *        200:
  *          description: '{ result: number, errorCode: number, errorMessage: string }'
  */
-router.post('/register', authHandler.registerHandler);
+router.post('/register', AuthHandler.registerHandler);
 
 /**
  * @swagger
@@ -194,9 +194,9 @@ router.post('/register', authHandler.registerHandler);
  *        200:
  *          description: '{ result: number, errorCode: number, errorMessage: string }'
  */
-router.get('/secession', authHandler.secessionHandler);
+router.get('/secession', AuthHandler.secessionHandler);
 
-router.post('/verify/reset_password', authHandler.verifyResetPwdHandler);
+router.post('/verify/reset_password', AuthHandler.verifyResetPwdHandler);
 
 /**
  * @swagger
@@ -219,6 +219,6 @@ router.post('/verify/reset_password', authHandler.verifyResetPwdHandler);
  *        200:
  *          description: '{ result: number, errorCode: number, errorMessage: string }'
  */
-router.post('/reset_password', authHandler.resetPwdHandler);
+router.post('/reset_password', AuthHandler.resetPwdHandler);
 
 export default router;
