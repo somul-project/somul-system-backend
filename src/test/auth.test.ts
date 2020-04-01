@@ -79,7 +79,7 @@ describe('auth', () => {
       email: 'test2@gmail.com',
       name: 'donghyeon',
       phonenumber: '0100000000',
-      password: 'asd',
+      password: 'assdasdasd',
     };
 
     await AuthHandler.registerHandler(req, res);
@@ -93,24 +93,38 @@ describe('auth', () => {
       email: 'test@gmail.com',
       name: 'donghyeon',
       phonenumber: '0100000000',
-      password: 'asd',
+      password: 'assdasdasd',
     };
 
     await AuthHandler.registerHandler(req, res);
     expect(res._getData()).toEqual({ result: -1, errorCode: '102', errorMessage: constants.ERROR.MESSAGE['102'] });
   });
 
-  it('is invalid params[local] <registerHandler>', async () => {
+  it('is invalid params(there is no name) <registerHandler>', async () => {
     const req = httpMocks.createRequest();
     const res = httpMocks.createResponse();
     req.body = {
       email: 'test@gmail.com',
       phonenumber: '0100000000',
-      password: 'asd',
+      password: 'asdsdasdasd',
     };
 
     await AuthHandler.registerHandler(req, res);
     expect(res._getData()).toEqual({ result: -1, errorCode: '1', errorMessage: constants.ERROR.MESSAGE['1'] });
+  });
+
+  it('is invalid params(password)  <registerHandler>', async () => {
+    const req = httpMocks.createRequest();
+    const res = httpMocks.createResponse();
+    req.body = {
+      email: 'test@gmail.com',
+      phonenumber: '0100000000',
+      password: 'asdd',
+      name: 'donghyeon',
+    };
+
+    await AuthHandler.registerHandler(req, res);
+    expect(res._getData()).toEqual({ result: -1, errorCode: '108', errorMessage: constants.ERROR.MESSAGE['108'] });
   });
 
   it('is invalid params[OAuth] <registerHandler>', async () => {
