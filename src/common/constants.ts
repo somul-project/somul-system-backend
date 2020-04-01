@@ -39,6 +39,8 @@ export class ERROR {
     105: 'you have to register',
     106: 'Session already filled',
     107: 'invalid email',
+    108: 'invalid password',
+    109: 'invalid phonenumber',
     500: 'Unexpected error occurred',
   };
 
@@ -53,6 +55,8 @@ export class ERROR {
     notRegistered: '105',
     sessionFull: '106',
     invalidEmail: '107',
+    invalidPassword: '108',
+    invalidPhonenumber: '109',
     unexpected: '500',
   }
 }

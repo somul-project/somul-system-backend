@@ -38,6 +38,23 @@ export default class AuthHandler {
     }
   };
 
+  static validateCheck(password?: string, phonenumber?: string, email?: string) {
+    if (!(password
+        && (/^[a-zA-Z0-9]*$/.test(password) && password.length >= 8 && password.length < 100))) {
+      return { result: false, errorCode: '108' };
+    }
+
+    if (!(phonenumber && /^[0-9]*$/.test(phonenumber))) {
+      return { result: false, errorParam: '109' };
+    }
+
+    if (!(email
+      && /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i.test(email))) {
+      return { result: false, errorParam: '107' };
+    }
+    return { result: true };
+  }
+
   static registerHandler = async (req: express.Request, res: express.Response) => {
     const {
       email, name, phonenumber, password,
@@ -45,8 +62,6 @@ export default class AuthHandler {
 
     const passportUser = AuthHandler.getPassportSession(req);
     const passportEmail = (passportUser) ? passportUser.email : undefined;
-    // validation check
-    // @TODO check email, phonenumber, password naming rule.
 
     try {
       if (
@@ -57,6 +72,11 @@ export default class AuthHandler {
       ) {
         throw constants.ERROR.CODE.invalidParams;
       }
+      const validResult = AuthHandler.validateCheck(password, phonenumber, email);
+      if (!validResult.result) {
+        throw validResult.errorCode;
+      }
+
       const updateDate = {
         email: (!passportEmail) ? email : passportEmail,
         name,
@@ -115,11 +135,9 @@ export default class AuthHandler {
     const { password } = req.body;
 
     try {
-      // @TODO add password rule
-      if (
-        !(password)
-      ) {
-        throw constants.ERROR.CODE.invalidParams;
+      const validResult = AuthHandler.validateCheck(password);
+      if (!validResult.result) {
+        throw validResult.errorCode;
       }
       const result = await EmailToken.findOne({ where: { ...req.query } });
       if (result) {
