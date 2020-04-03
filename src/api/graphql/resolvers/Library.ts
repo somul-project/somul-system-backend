@@ -49,7 +49,7 @@ export default class LibraryResolver {
   }
 
   @Mutation(() => ResultType)
-  async creteLibrary(
+  async createLibrary(
     @Args() args: LibraryTypes.LibraryCreateArgs,
   ): Promise<ResultType> {
     const result = await LibraryHandlers.createLibrary(args);
@@ -67,7 +67,7 @@ export default class LibraryResolver {
   }
 
   @Mutation(() => ResultType)
-  async deleteULibrary(
+  async deleteLibrary(
     @Args() args: LibraryTypes.LibraryArgs,
     @Ctx() context: any,
   ): Promise<ResultType> {

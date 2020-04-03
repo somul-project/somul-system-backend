@@ -185,16 +185,16 @@ router.post('/register', AuthHandler.registerHandler);
 
 /**
  * @swagger
- * /auth/secession:
+ * /auth/withdraw:
  *    post:
  *      tags:
  *          - Register
- *      summary: secession
+ *      summary: withdraw
  *      responses:
  *        200:
  *          description: '{ result: number, errorCode: number, errorMessage: string }'
  */
-router.get('/secession', AuthHandler.secessionHandler);
+router.get('/withdraw', AuthHandler.withdrawHandler);
 
 router.post('/verify/reset_password', AuthHandler.verifyResetPwdHandler);
 

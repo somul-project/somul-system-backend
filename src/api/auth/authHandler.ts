@@ -112,7 +112,7 @@ export default class AuthHandler {
     }
   };
 
-  static secessionHandler = async (req: express.Request, res: express.Response) => {
+  static withdrawHandler = async (req: express.Request, res: express.Response) => {
     const passportUser = AuthHandler.getPassportSession(req);
     const passportEmail = (passportUser) ? passportUser.email : undefined;
     try {
