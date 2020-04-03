@@ -10,7 +10,7 @@ const log = Logger.createLogger('graphql.resolver_handler.Session');
 const mutex = new Mutex();
 
 const SCHEDULE_TEMPLATE = {
-  create: 'CREATE EVENT {evant_name} ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 2 DAYS DO UPDATE somul.Session SET `admin_approved` = "2" WHERE (`library_id` = "{library_id}" AND `user_email` = "{user_email}");',
+  create: 'CREATE EVENT {event_name} ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 2 DAYS DO UPDATE somul.Session SET `admin_approved` = "2" WHERE (`library_id` = "{library_id}" AND `user_email` = "{user_email}");',
   delete: 'DROP EVENT {event_name}',
 };
 
