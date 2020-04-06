@@ -128,7 +128,7 @@ router.get('/github/callback',
  *                type: string
  *      responses:
  *        200:
- *          description: '{ result: number, errorCode: number, errorMessage: string }'
+ *          description: '{ statusCode: string, errorMessage: string }'
  */
 router.post('/login', passport.authenticate('local', { failureRedirect: '/', failureFlash: true }),
   (req, res) => {
@@ -144,7 +144,7 @@ router.post('/login', passport.authenticate('local', { failureRedirect: '/', fai
  *      summary: logout.
  *      responses:
  *        200:
- *          description: '{ result: number, errorCode: number, errorMessage: string }'
+ *          description: '{ statusCode: string, errorMessage: string }'
  */
 router.get('/logout', (req, res) => {
   req.logout();
@@ -179,7 +179,7 @@ router.get('/verify/register', AuthHandler.verifyRegisterHandler);
  *                type: string
  *      responses:
  *        200:
- *          description: '{ result: number, errorCode: number, errorMessage: string }'
+ *          description: '{ statusCode: string, errorMessage: string }'
  */
 router.post('/register', AuthHandler.registerHandler);
 
@@ -217,7 +217,7 @@ router.post('/verify/reset_password', AuthHandler.verifyResetPwdHandler);
  *                type: string
  *      responses:
  *        200:
- *          description: '{ result: number, errorCode: number, errorMessage: string }'
+ *          description: '{ statusCode: string, errorMessage: string }'
  */
 router.post('/reset_password', AuthHandler.resetPwdHandler);
 

@@ -116,7 +116,7 @@ describe('resolver_handler [Session]', () => {
       session_explainer: 'temp',
       document: 'temp',
     });
-    expect({ result: 0 }).toEqual(result);
+    expect({ statusCode: '0' }).toEqual(result);
   });
 
   it('is the case when the session is full <createSession>', async () => {
@@ -130,30 +130,30 @@ describe('resolver_handler [Session]', () => {
       session_explainer: 'temp',
       document: 'temp',
     });
-    expect({ result: -1, errorCode: '106', errorMessage: constants.ERROR.MESSAGE['106'] }).toEqual(result);
+    expect({ statusCode: '106', errorMessage: constants.CustomError.MESSAGE['106'] }).toEqual(result);
   });
 
   it('is the case when user have permission <updateSession>', async () => {
     const context = { request: { session: { passport: { user: { email: 'test@gmail.com' } } } } };
     const result = await sessionHandler.updateSession({}, { user_email: 'test@gmail.com' }, context);
-    expect({ result: 0 }).toEqual(result);
+    expect({ statusCode: '0' }).toEqual(result);
   });
 
   it('is the case when user do not have permission <updateSession>', async () => {
     const context = { request: { session: { passport: { user: { email: 'test2@gmail.com' } } } } };
     const result = await sessionHandler.updateSession({}, { user_email: 'test@gmail.com' }, context);
-    expect({ result: -1, errorCode: '104', errorMessage: constants.ERROR.MESSAGE['104'] }).toEqual(result);
+    expect({ statusCode: '104', errorMessage: constants.CustomError.MESSAGE['104'] }).toEqual(result);
   });
 
   it('is the case when user have permission <deleteSession>', async () => {
     const context = { request: { session: { passport: { user: { email: 'test@gmail.com' } } } } };
     const result = await sessionHandler.deleteSession({ user_email: 'test@gmail.com' }, context);
-    expect({ result: 0 }).toEqual(result);
+    expect({ statusCode: '0' }).toEqual(result);
   });
 
   it('is the case when user do not have permission <deleteSession>', async () => {
     const context = { request: { session: { passport: { user: { email: 'test2@gmail.com' } } } } };
     const result = await sessionHandler.deleteSession({ user_email: 'test@gmail.com' }, context);
-    expect({ result: -1, errorCode: '104', errorMessage: constants.ERROR.MESSAGE['104'] }).toEqual(result);
+    expect({ statusCode: '104', errorMessage: constants.CustomError.MESSAGE['104'] }).toEqual(result);
   });
 });

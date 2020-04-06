@@ -8,7 +8,6 @@ import {
   Root,
   Args,
 } from 'type-graphql';
-import * as constants from '../../../common/constants';
 import ResultType from '../types/Result';
 import * as UsersTypes from '../types/User';
 import * as VolunteerTypes from '../types/Volunteer';
@@ -25,13 +24,8 @@ export default class LibraryResolver {
   async library(
     @Arg('id') id: number,
   ): Promise<LibraryTypes.LibraryObject> {
-    try {
-      const result = await LibraryHandlers.queryLibrary(id);
-      return result;
-    } catch (error) {
-      const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
-      throw new Error(constants.ERROR.MESSAGE[errorCode]);
-    }
+    const result = await LibraryHandlers.queryLibrary(id);
+    return result;
   }
 
   @Query(() => [LibraryTypes.LibraryObject])
@@ -39,13 +33,8 @@ export default class LibraryResolver {
     @Args() args: LibraryTypes.LibraryArgs,
     @Ctx() context: any,
   ): Promise<LibraryTypes.LibraryObject[]> {
-    try {
-      const result = await LibraryHandlers.queryLibraries(args, context);
-      return result;
-    } catch (error) {
-      const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
-      throw new Error(constants.ERROR.MESSAGE[errorCode]);
-    }
+    const result = await LibraryHandlers.queryLibraries(args, context);
+    return result;
   }
 
   @Mutation(() => ResultType)
