@@ -2,6 +2,9 @@ import express from 'express';
 import EmailService, { VERIFY_TEMPLATE, RESET_TEMPLATE } from '../../util/emailService';
 import getDatabase from '../../database';
 import * as constants from '../../common/constants';
+import Logger from '../../common/logger';
+
+const log = Logger.createLogger('auth.authHandler');
 
 const EmailToken = getDatabase().getEmailToken();
 const Users = getDatabase().getUsers();
@@ -29,30 +32,33 @@ export default class AuthHandler {
           where: { email: result.email },
         });
       } else {
-        throw constants.ERROR.CODE.failedToVerify;
+        throw new constants.CustomError(constants.STATUS_CODE.failedToVerify);
       }
-      res.send({ result: 0 });
+      res.send({ statusCode: '0' });
     } catch (error) {
-      const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
-      res.send({ result: -1, errorCode, errorMessage: constants.ERROR.MESSAGE[errorCode] });
+      if (error instanceof constants.CustomError) {
+        res.send(error.getData());
+      } else {
+        log.error(error);
+        res.send({ statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] });
+      }
     }
   };
 
   static validateCheck(password?: string, phonenumber?: string, email?: string) {
     if (!(password
-        && (/^[a-zA-Z0-9]*$/.test(password) && password.length >= 8 && password.length < 100))) {
-      return { result: false, errorCode: '108' };
+      && (/^[a-zA-Z0-9]*$/.test(password) && password.length >= 8 && password.length < 100))) {
+      throw new constants.CustomError(constants.STATUS_CODE.invalidPassword);
     }
 
     if (!(phonenumber && /^[0-9]*$/.test(phonenumber))) {
-      return { result: false, errorParam: '109' };
+      throw new constants.CustomError(constants.STATUS_CODE.invalidPhonenumber);
     }
 
     if (!(email
       && /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i.test(email))) {
-      return { result: false, errorParam: '107' };
+      throw new constants.CustomError(constants.STATUS_CODE.invalidEmail);
     }
-    return { result: true };
   }
 
   static registerHandler = async (req: express.Request, res: express.Response) => {
@@ -70,12 +76,9 @@ export default class AuthHandler {
         // local
         && !(email && name && phonenumber && password)
       ) {
-        throw constants.ERROR.CODE.invalidParams;
+        throw new constants.CustomError(constants.STATUS_CODE.invalidParams);
       }
-      const validResult = AuthHandler.validateCheck(password, phonenumber, email);
-      if (!validResult.result) {
-        throw validResult.errorCode;
-      }
+      AuthHandler.validateCheck(password, phonenumber, email);
 
       const updateDate = {
         email: (!passportEmail) ? email : passportEmail,
@@ -87,7 +90,7 @@ export default class AuthHandler {
       };
       const result = await Users.findOne({ where: { email: updateDate.email } });
       if (result) {
-        throw constants.ERROR.CODE.alreadyRegistered;
+        throw new constants.CustomError(constants.STATUS_CODE.alreadyRegistered);
       }
       await Users.create(updateDate);
       // local register
@@ -105,10 +108,14 @@ export default class AuthHandler {
           VERIFY_TEMPLATE.subject,
         );
       }
-      res.send({ result: 0 });
+      res.send({ statusCode: '0' });
     } catch (error) {
-      const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
-      res.send({ result: -1, errorCode, errorMessage: constants.ERROR.MESSAGE[errorCode] });
+      if (error instanceof constants.CustomError) {
+        res.send(error.getData());
+      } else {
+        log.error(error);
+        res.send({ statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] });
+      }
     }
   };
 
@@ -121,13 +128,17 @@ export default class AuthHandler {
           where: { email: passportEmail },
         });
       } else {
-        throw constants.ERROR.CODE.notPermission;
+        throw new constants.CustomError(constants.STATUS_CODE.insufficientPermission);
       }
       req.logout();
-      res.send({ result: 0 });
+      res.send({ statusCode: '0' });
     } catch (error) {
-      const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
-      res.send({ result: -1, errorCode, errorMessage: constants.ERROR.MESSAGE[errorCode] });
+      if (error instanceof constants.CustomError) {
+        res.send(error.getData());
+      } else {
+        log.error(error);
+        res.send({ statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] });
+      }
     }
   };
 
@@ -135,27 +146,29 @@ export default class AuthHandler {
     const { password } = req.body;
 
     try {
-      const validResult = AuthHandler.validateCheck(password);
-      if (!validResult.result) {
-        throw validResult.errorCode;
-      }
+      AuthHandler.validateCheck(password);
+
       const result = await EmailToken.findOne({ where: { ...req.query } });
       if (result) {
         await EmailToken.destroy({
           where: { email: result.email },
         });
       } else {
-        throw constants.ERROR.CODE.failedToVerify;
+        throw new constants.CustomError(constants.STATUS_CODE.failedToVerify);
       }
       await Users.update({
         password: sha256(password),
       }, {
         where: { email: result.email },
       });
-      res.send({ result: 0 });
+      res.send({ statusCode: '0' });
     } catch (error) {
-      const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
-      res.send({ result: -1, errorCode, errorMessage: constants.ERROR.MESSAGE[errorCode] });
+      if (error instanceof constants.CustomError) {
+        res.send(error.getData());
+      } else {
+        log.error(error);
+        res.send({ statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] });
+      }
     }
   };
 
@@ -166,7 +179,7 @@ export default class AuthHandler {
     try {
       const result = await Users.findOne({ where: { email } });
       if (!result || !result.password) {
-        throw constants.ERROR.CODE.invalidEmail;
+        throw new constants.CustomError(constants.STATUS_CODE.invalidEmail);
       }
       const token = randomstring.generate();
       await EmailToken.create({
@@ -179,9 +192,14 @@ export default class AuthHandler {
         RESET_TEMPLATE.html.replace('{token}', token).replace('{email}', email),
         RESET_TEMPLATE.subject,
       );
-      res.send({ result: 0 });
+      res.send({ statusCode: '0' });
     } catch (error) {
-      res.send({ result: -1, errorCode: 103, errorMessage: constants.ERROR.MESSAGE[103] });
+      if (error instanceof constants.CustomError) {
+        res.send(error.getData());
+      } else {
+        log.error(error);
+        res.send({ statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] });
+      }
     }
   };
 }

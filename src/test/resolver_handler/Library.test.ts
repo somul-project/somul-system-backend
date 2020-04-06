@@ -91,24 +91,24 @@ describe('resolver_handler [Library]', () => {
   it('is the case when user have permission <updateLibrary>', async () => {
     const context = { request: { session: { passport: { user: { email: 'test@gmail.com' } } } } };
     const result = await libraryHandler.updateLibrary({}, { manager_email: 'test@gmail.com' }, context);
-    expect({ result: 0 }).toEqual(result);
+    expect({ statusCode: '0' }).toEqual(result);
   });
 
   it('is the case when user do not have permission <updateLibrary>', async () => {
     const context = { request: { session: { passport: { user: { email: 'test2@gmail.com' } } } } };
     const result = await libraryHandler.updateLibrary({}, { manager_email: 'test@gmail.com' }, context);
-    expect({ result: -1, errorCode: '104', errorMessage: constants.ERROR.MESSAGE['104'] }).toEqual(result);
+    expect({ statusCode: '104', errorMessage: constants.CustomError.MESSAGE['104'] }).toEqual(result);
   });
 
   it('is the case when user have permission <deleteLibrary>', async () => {
     const context = { request: { session: { passport: { user: { email: 'test@gmail.com' } } } } };
     const result = await libraryHandler.deleteLibrary({ manager_email: 'test@gmail.com' }, context);
-    expect({ result: 0 }).toEqual(result);
+    expect({ statusCode: '0' }).toEqual(result);
   });
 
   it('is the case when user do not have permission <deleteLibrary>', async () => {
     const context = { request: { session: { passport: { user: { email: 'test2@gmail.com' } } } } };
     const result = await libraryHandler.deleteLibrary({ manager_email: 'test@gmail.com' }, context);
-    expect({ result: -1, errorCode: '104', errorMessage: constants.ERROR.MESSAGE['104'] }).toEqual(result);
+    expect({ statusCode: '104', errorMessage: constants.CustomError.MESSAGE['104'] }).toEqual(result);
   });
 });

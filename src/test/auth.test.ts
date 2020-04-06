@@ -57,7 +57,7 @@ describe('auth', () => {
     };
 
     await AuthHandler.verifyRegisterHandler(req, res);
-    expect(res._getData()).toEqual({ result: 0 });
+    expect(res._getData()).toEqual({ statusCode: '0' });
   });
 
   it('failed to find emailToken <verifyRegisterHandler> ', async () => {
@@ -69,7 +69,7 @@ describe('auth', () => {
     };
 
     await AuthHandler.verifyRegisterHandler(req, res);
-    expect(res._getData()).toEqual({ result: -1, errorCode: '101', errorMessage: constants.ERROR.MESSAGE['101'] });
+    expect(res._getData()).toEqual({ statusCode: '101', errorMessage: constants.CustomError.MESSAGE['101'] });
   });
 
   it('is a successful case <registerHandler>', async () => {
@@ -83,7 +83,7 @@ describe('auth', () => {
     };
 
     await AuthHandler.registerHandler(req, res);
-    expect(res._getData()).toEqual({ result: 0 });
+    expect(res._getData()).toEqual({ statusCode: '0' });
   });
 
   it('is the case if an account already exists <registerHandler>', async () => {
@@ -97,7 +97,7 @@ describe('auth', () => {
     };
 
     await AuthHandler.registerHandler(req, res);
-    expect(res._getData()).toEqual({ result: -1, errorCode: '102', errorMessage: constants.ERROR.MESSAGE['102'] });
+    expect(res._getData()).toEqual({ statusCode: '102', errorMessage: constants.CustomError.MESSAGE['102'] });
   });
 
   it('is invalid params(there is no name) <registerHandler>', async () => {
@@ -110,7 +110,7 @@ describe('auth', () => {
     };
 
     await AuthHandler.registerHandler(req, res);
-    expect(res._getData()).toEqual({ result: -1, errorCode: '1', errorMessage: constants.ERROR.MESSAGE['1'] });
+    expect(res._getData()).toEqual({ statusCode: '1', errorMessage: constants.CustomError.MESSAGE['1'] });
   });
 
   it('is invalid params(password)  <registerHandler>', async () => {
@@ -124,7 +124,7 @@ describe('auth', () => {
     };
 
     await AuthHandler.registerHandler(req, res);
-    expect(res._getData()).toEqual({ result: -1, errorCode: '108', errorMessage: constants.ERROR.MESSAGE['108'] });
+    expect(res._getData()).toEqual({ statusCode: '108', errorMessage: constants.CustomError.MESSAGE['108'] });
   });
 
   it('is invalid params[OAuth] <registerHandler>', async () => {
@@ -139,7 +139,7 @@ describe('auth', () => {
       });
 
     await AuthHandler.registerHandler(req, res);
-    expect(res._getData()).toEqual({ result: -1, errorCode: '1', errorMessage: constants.ERROR.MESSAGE['1'] });
+    expect(res._getData()).toEqual({ statusCode: '1', errorMessage: constants.CustomError.MESSAGE['1'] });
   });
 
 
@@ -152,6 +152,6 @@ describe('auth', () => {
     };
 
     await AuthHandler.verifyRegisterHandler(req, res);
-    expect(res._getData()).toEqual({ result: -1, errorCode: '101', errorMessage: constants.ERROR.MESSAGE['101'] });
+    expect(res._getData()).toEqual({ statusCode: '101', errorMessage: constants.CustomError.MESSAGE['101'] });
   });
 });

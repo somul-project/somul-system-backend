@@ -3,12 +3,9 @@ import { ObjectType, Field } from 'type-graphql';
 import 'reflect-metadata';
 
 @ObjectType()
-export default class resultObject {
+export default class ResultObject {
   @Field({ nullable: true })
-  result?: number;
-
-  @Field({ nullable: true })
-  errorCode?: string;
+  statusCode?: string;
 
   @Field({ nullable: true })
   errorMessage?: string;

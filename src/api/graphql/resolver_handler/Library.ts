@@ -52,11 +52,13 @@ export const queryLibraries = async (args: LibraryTypes.LibraryArgs, context: an
 export const createLibrary = async (args: LibraryTypes.LibraryCreateArgs) => {
   try {
     await Library.create({ ...args, admin_approved: constants.ADMIN_APPROVED.PROCESS });
-    return { result: 0 };
+    return { statusCode: '0' };
   } catch (error) {
-    log.error(`[-] failed to create user - ${error}`);
-    const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
-    return { result: -1, errorCode, errorMessage: constants.ERROR.MESSAGE[errorCode] };
+    if (error instanceof constants.CustomError) {
+      return error.getData();
+    }
+    log.error(error);
+    return { statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] };
   }
 };
 
@@ -67,7 +69,7 @@ export const updateLibrary = async (
     const email = context.request.session?.passport?.user.email;
 
     if (!admin && (args.manager_email && args.manager_email !== email)) {
-      throw constants.ERROR.CODE.notPermission;
+      throw new constants.CustomError(constants.STATUS_CODE.insufficientPermission);
     }
     const where = JSON.parse(JSON.stringify(args));
     if (!admin && changeValues.admin_approved) {
@@ -76,11 +78,13 @@ export const updateLibrary = async (
     await Library.update(changeValues, {
       where,
     });
-    return { result: 0 };
+    return { statusCode: '0' };
   } catch (error) {
-    log.error(`[-] failed to create user - ${error}`);
-    const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
-    return { result: -1, errorCode, errorMessage: constants.ERROR.MESSAGE[errorCode] };
+    if (error instanceof constants.CustomError) {
+      return error.getData();
+    }
+    log.error(error);
+    return { statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] };
   }
 };
 
@@ -89,16 +93,18 @@ export const deleteLibrary = async (args: LibraryTypes.LibraryArgs, context: any
     const admin = !!context.request.session.passport.user.admin;
     const email = context.request.session?.passport?.user.email;
     if (!admin && (args.manager_email && args.manager_email !== email)) {
-      throw constants.ERROR.CODE.notPermission;
+      throw new constants.CustomError(constants.STATUS_CODE.insufficientPermission);
     }
     const where = JSON.parse(JSON.stringify(args));
     await Library.destroy({
       where,
     });
-    return { result: 0 };
+    return { statusCode: '0' };
   } catch (error) {
-    log.error(`[-] failed to delete user - ${error}`);
-    const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
-    return { result: -1, errorCode, errorMessage: constants.ERROR.MESSAGE[errorCode] };
+    if (error instanceof constants.CustomError) {
+      return error.getData();
+    }
+    log.error(error);
+    return { statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] };
   }
 };

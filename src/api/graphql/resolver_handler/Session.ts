@@ -58,17 +58,17 @@ export const querySessions = async (args: SessionTypes.SessionArgs, context: any
 
 export const createSession = async (args: SessionTypes.SessionCreateArgs) => {
   try {
-    const Release = await mutex.acquire();
+    const release = await mutex.acquire();
     try {
       const result = await Session.findAll({
         where: { library_id: args.library_id },
       });
       if (result.length >= 2) {
-        throw constants.ERROR.CODE.sessionFull;
+        throw new constants.CustomError(constants.STATUS_CODE.sessionFull);
       }
-      Release();
+      release();
     } catch (error) {
-      Release();
+      release();
       throw error;
     }
     await Session.create({ ...args, admin_approved: constants.ADMIN_APPROVED.PROCESS });
@@ -79,11 +79,13 @@ export const createSession = async (args: SessionTypes.SessionCreateArgs) => {
         .replace('{library_id}', String(args.library_id));
       await db.query(query);
     }
-    return { result: 0 };
+    return { statusCode: '0' };
   } catch (error) {
-    log.error(`[-] failed to create user - ${error}`);
-    const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
-    return { result: -1, errorCode, errorMessage: constants.ERROR.MESSAGE[errorCode] };
+    if (error instanceof constants.CustomError) {
+      return error.getData();
+    }
+    log.error(error);
+    return { statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] };
   }
 };
 
@@ -94,7 +96,7 @@ export const updateSession = async (
     const email = context.request.session?.passport?.user.email;
 
     if (!admin && (args.user_email && args.user_email !== email)) {
-      throw constants.ERROR.CODE.notPermission;
+      throw new constants.CustomError(constants.STATUS_CODE.insufficientPermission);
     }
     const where = JSON.parse(JSON.stringify(args));
     if (!admin && changeValues.admin_approved) {
@@ -108,10 +110,13 @@ export const updateSession = async (
         .replace('{event_name}', `${args.library_id}_${args.user_email}`);
       await db.query(query).catch(() => {});
     }
-    return { result: 0 };
+    return { statusCode: '0' };
   } catch (error) {
-    const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
-    return { result: -1, errorCode, errorMessage: constants.ERROR.MESSAGE[errorCode] };
+    if (error instanceof constants.CustomError) {
+      return error.getData();
+    }
+    log.error(error);
+    return { statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] };
   }
 };
 
@@ -120,15 +125,18 @@ export const deleteSession = async (args: SessionTypes.SessionArgs, context: any
     const admin = !!context.request.session.passport.user.admin;
     const email = context.request.session?.passport?.user.email;
     if (!admin && (args.user_email && args.user_email !== email)) {
-      throw constants.ERROR.CODE.notPermission;
+      throw new constants.CustomError(constants.STATUS_CODE.insufficientPermission);
     }
     const where = JSON.parse(JSON.stringify(args));
     await Session.destroy({
       where,
     });
-    return { result: 0 };
+    return { statusCode: '0' };
   } catch (error) {
-    const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
-    return { result: -1, errorCode, errorMessage: constants.ERROR.MESSAGE[errorCode] };
+    if (error instanceof constants.CustomError) {
+      return error.getData();
+    }
+    log.error(error);
+    return { statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] };
   }
 };

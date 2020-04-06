@@ -44,18 +44,20 @@ export const updateUser = async (
     const email = context.request.session?.passport?.user.email;
 
     if (!admin && (!args.email || args.email !== email)) {
-      throw constants.ERROR.CODE.notPermission;
+      throw new constants.CustomError(constants.STATUS_CODE.insufficientPermission);
     }
     const where = JSON.parse(JSON.stringify(args));
 
     await Users.update(changeValues, {
       where,
     });
-    return { result: 0 };
+    return { statusCode: '0' };
   } catch (error) {
-    log.error(`[-] failed to update user - ${error}`);
-    const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
-    return { result: -1, errorCode, errorMessage: constants.ERROR.MESSAGE[errorCode] };
+    if (error instanceof constants.CustomError) {
+      return error.getData();
+    }
+    log.error(error);
+    return { statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] };
   }
 };
 
@@ -64,15 +66,18 @@ export const deleteUser = async (args: UserTypes.UserArgs, context: any) => {
     const admin = !!context.request.session?.passport?.user.admin;
 
     if (!admin) {
-      throw constants.ERROR.CODE.notPermission;
+      throw new constants.CustomError(constants.STATUS_CODE.insufficientPermission);
     }
     const where = JSON.parse(JSON.stringify(args));
     await Users.destroy({
       where,
     });
-    return { result: 0 };
+    return { statusCode: '0' };
   } catch (error) {
-    const errorCode = (constants.ERROR.MESSAGE[error]) ? error : 500;
-    return { result: -1, errorCode, errorMessage: constants.ERROR.MESSAGE[errorCode] };
+    if (error instanceof constants.CustomError) {
+      return error.getData();
+    }
+    log.error(error);
+    return { statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] };
   }
 };
