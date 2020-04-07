@@ -4,13 +4,8 @@ import localPassport from 'passport-local';
 import githubPassport from 'passport-github';
 import express from 'express';
 import * as constants from '../../common/constants';
-import getDatabase from '../../database';
 import AuthHandler from './authHandler';
 import * as errorHandler from '../../common/error';
-
-const Users = getDatabase().getUsers();
-
-const sha256 = require('sha256');
 
 const router = express.Router();
 const LocalStrategy = localPassport.Strategy;
@@ -29,70 +24,28 @@ passport.use(new LocalStrategy({
   usernameField: 'email',
   passwordField: 'password',
   passReqToCallback: true,
-},
-async (req, email, password, done) => {
-  const userInfo = await Users.findOne({ where: { email, password: sha256(password) } });
-  if (userInfo && userInfo.verify_email) {
-    return done(null, {
-      email,
-      admin: userInfo?.getDataValue('admin'),
-      name: userInfo.name,
-      phonenumber: userInfo.phonenumber,
-    });
-  }
-  return done(false, null);
-}));
+}, AuthHandler.localLogin));
 
 passport.use(new GoogleStrategy({
   clientID: constants.GOOGLE_CLIENT_ID,
   clientSecret: constants.GOOGLE_CLIENT_SECRET,
   callbackURL: `http://${constants.SERVER_DOMAIN}:${constants.SERVER_PORT}/auth/google/callback`,
-},
-async (accessToken, refreshToken, profile, cb) => {
-  const email = profile.emails![0].value;
-  const userInfo = await Users.findOne({ where: { email } });
-  const user = {
-    ...profile,
-    email,
-    admin: (userInfo) ? false : undefined,
-    name: (userInfo) ? userInfo.name : undefined,
-    phonenumber: (userInfo) ? userInfo.phonenumber : undefined,
-  };
-  return cb(undefined, user);
-}));
+}, AuthHandler.googleLogin));
 
 passport.use(new GithubStrategy({
   clientID: constants.GITHUB_CLIENT_ID,
   clientSecret: constants.GITHUB_CLIENT_SECRET,
   callbackURL: `http://${constants.SERVER_DOMAIN}:${constants.SERVER_PORT}/auth/github/callback`,
   scope: ['user:email'],
-},
-async (accessToken, refreshToken, profile, cb) => {
-  const email = profile.emails![0].value;
-  const userInfo = await Users.findOne({ where: { email } });
-  const user = {
-    ...profile,
-    email,
-    admin: (userInfo) ? false : undefined,
-    name: (userInfo) ? userInfo.name : undefined,
-    phonenumber: (userInfo) ? userInfo.phonenumber : undefined,
-  };
-  return cb(undefined, user);
-}));
+}, AuthHandler.githubLogin));
 
 router.use(passport.initialize());
 router.use(passport.session());
 
 
-router.get('/verify/oauth',
-  (req, res) => {
-    if (req.session!.passport.user.admin === undefined) {
-      res.redirect(`${constants.CLIENT_DOMAIN}/signUp?email=${req.session!.passport.user.email}`);
-      return;
-    }
-    res.redirect(`${constants.CLIENT_DOMAIN}/`);
-  });
+router.get('/verify/local', AuthHandler.verifyLocalLogin);
 
+router.get('/verify/oauth', AuthHandler.verifyOauthLogin);
 
 /**
  * @swagger
@@ -151,14 +104,10 @@ router.get('/github/callback',
  *        200:
  *          description: '{ statusCode: string, errorMessage: string }'
  */
-router.post('/login', passport.authenticate('local', { failureRedirect: '/', failureFlash: true }),
-  (req, res) => {
-    if (req.session!.passport.user.admin === undefined) {
-      res.send({ statusCode: '105', errorMessage: errorHandler.CustomError.MESSAGE['105'] });
-      return;
-    }
-    res.send({ statusCode: '0' });
-  });
+router.post('/login', passport.authenticate('local',
+  {
+    successRedirect: '/auth/verify/local', failureRedirect: '/auth/verify/local', failureFlash: true,
+  }));
 
 /**
  * @swagger
@@ -171,12 +120,7 @@ router.post('/login', passport.authenticate('local', { failureRedirect: '/', fai
  *        200:
  *          description: '{ statusCode: string, errorMessage: string }'
  */
-router.get('/logout', (req, res) => {
-  req.logout();
-  res.send({ result: 0 });
-});
-
-router.get('/verify/register', AuthHandler.verifyRegisterHandler);
+router.get('/logout', AuthHandler.logout);
 
 /**
  * @swagger
@@ -206,7 +150,22 @@ router.get('/verify/register', AuthHandler.verifyRegisterHandler);
  *        200:
  *          description: '{ statusCode: string, errorMessage: string }'
  */
-router.post('/register', AuthHandler.registerHandler);
+router.post('/register', AuthHandler.register);
+
+router.get('/verify/register', AuthHandler.verifyRegister);
+
+/**
+ * @swagger
+ * /auth/send/token:
+ *    get:
+ *      tags:
+ *          - Register
+ *      summary: request to resend.
+ *      responses:
+ *        200:
+ *          description: '{ statusCode: string, errorMessage: string }'
+ */
+router.get('/send/token', AuthHandler.sendToken);
 
 /**
  * @swagger
@@ -224,7 +183,7 @@ router.get('/resend', AuthHandler.resendTokenMessage);
 /**
  * @swagger
  * /auth/withdraw:
- *    post:
+ *    get:
  *      tags:
  *          - Register
  *      summary: withdraw
@@ -232,9 +191,7 @@ router.get('/resend', AuthHandler.resendTokenMessage);
  *        200:
  *          description: '{ result: number, errorCode: number, errorMessage: string }'
  */
-router.get('/withdraw', AuthHandler.withdrawHandler);
-
-router.post('/verify/reset_password', AuthHandler.verifyResetPwdHandler);
+router.get('/withdraw', AuthHandler.withdraw);
 
 /**
  * @swagger
@@ -253,10 +210,14 @@ router.post('/verify/reset_password', AuthHandler.verifyResetPwdHandler);
  *            properties:
  *              email:
  *                type: string
+ *              newPassword:
+ *                type: string
  *      responses:
  *        200:
  *          description: '{ statusCode: string, errorMessage: string }'
  */
-router.post('/reset_password', AuthHandler.resetPwdHandler);
+router.post('/reset_password', AuthHandler.resetPwd);
+
+router.post('/verify/reset_password', AuthHandler.verifyResetPwd);
 
 export default router;

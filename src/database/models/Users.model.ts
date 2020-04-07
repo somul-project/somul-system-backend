@@ -36,7 +36,6 @@ export default class Users extends Model<Users> {
   @Column
   password?: string;
 
-
   @AllowNull(false)
   @Column
   createdAt: Date;

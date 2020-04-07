@@ -14,6 +14,7 @@ CREATE TABLE Email_Token (
     id INT NOT NULL AUTO_INCREMENT,
     email VARCHAR(50) NOT NULL,
     token VARCHAR(100) NOT NULL,
+    send_count INT NOT NULL,
     createdAt TIMESTAMP NOT NULL,
     updatedAt TIMESTAMP NOT NULL,
     PRIMARY KEY (id),

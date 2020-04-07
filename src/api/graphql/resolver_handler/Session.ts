@@ -12,7 +12,7 @@ const log = Logger.createLogger('graphql.resolver_handler.Session');
 const mutex = new Mutex();
 
 const SCHEDULE_TEMPLATE = {
-  create: 'CREATE EVENT {event_name} ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 2 DAYS DO UPDATE somul.Session SET `admin_approved` = "2" WHERE (`library_id` = "{library_id}" AND `user_email` = "{user_email}");',
+  create: 'CREATE EVENT {event_name} ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 2 DAY DO UPDATE somul.Session SET `admin_approved` = "2" WHERE (`library_id` = "{library_id}" AND `user_email` = "{user_email}" AND admin_approved` = "0");',
   delete: 'DROP EVENT {event_name}',
 };
 
@@ -62,13 +62,11 @@ export const createSession = async (args: SessionTypes.SessionCreateArgs) => {
   try {
     const release = await mutex.acquire();
     try {
-      if (args.library_id) {
-        const result = await Session.findAll({
-          where: { library_id: args.library_id },
-        });
-        if (result.length >= 2) {
-          throw new errorHandler.CustomError(errorHandler.STATUS_CODE.sessionFull);
-        }
+      const result = await Session.findAll({
+        where: { library_id: args.library_id },
+      });
+      if (result.length >= 2) {
+        throw new errorHandler.CustomError(errorHandler.STATUS_CODE.sessionFull);
       }
 
       release();
