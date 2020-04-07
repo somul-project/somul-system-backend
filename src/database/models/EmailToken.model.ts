@@ -21,7 +21,7 @@ export default class EmailToken extends Model<EmailToken> {
 
   @AllowNull(false)
   @Column
-  count: number;
+  send_count: number;
 
   @AllowNull(false)
   @Column

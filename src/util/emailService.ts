@@ -11,7 +11,7 @@ AWS.config.update({
 const ses = new AWS.SES();
 
 export const VERIFY_TEMPLATE = {
-  html: `http://${constants.SERVER_DOMAIN}/auth/verify/register?email={email}&token={token}`,
+  html: `http://${constants.SERVER_DOMAIN}:${constants.SERVER_PORT}/auth/verify/register?email={email}&token={token}`,
   subject: '이메일 인증!',
 };
 
@@ -24,7 +24,7 @@ export const RESET_TEMPLATE = {
     <title>회원 가입</title>
    </head>
    <body>
-   <form action="http://localhost/auth/verify/reset_password?email={email}&token={token}" name="temp" method="post">
+   <form action="http://${constants.SERVER_DOMAIN}:${constants.SERVER_PORT}/auth/verify/reset_password?email={email}&token={token}" name="temp" method="post">
      <table width="940" style="padding:5px 0 5px 0; ">
         <tr height="2" bgcolor="#FFC8C3"><td colspan="2"></td></tr>
            <th>비밀번호</th>
