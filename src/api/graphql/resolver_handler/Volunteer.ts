@@ -1,5 +1,6 @@
 import Logger from '../../../common/logger';
 import * as constants from '../../../common/constants';
+import * as errorHandler from '../../../common/error';
 import getDatabase from '../../../database';
 import * as VolunteerTypes from '../types/Volunteer';
 
@@ -52,11 +53,11 @@ export const createVolunteer = async (args: VolunteerTypes.VolunteerCreateArgs) 
     await Volunteer.create({ ...args, admin_approved: constants.ADMIN_APPROVED.PROCESS });
     return { statusCode: '0' };
   } catch (error) {
-    if (error instanceof constants.CustomError) {
+    if (error instanceof errorHandler.CustomError) {
       return error.getData();
     }
     log.error(error);
-    return { statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] };
+    return { statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] };
   }
 };
 
@@ -67,7 +68,7 @@ export const updateVolunteer = async (
     const email = context.request.session?.passport?.user.email;
 
     if (!admin && (args.user_email && args.user_email !== email)) {
-      throw new constants.CustomError(constants.STATUS_CODE.insufficientPermission);
+      throw new errorHandler.CustomError(errorHandler.STATUS_CODE.insufficientPermission);
     }
 
     const where = JSON.parse(JSON.stringify(args));
@@ -79,11 +80,11 @@ export const updateVolunteer = async (
     });
     return { statusCode: '0' };
   } catch (error) {
-    if (error instanceof constants.CustomError) {
+    if (error instanceof errorHandler.CustomError) {
       return error.getData();
     }
     log.error(error);
-    return { statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] };
+    return { statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] };
   }
 };
 
@@ -92,7 +93,7 @@ export const deleteVolunteer = async (args: VolunteerTypes.VolunteerArgs, contex
     const admin = !!context.request.session.passport.user.admin;
     const email = context.request.session?.passport?.user.email;
     if (!admin && (args.user_email && args.user_email !== email)) {
-      throw new constants.CustomError(constants.STATUS_CODE.insufficientPermission);
+      throw new errorHandler.CustomError(errorHandler.STATUS_CODE.insufficientPermission);
     }
     const where = JSON.parse(JSON.stringify(args));
     await Volunteer.destroy({
@@ -100,10 +101,10 @@ export const deleteVolunteer = async (args: VolunteerTypes.VolunteerArgs, contex
     });
     return { statusCode: '0' };
   } catch (error) {
-    if (error instanceof constants.CustomError) {
+    if (error instanceof errorHandler.CustomError) {
       return error.getData();
     }
     log.error(error);
-    return { statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] };
+    return { statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] };
   }
 };

@@ -3,6 +3,7 @@ import session from 'express-session';
 import bodyParser from 'body-parser';
 import swaggerUi from 'swagger-ui-express';
 import * as constants from '../common/constants';
+import * as errorHandler from '../common/error';
 import Logger from '../common/logger';
 import getGraphQlserver from '../api/graphql';
 import authRouter from '../api/auth';
@@ -27,12 +28,12 @@ export default class Server {
     res: express.Response, next: express.NextFunction) => {
     if (req.session && req.session.passport && req.session.passport.user !== undefined) {
       if (req.session.passport.user.admin === undefined) {
-        res.send({ statusCode: '105', errorMessage: constants.CustomError.MESSAGE['105'] });
+        res.send({ statusCode: '105', errorMessage: errorHandler.CustomError.MESSAGE['105'] });
       } else {
         next();
       }
     } else {
-      res.send({ statusCode: '104', errorMessage: constants.CustomError.MESSAGE['104'] });
+      res.send({ statusCode: '104', errorMessage: errorHandler.CustomError.MESSAGE['104'] });
     }
   }
 

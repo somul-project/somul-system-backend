@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 import * as userHandler from '../../api/graphql/resolver_handler/User';
 import getDatabase from '../../database';
-import * as constants from '../../common/constants';
+import * as errorHandler from '../../common/error';
 
 const database = getDatabase(true);
 
@@ -74,7 +74,7 @@ describe('resolver_handler [Users]', () => {
   it('is the case when user do not have permission <updateUser>', async () => {
     const context = { request: { session: { passport: { user: { email: 'test@gmail.com' } } } } };
     const result = await userHandler.updateUser({}, { email: 'test3@gmail.com' }, context);
-    expect({ statusCode: '104', errorMessage: constants.CustomError.MESSAGE['104'] }).toEqual(result);
+    expect({ statusCode: '104', errorMessage: errorHandler.CustomError.MESSAGE['104'] }).toEqual(result);
   });
 
   it('is the case when admin makes a request <deleteUser>', async () => {
@@ -86,6 +86,6 @@ describe('resolver_handler [Users]', () => {
   it('is the case when  user who is not admin makes a request <deleteUser>', async () => {
     const context = { request: { session: { passport: { user: { email: 'test@gmail.com' } } } } };
     const result = await userHandler.deleteUser({ email: 'test3@gmail.com' }, context);
-    expect({ statusCode: '104', errorMessage: constants.CustomError.MESSAGE['104'] }).toEqual(result);
+    expect({ statusCode: '104', errorMessage: errorHandler.CustomError.MESSAGE['104'] }).toEqual(result);
   });
 });

@@ -1,5 +1,5 @@
 import Logger from '../../../common/logger';
-import * as constants from '../../../common/constants';
+import * as errorHandler from '../../../common/error';
 import getDatabase from '../../../database';
 import * as UserTypes from '../types/User';
 
@@ -44,7 +44,7 @@ export const updateUser = async (
     const email = context.request.session?.passport?.user.email;
 
     if (!admin && (!args.email || args.email !== email)) {
-      throw new constants.CustomError(constants.STATUS_CODE.insufficientPermission);
+      throw new errorHandler.CustomError(errorHandler.STATUS_CODE.insufficientPermission);
     }
     const where = JSON.parse(JSON.stringify(args));
 
@@ -53,11 +53,11 @@ export const updateUser = async (
     });
     return { statusCode: '0' };
   } catch (error) {
-    if (error instanceof constants.CustomError) {
+    if (error instanceof errorHandler.CustomError) {
       return error.getData();
     }
     log.error(error);
-    return { statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] };
+    return { statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] };
   }
 };
 
@@ -66,7 +66,7 @@ export const deleteUser = async (args: UserTypes.UserArgs, context: any) => {
     const admin = !!context.request.session?.passport?.user.admin;
 
     if (!admin) {
-      throw new constants.CustomError(constants.STATUS_CODE.insufficientPermission);
+      throw new errorHandler.CustomError(errorHandler.STATUS_CODE.insufficientPermission);
     }
     const where = JSON.parse(JSON.stringify(args));
     await Users.destroy({
@@ -74,10 +74,10 @@ export const deleteUser = async (args: UserTypes.UserArgs, context: any) => {
     });
     return { statusCode: '0' };
   } catch (error) {
-    if (error instanceof constants.CustomError) {
+    if (error instanceof errorHandler.CustomError) {
       return error.getData();
     }
     log.error(error);
-    return { statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] };
+    return { statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] };
   }
 };
