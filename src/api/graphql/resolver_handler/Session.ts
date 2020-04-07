@@ -1,6 +1,7 @@
 import { Mutex } from 'async-mutex';
 import Logger from '../../../common/logger';
 import * as constants from '../../../common/constants';
+import * as errorHandler from '../../../common/error';
 import getDatabase from '../../../database';
 import * as SessionTypes from '../types/Session';
 
@@ -64,7 +65,7 @@ export const createSession = async (args: SessionTypes.SessionCreateArgs) => {
         where: { library_id: args.library_id },
       });
       if (result.length >= 2) {
-        throw new constants.CustomError(constants.STATUS_CODE.sessionFull);
+        throw new errorHandler.CustomError(errorHandler.STATUS_CODE.sessionFull);
       }
       release();
     } catch (error) {
@@ -81,11 +82,11 @@ export const createSession = async (args: SessionTypes.SessionCreateArgs) => {
     }
     return { statusCode: '0' };
   } catch (error) {
-    if (error instanceof constants.CustomError) {
+    if (error instanceof errorHandler.CustomError) {
       return error.getData();
     }
     log.error(error);
-    return { statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] };
+    return { statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] };
   }
 };
 
@@ -96,7 +97,7 @@ export const updateSession = async (
     const email = context.request.session?.passport?.user.email;
 
     if (!admin && (args.user_email && args.user_email !== email)) {
-      throw new constants.CustomError(constants.STATUS_CODE.insufficientPermission);
+      throw new errorHandler.CustomError(errorHandler.STATUS_CODE.insufficientPermission);
     }
     const where = JSON.parse(JSON.stringify(args));
     if (!admin && changeValues.admin_approved) {
@@ -112,11 +113,11 @@ export const updateSession = async (
     }
     return { statusCode: '0' };
   } catch (error) {
-    if (error instanceof constants.CustomError) {
+    if (error instanceof errorHandler.CustomError) {
       return error.getData();
     }
     log.error(error);
-    return { statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] };
+    return { statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] };
   }
 };
 
@@ -125,7 +126,7 @@ export const deleteSession = async (args: SessionTypes.SessionArgs, context: any
     const admin = !!context.request.session.passport.user.admin;
     const email = context.request.session?.passport?.user.email;
     if (!admin && (args.user_email && args.user_email !== email)) {
-      throw new constants.CustomError(constants.STATUS_CODE.insufficientPermission);
+      throw new errorHandler.CustomError(errorHandler.STATUS_CODE.insufficientPermission);
     }
     const where = JSON.parse(JSON.stringify(args));
     await Session.destroy({
@@ -133,10 +134,10 @@ export const deleteSession = async (args: SessionTypes.SessionArgs, context: any
     });
     return { statusCode: '0' };
   } catch (error) {
-    if (error instanceof constants.CustomError) {
+    if (error instanceof errorHandler.CustomError) {
       return error.getData();
     }
     log.error(error);
-    return { statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] };
+    return { statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] };
   }
 };

@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 import * as libraryHandler from '../../api/graphql/resolver_handler/Library';
 import getDatabase from '../../database';
-import * as constants from '../../common/constants';
+import * as errorHandler from '../../common/error';
 
 const database = getDatabase(true);
 
@@ -97,7 +97,7 @@ describe('resolver_handler [Library]', () => {
   it('is the case when user do not have permission <updateLibrary>', async () => {
     const context = { request: { session: { passport: { user: { email: 'test2@gmail.com' } } } } };
     const result = await libraryHandler.updateLibrary({}, { manager_email: 'test@gmail.com' }, context);
-    expect({ statusCode: '104', errorMessage: constants.CustomError.MESSAGE['104'] }).toEqual(result);
+    expect({ statusCode: '104', errorMessage: errorHandler.CustomError.MESSAGE['104'] }).toEqual(result);
   });
 
   it('is the case when user have permission <deleteLibrary>', async () => {
@@ -109,6 +109,6 @@ describe('resolver_handler [Library]', () => {
   it('is the case when user do not have permission <deleteLibrary>', async () => {
     const context = { request: { session: { passport: { user: { email: 'test2@gmail.com' } } } } };
     const result = await libraryHandler.deleteLibrary({ manager_email: 'test@gmail.com' }, context);
-    expect({ statusCode: '104', errorMessage: constants.CustomError.MESSAGE['104'] }).toEqual(result);
+    expect({ statusCode: '104', errorMessage: errorHandler.CustomError.MESSAGE['104'] }).toEqual(result);
   });
 });

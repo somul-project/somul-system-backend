@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 import * as volunteerHandler from '../../api/graphql/resolver_handler/Volunteer';
 import getDatabase from '../../database';
-import * as constants from '../../common/constants';
+import * as errorHandler from '../../common/error';
 
 const database = getDatabase(true);
 
@@ -113,7 +113,7 @@ describe('resolver_handler [Volunteer]', () => {
   it('is the case when user do not have permission <updateVolunteer>', async () => {
     const context = { request: { session: { passport: { user: { email: 'test2@gmail.com' } } } } };
     const result = await volunteerHandler.updateVolunteer({}, { user_email: 'test@gmail.com' }, context);
-    expect({ statusCode: '104', errorMessage: constants.CustomError.MESSAGE['104'] }).toEqual(result);
+    expect({ statusCode: '104', errorMessage: errorHandler.CustomError.MESSAGE['104'] }).toEqual(result);
   });
 
   it('is the case when user have permission <deleteVolunteer>', async () => {
@@ -125,6 +125,6 @@ describe('resolver_handler [Volunteer]', () => {
   it('is the case when user do not have permission <deleteVolunteer>', async () => {
     const context = { request: { session: { passport: { user: { email: 'test2@gmail.com' } } } } };
     const result = await volunteerHandler.deleteVolunteer({ user_email: 'test@gmail.com' }, context);
-    expect({ statusCode: '104', errorMessage: constants.CustomError.MESSAGE['104'] }).toEqual(result);
+    expect({ statusCode: '104', errorMessage: errorHandler.CustomError.MESSAGE['104'] }).toEqual(result);
   });
 });

@@ -2,6 +2,8 @@ import express from 'express';
 import EmailService, { VERIFY_TEMPLATE, RESET_TEMPLATE } from '../../util/emailService';
 import getDatabase from '../../database';
 import * as constants from '../../common/constants';
+import * as errorHandler from '../../common/error';
+
 import Logger from '../../common/logger';
 
 const log = Logger.createLogger('auth.authHandler');
@@ -32,15 +34,15 @@ export default class AuthHandler {
           where: { email: result.email },
         });
       } else {
-        throw new constants.CustomError(constants.STATUS_CODE.failedToVerify);
+        throw new errorHandler.CustomError(errorHandler.STATUS_CODE.failedToVerify);
       }
       res.send({ statusCode: '0' });
     } catch (error) {
-      if (error instanceof constants.CustomError) {
+      if (error instanceof errorHandler.CustomError) {
         res.send(error.getData());
       } else {
         log.error(error);
-        res.send({ statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] });
+        res.send({ statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] });
       }
     }
   };
@@ -48,16 +50,16 @@ export default class AuthHandler {
   static validateCheck(password?: string, phonenumber?: string, email?: string) {
     if (!(password
       && (/^[a-zA-Z0-9]*$/.test(password) && password.length >= 8 && password.length < 100))) {
-      throw new constants.CustomError(constants.STATUS_CODE.invalidPassword);
+      throw new errorHandler.CustomError(errorHandler.STATUS_CODE.invalidPassword);
     }
 
     if (!(phonenumber && /^[0-9]*$/.test(phonenumber))) {
-      throw new constants.CustomError(constants.STATUS_CODE.invalidPhonenumber);
+      throw new errorHandler.CustomError(errorHandler.STATUS_CODE.invalidPhonenumber);
     }
 
     if (!(email
       && /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i.test(email))) {
-      throw new constants.CustomError(constants.STATUS_CODE.invalidEmail);
+      throw new errorHandler.CustomError(errorHandler.STATUS_CODE.invalidEmail);
     }
   }
 
@@ -76,7 +78,7 @@ export default class AuthHandler {
         // local
         && !(email && name && phonenumber && password)
       ) {
-        throw new constants.CustomError(constants.STATUS_CODE.invalidParams);
+        throw new errorHandler.CustomError(errorHandler.STATUS_CODE.invalidParams);
       }
       AuthHandler.validateCheck(password, phonenumber, email);
 
@@ -90,7 +92,7 @@ export default class AuthHandler {
       };
       const result = await Users.findOne({ where: { email: updateDate.email } });
       if (result) {
-        throw new constants.CustomError(constants.STATUS_CODE.alreadyRegistered);
+        throw new errorHandler.CustomError(errorHandler.STATUS_CODE.alreadyRegistered);
       }
       await Users.create(updateDate);
       // local register
@@ -110,11 +112,11 @@ export default class AuthHandler {
       }
       res.send({ statusCode: '0' });
     } catch (error) {
-      if (error instanceof constants.CustomError) {
+      if (error instanceof errorHandler.CustomError) {
         res.send(error.getData());
       } else {
         log.error(error);
-        res.send({ statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] });
+        res.send({ statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] });
       }
     }
   };
@@ -128,16 +130,16 @@ export default class AuthHandler {
           where: { email: passportEmail },
         });
       } else {
-        throw new constants.CustomError(constants.STATUS_CODE.insufficientPermission);
+        throw new errorHandler.CustomError(errorHandler.STATUS_CODE.insufficientPermission);
       }
       req.logout();
       res.send({ statusCode: '0' });
     } catch (error) {
-      if (error instanceof constants.CustomError) {
+      if (error instanceof errorHandler.CustomError) {
         res.send(error.getData());
       } else {
         log.error(error);
-        res.send({ statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] });
+        res.send({ statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] });
       }
     }
   };
@@ -154,7 +156,7 @@ export default class AuthHandler {
           where: { email: result.email },
         });
       } else {
-        throw new constants.CustomError(constants.STATUS_CODE.failedToVerify);
+        throw new errorHandler.CustomError(errorHandler.STATUS_CODE.failedToVerify);
       }
       await Users.update({
         password: sha256(password),
@@ -163,11 +165,11 @@ export default class AuthHandler {
       });
       res.send({ statusCode: '0' });
     } catch (error) {
-      if (error instanceof constants.CustomError) {
+      if (error instanceof errorHandler.CustomError) {
         res.send(error.getData());
       } else {
         log.error(error);
-        res.send({ statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] });
+        res.send({ statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] });
       }
     }
   };
@@ -179,7 +181,7 @@ export default class AuthHandler {
     try {
       const result = await Users.findOne({ where: { email } });
       if (!result || !result.password) {
-        throw new constants.CustomError(constants.STATUS_CODE.invalidEmail);
+        throw new errorHandler.CustomError(errorHandler.STATUS_CODE.invalidEmail);
       }
       const token = randomstring.generate();
       await EmailToken.create({
@@ -194,11 +196,11 @@ export default class AuthHandler {
       );
       res.send({ statusCode: '0' });
     } catch (error) {
-      if (error instanceof constants.CustomError) {
+      if (error instanceof errorHandler.CustomError) {
         res.send(error.getData());
       } else {
         log.error(error);
-        res.send({ statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] });
+        res.send({ statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] });
       }
     }
   };

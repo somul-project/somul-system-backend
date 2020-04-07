@@ -62,7 +62,7 @@
     "winston": "^3.2.1"
   },
   "scripts": {
-    "test": "NODE_ENV=sample jest",
+    "test": "jest",
     "build": "tsc",
     "watch-ts": "tsc -w",
     "watch-nodemon": "nodemon dist/index.js",

@@ -1,4 +1,5 @@
 import * as constants from '../../../common/constants';
+import * as errorHandler from '../../../common/error';
 import Logger from '../../../common/logger';
 import getDatabase from '../../../database';
 import * as LibraryTypes from '../types/Library';
@@ -54,11 +55,11 @@ export const createLibrary = async (args: LibraryTypes.LibraryCreateArgs) => {
     await Library.create({ ...args, admin_approved: constants.ADMIN_APPROVED.PROCESS });
     return { statusCode: '0' };
   } catch (error) {
-    if (error instanceof constants.CustomError) {
+    if (error instanceof errorHandler.CustomError) {
       return error.getData();
     }
     log.error(error);
-    return { statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] };
+    return { statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] };
   }
 };
 
@@ -69,7 +70,7 @@ export const updateLibrary = async (
     const email = context.request.session?.passport?.user.email;
 
     if (!admin && (args.manager_email && args.manager_email !== email)) {
-      throw new constants.CustomError(constants.STATUS_CODE.insufficientPermission);
+      throw new errorHandler.CustomError(errorHandler.STATUS_CODE.insufficientPermission);
     }
     const where = JSON.parse(JSON.stringify(args));
     if (!admin && changeValues.admin_approved) {
@@ -80,11 +81,11 @@ export const updateLibrary = async (
     });
     return { statusCode: '0' };
   } catch (error) {
-    if (error instanceof constants.CustomError) {
+    if (error instanceof errorHandler.CustomError) {
       return error.getData();
     }
     log.error(error);
-    return { statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] };
+    return { statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] };
   }
 };
 
@@ -93,7 +94,7 @@ export const deleteLibrary = async (args: LibraryTypes.LibraryArgs, context: any
     const admin = !!context.request.session.passport.user.admin;
     const email = context.request.session?.passport?.user.email;
     if (!admin && (args.manager_email && args.manager_email !== email)) {
-      throw new constants.CustomError(constants.STATUS_CODE.insufficientPermission);
+      throw new errorHandler.CustomError(errorHandler.STATUS_CODE.insufficientPermission);
     }
     const where = JSON.parse(JSON.stringify(args));
     await Library.destroy({
@@ -101,10 +102,10 @@ export const deleteLibrary = async (args: LibraryTypes.LibraryArgs, context: any
     });
     return { statusCode: '0' };
   } catch (error) {
-    if (error instanceof constants.CustomError) {
+    if (error instanceof errorHandler.CustomError) {
       return error.getData();
     }
     log.error(error);
-    return { statusCode: '500', errorMessage: constants.CustomError.MESSAGE['500'] };
+    return { statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] };
   }
 };
