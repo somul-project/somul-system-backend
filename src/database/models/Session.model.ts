@@ -12,7 +12,7 @@ export default class Session extends Model<Session> {
   @Column
   id: number;
 
-  @AllowNull(false)
+  @AllowNull(true)
   @ForeignKey(() => Library)
   @Column
   library_id: number;

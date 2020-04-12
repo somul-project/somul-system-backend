@@ -1,18 +1,16 @@
 import express from 'express';
 import EmailService, { VERIFY_TEMPLATE, RESET_TEMPLATE } from '../../util/emailService';
+import Slack from '../../util/slack';
 import getDatabase from '../../database';
 import * as constants from '../../common/constants';
 import * as errorHandler from '../../common/error';
-
 import Logger from '../../common/logger';
 
 const log = Logger.createLogger('auth.authHandler');
-
 const EmailToken = getDatabase().getEmailToken();
 const Users = getDatabase().getUsers();
 const randomstring = require('randomstring');
 const sha256 = require('sha256');
-
 
 export default class AuthHandler {
   static getPassportSession = (req: express.Request) => {
@@ -36,13 +34,15 @@ export default class AuthHandler {
       } else {
         throw new errorHandler.CustomError(errorHandler.STATUS_CODE.failedToVerify);
       }
-      res.send({ statusCode: '0' });
+      res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=0`);
     } catch (error) {
       if (error instanceof errorHandler.CustomError) {
-        res.send(error.getData());
+        const errorInfo = error.getData();
+        res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=${errorInfo.statusCode}&errorMessage=${errorInfo.errorMessage}`);
       } else {
         log.error(error);
-        res.send({ statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] });
+        await Slack.send('error', error);
+        res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=500&errorMessage=${errorHandler.CustomError.MESSAGE['500']}`);
       }
     }
   };
@@ -67,7 +67,6 @@ export default class AuthHandler {
     const {
       email, name, phonenumber, password,
     } = req.body;
-
     const passportUser = AuthHandler.getPassportSession(req);
     const passportEmail = (passportUser) ? passportUser.email : undefined;
 
@@ -103,7 +102,7 @@ export default class AuthHandler {
           token,
         });
         // send email for verifying
-        EmailService.send(
+        await EmailService.send(
           [email],
           constants.ADMIN_EMAIL,
           VERIFY_TEMPLATE.html.replace('{token}', token).replace('{email}', email),
@@ -116,6 +115,7 @@ export default class AuthHandler {
         res.send(error.getData());
       } else {
         log.error(error);
+        await Slack.send('error', error);
         res.send({ statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] });
       }
     }
@@ -139,6 +139,7 @@ export default class AuthHandler {
         res.send(error.getData());
       } else {
         log.error(error);
+        await Slack.send('error', error);
         res.send({ statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] });
       }
     }
@@ -169,6 +170,7 @@ export default class AuthHandler {
         res.send(error.getData());
       } else {
         log.error(error);
+        await Slack.send('error', error);
         res.send({ statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] });
       }
     }
@@ -200,6 +202,7 @@ export default class AuthHandler {
         res.send(error.getData());
       } else {
         log.error(error);
+        await Slack.send('error', error);
         res.send({ statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] });
       }
     }

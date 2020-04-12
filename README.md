@@ -14,7 +14,6 @@ sudo docker run -d -v {env_path}:/somul-server/.env somul/backend:{tag}
 - 도커 설치는 다음 url 참고 (https://blog.cosmosfarm.com/archives/248/%EC%9A%B0%EB%B6%84%ED%88%AC-18-04-%EB%8F%84%EC%BB%A4-docker-%EC%84%A4%EC%B9%98-%EB%B0%A9%EB%B2%95/)
 - staging 인 경우 tag를 staging으로 명시
 
-
 # 호스트 머신에서 실행
 ```
 // (0) .env 파일 추가

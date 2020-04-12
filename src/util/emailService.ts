@@ -11,7 +11,7 @@ AWS.config.update({
 const ses = new AWS.SES();
 
 export const VERIFY_TEMPLATE = {
-  html: `http://${constants.DOMAIN}/auth/verify?email={email}&token={token}`,
+  html: `http://${constants.SERVER_DOMAIN}/auth/verify/register?email={email}&token={token}`,
   subject: '이메일 인증!',
 };
 
@@ -21,14 +21,12 @@ export const RESET_TEMPLATE = {
   <html lang="en">
    <head>
     <meta charset="UTF-8">
-  
     <title>회원 가입</title>
    </head>
    <body>
-   <form action="http://localhost/auth/resetPwd?email={email}&token={token}" name="temp" method="post">
+   <form action="http://localhost/auth/verify/reset_password?email={email}&token={token}" name="temp" method="post">
      <table width="940" style="padding:5px 0 5px 0; ">
         <tr height="2" bgcolor="#FFC8C3"><td colspan="2"></td></tr>
-  
            <th>비밀번호</th>
            <td><input type="password" name="password"> 영문/숫자포함 6자 이상</td>
          </tr>
@@ -70,6 +68,14 @@ export default class EmailService {
       Source: from,
       ReplyToAddresses: [from],
     };
-    ses.sendEmail(params);
+    return new Promise<boolean>((resolve, reject) => {
+      ses.sendEmail(params, (err, data) => {
+        if (err) {
+          reject(new Error('[-] failed to send'));
+          return;
+        }
+        resolve(true);
+      });
+    });
   }
 }

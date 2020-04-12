@@ -43,7 +43,7 @@ async (req, email, password, done) => {
 passport.use(new GoogleStrategy({
   clientID: constants.GOOGLE_CLIENT_ID,
   clientSecret: constants.GOOGLE_CLIENT_SECRET,
-  callbackURL: `http://${constants.DOMAIN}:${constants.SERVER_PORT}/auth/google/callback`,
+  callbackURL: `http://${constants.SERVER_DOMAIN}:${constants.SERVER_PORT}/auth/google/callback`,
 },
 async (accessToken, refreshToken, profile, cb) => {
   const email = profile.emails![0].value;
@@ -59,7 +59,7 @@ async (accessToken, refreshToken, profile, cb) => {
 passport.use(new GithubStrategy({
   clientID: constants.GITHUB_CLIENT_ID,
   clientSecret: constants.GITHUB_CLIENT_SECRET,
-  callbackURL: `http://${constants.DOMAIN}:${constants.SERVER_PORT}/auth/github/callback`,
+  callbackURL: `http://${constants.SERVER_DOMAIN}:${constants.SERVER_PORT}/auth/github/callback`,
   scope: ['user:email'],
 },
 async (accessToken, refreshToken, profile, cb) => {
@@ -115,7 +115,7 @@ router.get('/github/callback',
  *          - Login
  *      summary: local login.
  *      consumes:
- *        - multipart/form-data
+ *        - application/json
  *      parameters:
  *        - name: data
  *          in: body
@@ -161,7 +161,7 @@ router.get('/verify/register', AuthHandler.verifyRegisterHandler);
  *          - Register
  *      summary: register
  *      consumes:
- *        - multipart/form-data
+ *        - application/json
  *      parameters:
  *        - name: data
  *          description: 'you have to send only name and phonenumber then you register using OAuth.'
@@ -206,7 +206,7 @@ router.post('/verify/reset_password', AuthHandler.verifyResetPwdHandler);
  *          - Reset password
  *      summary: request to reset password
  *      consumes:
- *        - multipart/form-data
+ *        - application/json
  *      parameters:
  *        - name: data
  *          in: body
