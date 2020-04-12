@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import session from 'express-session';
 import bodyParser from 'body-parser';
 import swaggerUi from 'swagger-ui-express';
@@ -44,6 +45,7 @@ export default class Server {
   private async addEvent() {
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: true }));
+    this.app.use(cors());
     this.app.use(session({
       secret: constants.SECRET_CODE,
       cookie: { maxAge: 60 * 60 * 1000 },
