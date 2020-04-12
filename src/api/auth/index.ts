@@ -6,6 +6,7 @@ import express from 'express';
 import * as constants from '../../common/constants';
 import getDatabase from '../../database';
 import AuthHandler from './authHandler';
+import * as errorHandler from '../../common/error';
 
 const Users = getDatabase().getUsers();
 
@@ -35,6 +36,8 @@ async (req, email, password, done) => {
     return done(null, {
       email,
       admin: userInfo?.getDataValue('admin'),
+      name: userInfo.name,
+      phonenumber: userInfo.phonenumber,
     });
   }
   return done(false, null);
@@ -52,6 +55,8 @@ async (accessToken, refreshToken, profile, cb) => {
     ...profile,
     email,
     admin: (userInfo) ? false : undefined,
+    name: (userInfo) ? userInfo.name : undefined,
+    phonenumber: (userInfo) ? userInfo.phonenumber : undefined,
   };
   return cb(undefined, user);
 }));
@@ -69,12 +74,15 @@ async (accessToken, refreshToken, profile, cb) => {
     ...profile,
     email,
     admin: (userInfo) ? false : undefined,
+    name: (userInfo) ? userInfo.name : undefined,
+    phonenumber: (userInfo) ? userInfo.phonenumber : undefined,
   };
   return cb(undefined, user);
 }));
 
 router.use(passport.initialize());
 router.use(passport.session());
+
 /**
  * @swagger
  * /auth/google:
@@ -84,7 +92,15 @@ router.use(passport.session());
  *      summary: google OAuth.
  *      description: redirect to google login
  */
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.post('/google', passport.authenticate('google', { scope: ['profile', 'email'] }),
+  (req, res) => {
+    if (req.session!.passport.user.admin === undefined) {
+      res.redirect(`${constants.CLIENT_DOMAIN}/signUp?email=${req.session!.passport.user.email}`);
+      return;
+    }
+    res.redirect(`${constants.CLIENT_DOMAIN}/`);
+  });
+
 router.get('/google/callback',
   passport.authenticate('google', {
     failureRedirect: '/auth/google',
@@ -100,7 +116,15 @@ router.get('/google/callback',
  *      summary: github OAuth.
  *      description: redirect to github login
  */
-router.get('/github', passport.authenticate('github', { scope: ['profile', 'user:email'] }));
+router.post('/github', passport.authenticate('github', { scope: ['profile', 'user:email'] }),
+  (req, res) => {
+    if (req.session!.passport.user.admin === undefined) {
+      res.redirect(`${constants.CLIENT_DOMAIN}/signUp?email=${req.session!.passport.user.email}`);
+      return;
+    }
+    res.redirect(`${constants.CLIENT_DOMAIN}/`);
+  });
+
 router.get('/github/callback',
   passport.authenticate('github', {
     failureRedirect: '/auth/github',
@@ -132,7 +156,11 @@ router.get('/github/callback',
  */
 router.post('/login', passport.authenticate('local', { failureRedirect: '/', failureFlash: true }),
   (req, res) => {
-    res.redirect('/');
+    if (req.session!.passport.user.admin === undefined) {
+      res.send({ statusCode: '105', errorMessage: errorHandler.CustomError.MESSAGE['105'] });
+      return;
+    }
+    res.send({ statusCode: '0' });
   });
 
 /**
@@ -182,6 +210,19 @@ router.get('/verify/register', AuthHandler.verifyRegisterHandler);
  *          description: '{ statusCode: string, errorMessage: string }'
  */
 router.post('/register', AuthHandler.registerHandler);
+
+/**
+ * @swagger
+ * /auth/resend:
+ *    get:
+ *      tags:
+ *          - register
+ *      summary: request to resend.
+ *      responses:
+ *        200:
+ *          description: '{ statusCode: string, errorMessage: string }'
+ */
+router.get('/resend', AuthHandler.resendTokenMessage);
 
 /**
  * @swagger

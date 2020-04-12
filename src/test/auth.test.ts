@@ -48,19 +48,6 @@ describe('auth', () => {
     sinon.restore();
   });
 
-  it('is a successful case <registerHandler>', async () => {
-    const req = httpMocks.createRequest();
-    const res = httpMocks.createResponse();
-    req.body = {
-      email: 'test2@gmail.com',
-      name: 'donghyeon',
-      phonenumber: '0100000000',
-      password: 'assdasdasd',
-    };
-
-    await AuthHandler.registerHandler(req, res);
-    expect(res._getData()).toEqual({ statusCode: '0' });
-  });
 
   it('is the case if an account already exists <registerHandler>', async () => {
     const req = httpMocks.createRequest();
