@@ -48,30 +48,6 @@ describe('auth', () => {
     sinon.restore();
   });
 
-  it('succeed to find emailToken <verifyRegisterHandler> ', async () => {
-    const req = httpMocks.createRequest();
-    const res = httpMocks.createResponse();
-    req.query = {
-      email: 'test@gmail.com',
-      token: 'testToken',
-    };
-
-    await AuthHandler.verifyRegisterHandler(req, res);
-    expect(res._getData()).toEqual({ statusCode: '0' });
-  });
-
-  it('failed to find emailToken <verifyRegisterHandler> ', async () => {
-    const req = httpMocks.createRequest();
-    const res = httpMocks.createResponse();
-    req.query = {
-      email: 'notEmail@gmail.com',
-      token: 'testToken',
-    };
-
-    await AuthHandler.verifyRegisterHandler(req, res);
-    expect(res._getData()).toEqual({ statusCode: '101', errorMessage: errorHandler.CustomError.MESSAGE['101'] });
-  });
-
   it('is a successful case <registerHandler>', async () => {
     const req = httpMocks.createRequest();
     const res = httpMocks.createResponse();
@@ -140,18 +116,5 @@ describe('auth', () => {
 
     await AuthHandler.registerHandler(req, res);
     expect(res._getData()).toEqual({ statusCode: '1', errorMessage: errorHandler.CustomError.MESSAGE['1'] });
-  });
-
-
-  it('is a failed case <verifyResetPwdHandler>', async () => {
-    const req = httpMocks.createRequest();
-    const res = httpMocks.createResponse();
-    req.query = {
-      email: 'test2@gmail.com',
-      token: 'testToken',
-    };
-
-    await AuthHandler.verifyRegisterHandler(req, res);
-    expect(res._getData()).toEqual({ statusCode: '101', errorMessage: errorHandler.CustomError.MESSAGE['101'] });
   });
 });
