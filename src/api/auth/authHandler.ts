@@ -109,6 +109,8 @@ export default class AuthHandler {
           VERIFY_TEMPLATE.subject,
         );
       }
+      req.session!.register = true;
+      req.session!.email = email;
       res.send({ statusCode: '0' });
     } catch (error) {
       if (error instanceof errorHandler.CustomError) {
@@ -120,6 +122,44 @@ export default class AuthHandler {
       }
     }
   };
+
+  static resendTokenMessage = async (req: express.Request, res: express.Response) => {
+    if (req.session && req.session.register) {
+      try {
+        const { email } = req.session;
+        const result = await EmailToken.findOne({ where: { email } });
+        if (!result) {
+          throw new errorHandler.CustomError(errorHandler.STATUS_CODE.notExistToken);
+        }
+        // if (result.count > constants.LIMIT_SEND_COUNT) {
+        //   throw new errorHandler.CustomError(errorHandler.STATUS_CODE.exceedLimitSend);
+        // }
+        await EmailService.send(
+          [email],
+          constants.ADMIN_EMAIL,
+          VERIFY_TEMPLATE.html.replace('{token}', result.token).replace('{email}', email),
+          VERIFY_TEMPLATE.subject,
+        );
+        // await Users.update({
+        //   count: result.count + 1,
+        // }, {
+        //   where: { email: result.email },
+        // });
+        res.send({ statusCode: '0' });
+      } catch (error) {
+        if (error instanceof errorHandler.CustomError) {
+          res.send(error.getData());
+        } else {
+          log.error(error);
+          await Slack.send('error', error);
+          res.send({ statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] });
+        }
+      }
+    } else {
+      const statusCode = errorHandler.STATUS_CODE.insufficientPermission;
+      res.send({ statusCode, errorMessage: errorHandler.CustomError.MESSAGE[statusCode] });
+    }
+  }
 
   static withdrawHandler = async (req: express.Request, res: express.Response) => {
     const passportUser = AuthHandler.getPassportSession(req);
@@ -189,6 +229,7 @@ export default class AuthHandler {
       await EmailToken.create({
         email,
         token,
+        count: 1,
       });
       EmailService.send(
         [email],

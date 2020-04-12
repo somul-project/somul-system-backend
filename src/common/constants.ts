@@ -35,6 +35,8 @@ export const {
 } = envDev;
 
 export const SLACK_USE = (envDev.SLACK_USE === 'true');
+export const LIMIT_SEND_COUNT = 5;
+
 export const enum ADMIN_APPROVED {
   PROCESS = '0',
   ADMIN_DISAPPROVAL = '1',

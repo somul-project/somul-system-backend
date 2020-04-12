@@ -11,6 +11,8 @@ export const enum STATUS_CODE {
   invalidEmail = '107',
   invalidPassword = '108',
   invalidPhonenumber = '109',
+  notExistToken = '110',
+  exceedLimitSend = '111',
   unexpected = '500',
 }
 
@@ -28,6 +30,8 @@ export class CustomError extends Error {
     107: '이메일의 형식이 적절하지 않습니다.',
     108: '비밀번호의 형식이 적절하지 않습니다.',
     109: '휴대폰 번호의 형식이 적절하지 않습니다.',
+    110: '토큰을 요청한 적이 없습니다.',
+    111: '최대 재전송 횟수를 초과했습니다',
     500: '예상치 못한 오류가 발생했습니다.',
   };
 
