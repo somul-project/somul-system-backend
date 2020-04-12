@@ -28,21 +28,23 @@ export default class Slack {
 
   static async send(level: levelType, value: string) {
     try {
-      await webhook.send({
-        text: Slack.level_info[level].text,
-        attachments: [
-          {
-            color: Slack.level_info[level].color,
-            fields: [
-              {
-                title: '알림',
-                value,
-                short: false,
-              },
-            ],
-          },
-        ],
-      });
+      if (constants.SLACK_USE) {
+        await webhook.send({
+          text: Slack.level_info[level].text,
+          attachments: [
+            {
+              color: Slack.level_info[level].color,
+              fields: [
+                {
+                  title: '알림',
+                  value,
+                  short: false,
+                },
+              ],
+            },
+          ],
+        });
+      }
     } catch (error) {
       log.error(`[-] failed to send - ${error}`);
     }
