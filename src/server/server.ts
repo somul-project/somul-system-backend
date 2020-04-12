@@ -8,6 +8,7 @@ import Logger from '../common/logger';
 import getGraphQlserver from '../api/graphql';
 import authRouter from '../api/auth';
 import * as specs from './swagger';
+import Slack from '../util/slack';
 
 const log = Logger.createLogger('server.server');
 
@@ -21,7 +22,10 @@ export default class Server {
   public async start() {
     await this.addEvent();
     this.app.listen(constants.SERVER_PORT,
-      () => log.info(`Example app listening on port ${constants.SERVER_PORT}!`));
+      async () => {
+        log.info(`Example app listening on port ${constants.SERVER_PORT}!`);
+        await Slack.send('info', `Example app listening on port ${constants.SERVER_PORT}!`);
+      });
   }
 
   public authenticateUser = async (req: express.Request,

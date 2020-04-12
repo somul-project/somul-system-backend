@@ -1,4 +1,5 @@
 import { Mutex } from 'async-mutex';
+import Slack from '../../../util/slack';
 import Logger from '../../../common/logger';
 import * as constants from '../../../common/constants';
 import * as errorHandler from '../../../common/error';
@@ -61,12 +62,15 @@ export const createSession = async (args: SessionTypes.SessionCreateArgs) => {
   try {
     const release = await mutex.acquire();
     try {
-      const result = await Session.findAll({
-        where: { library_id: args.library_id },
-      });
-      if (result.length >= 2) {
-        throw new errorHandler.CustomError(errorHandler.STATUS_CODE.sessionFull);
+      if (args.library_id) {
+        const result = await Session.findAll({
+          where: { library_id: args.library_id },
+        });
+        if (result.length >= 2) {
+          throw new errorHandler.CustomError(errorHandler.STATUS_CODE.sessionFull);
+        }
       }
+
       release();
     } catch (error) {
       release();
@@ -86,6 +90,7 @@ export const createSession = async (args: SessionTypes.SessionCreateArgs) => {
       return error.getData();
     }
     log.error(error);
+    await Slack.send('error', error);
     return { statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] };
   }
 };
@@ -117,6 +122,7 @@ export const updateSession = async (
       return error.getData();
     }
     log.error(error);
+    await Slack.send('error', error);
     return { statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] };
   }
 };
@@ -138,6 +144,7 @@ export const deleteSession = async (args: SessionTypes.SessionArgs, context: any
       return error.getData();
     }
     log.error(error);
+    await Slack.send('error', error);
     return { statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] };
   }
 };

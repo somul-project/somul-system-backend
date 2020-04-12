@@ -9,9 +9,9 @@ export const {
   SERVER_PORT,
   SECRET_CODE,
   // Email config
-  DOMAIN,
+  SERVER_DOMAIN,
+  CLIENT_DOMAIN,
   ADMIN_EMAIL,
-  SENDGRID_API_KEY,
   // OAuth config
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
@@ -25,6 +25,8 @@ export const {
   AWS_REGION,
   AWS_ACCESS_KEY_ID,
   AWS_SECRET_ACCESS_KEY,
+  // slack
+  SLACK_WEBHOOK_URL,
 } = envDev;
 
 export const enum ADMIN_APPROVED {

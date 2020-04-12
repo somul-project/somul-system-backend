@@ -1,5 +1,6 @@
 import * as constants from '../../../common/constants';
 import * as errorHandler from '../../../common/error';
+import Slack from '../../../util/slack';
 import Logger from '../../../common/logger';
 import getDatabase from '../../../database';
 import * as LibraryTypes from '../types/Library';
@@ -59,6 +60,7 @@ export const createLibrary = async (args: LibraryTypes.LibraryCreateArgs) => {
       return error.getData();
     }
     log.error(error);
+    await Slack.send('error', error);
     return { statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] };
   }
 };
@@ -85,6 +87,7 @@ export const updateLibrary = async (
       return error.getData();
     }
     log.error(error);
+    await Slack.send('error', error);
     return { statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] };
   }
 };
@@ -106,6 +109,7 @@ export const deleteLibrary = async (args: LibraryTypes.LibraryArgs, context: any
       return error.getData();
     }
     log.error(error);
+    await Slack.send('error', error);
     return { statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] };
   }
 };

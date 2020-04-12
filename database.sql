@@ -44,7 +44,7 @@ CREATE TABLE Library (
 
 CREATE TABLE Session (
     id INT NOT NULL AUTO_INCREMENT,
-    library_id INT NOT NULL,
+    library_id INT,
     user_email VARCHAR(50) NOT NULL,
     session_name VARCHAR(50) NOT NULL,
     session_time VARCHAR(10) NOT NULL,

@@ -1,3 +1,4 @@
+import Slack from '../../../util/slack';
 import Logger from '../../../common/logger';
 import * as errorHandler from '../../../common/error';
 import getDatabase from '../../../database';
@@ -57,6 +58,7 @@ export const updateUser = async (
       return error.getData();
     }
     log.error(error);
+    await Slack.send('error', error);
     return { statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] };
   }
 };
@@ -78,6 +80,7 @@ export const deleteUser = async (args: UserTypes.UserArgs, context: any) => {
       return error.getData();
     }
     log.error(error);
+    await Slack.send('error', error);
     return { statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] };
   }
 };
