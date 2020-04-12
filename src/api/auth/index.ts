@@ -83,6 +83,17 @@ async (accessToken, refreshToken, profile, cb) => {
 router.use(passport.initialize());
 router.use(passport.session());
 
+
+router.get('/verify/oauth',
+  (req, res) => {
+    if (req.session!.passport.user.admin === undefined) {
+      res.redirect(`${constants.CLIENT_DOMAIN}/signUp?email=${req.session!.passport.user.email}`);
+      return;
+    }
+    res.redirect(`${constants.CLIENT_DOMAIN}/`);
+  });
+
+
 /**
  * @swagger
  * /auth/google:
@@ -92,19 +103,12 @@ router.use(passport.session());
  *      summary: google OAuth.
  *      description: redirect to google login
  */
-router.post('/google', passport.authenticate('google', { scope: ['profile', 'email'] }),
-  (req, res) => {
-    if (req.session!.passport.user.admin === undefined) {
-      res.redirect(`${constants.CLIENT_DOMAIN}/signUp?email=${req.session!.passport.user.email}`);
-      return;
-    }
-    res.redirect(`${constants.CLIENT_DOMAIN}/`);
-  });
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 router.get('/google/callback',
   passport.authenticate('google', {
     failureRedirect: '/auth/google',
-    successRedirect: '/',
+    successRedirect: '/oauth/verify/oauth',
   }));
 
 /**
@@ -116,19 +120,12 @@ router.get('/google/callback',
  *      summary: github OAuth.
  *      description: redirect to github login
  */
-router.post('/github', passport.authenticate('github', { scope: ['profile', 'user:email'] }),
-  (req, res) => {
-    if (req.session!.passport.user.admin === undefined) {
-      res.redirect(`${constants.CLIENT_DOMAIN}/signUp?email=${req.session!.passport.user.email}`);
-      return;
-    }
-    res.redirect(`${constants.CLIENT_DOMAIN}/`);
-  });
+router.get('/github', passport.authenticate('github', { scope: ['profile', 'user:email'] }));
 
 router.get('/github/callback',
   passport.authenticate('github', {
     failureRedirect: '/auth/github',
-    successRedirect: '/',
+    successRedirect: '/oauth/verify/oauth',
   }));
 
 /**
