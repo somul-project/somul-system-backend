@@ -34,7 +34,7 @@ export const {
   SLACK_WEBHOOK_URL,
 } = envDev;
 
-export const SLACK_USE = (envDev.SLACK_USE === 'true');
+export const USE_SLACK = (envDev.USE_SLACK === 'true');
 export const LIMIT_SEND_COUNT = 5;
 
 export const enum ADMIN_APPROVED {

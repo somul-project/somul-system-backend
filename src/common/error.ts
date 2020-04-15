@@ -11,8 +11,8 @@ export const enum STATUS_CODE {
   invalidEmail = '107',
   invalidPassword = '108',
   invalidPhonenumber = '109',
-  notExistToken = '110',
-  exceedLimitSend = '111',
+  tokenNotExist = '110',
+  sendLimitExceeded = '111',
   unexpected = '500',
 }
 

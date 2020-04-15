@@ -19,9 +19,9 @@ export default class EmailToken extends Model<EmailToken> {
   @Column
   token: string;
 
-  // @AllowNull(false)
-  // @Column
-  // count: number;
+  @AllowNull(false)
+  @Column
+  count: number;
 
   @AllowNull(false)
   @Column

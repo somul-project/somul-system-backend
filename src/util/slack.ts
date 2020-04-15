@@ -7,7 +7,7 @@ const log = Logger.createLogger('util.slack');
 
 const webhook = new IncomingWebhook(constants.SLACK_WEBHOOK_URL);
 
-type levelType = 'error' | 'info' | 'debug';
+type LevelType = 'error' | 'info' | 'debug';
 
 export default class Slack {
   static level_info = {
@@ -26,9 +26,9 @@ export default class Slack {
 
   }
 
-  static async send(level: levelType, value: string) {
+  static async send(level: LevelType, value: string) {
     try {
-      if (constants.SLACK_USE) {
+      if (constants.USE_SLACK) {
         await webhook.send({
           text: Slack.level_info[level].text,
           attachments: [
