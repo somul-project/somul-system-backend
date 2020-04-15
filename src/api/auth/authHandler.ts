@@ -38,11 +38,11 @@ export default class AuthHandler {
     } catch (error) {
       if (error instanceof errorHandler.CustomError) {
         const errorInfo = error.getData();
-        res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=${errorInfo.statusCode}&errorMessage=${errorInfo.errorMessage}`);
+        res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=${errorInfo.statusCode}`);
       } else {
         log.error(error);
         await Slack.send('error', error);
-        res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=500&errorMessage=${errorHandler.CustomError.MESSAGE['500']}`);
+        res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=500`);
       }
     }
   };
@@ -109,8 +109,10 @@ export default class AuthHandler {
           VERIFY_TEMPLATE.subject,
         );
       }
-      req.session!.register = true;
-      req.session!.email = email;
+      if (req.session) {
+        req.session.register = true;
+        req.session.email = email;
+      }
       res.send({ statusCode: '0' });
     } catch (error) {
       if (error instanceof errorHandler.CustomError) {
@@ -129,22 +131,22 @@ export default class AuthHandler {
         const { email } = req.session;
         const result = await EmailToken.findOne({ where: { email } });
         if (!result) {
-          throw new errorHandler.CustomError(errorHandler.STATUS_CODE.notExistToken);
+          throw new errorHandler.CustomError(errorHandler.STATUS_CODE.tokenNotExist);
         }
-        // if (result.count > constants.LIMIT_SEND_COUNT) {
-        //   throw new errorHandler.CustomError(errorHandler.STATUS_CODE.exceedLimitSend);
-        // }
+        if (result.count > constants.LIMIT_SEND_COUNT) {
+          throw new errorHandler.CustomError(errorHandler.STATUS_CODE.sendLimitExceeded);
+        }
         await EmailService.send(
           [email],
           constants.ADMIN_EMAIL,
           VERIFY_TEMPLATE.html.replace('{token}', result.token).replace('{email}', email),
           VERIFY_TEMPLATE.subject,
         );
-        // await Users.update({
-        //   count: result.count + 1,
-        // }, {
-        //   where: { email: result.email },
-        // });
+        await Users.update({
+          count: result.count + 1,
+        }, {
+          where: { email: result.email },
+        });
         res.send({ statusCode: '0' });
       } catch (error) {
         if (error instanceof errorHandler.CustomError) {

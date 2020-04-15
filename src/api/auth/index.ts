@@ -108,7 +108,7 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 router.get('/google/callback',
   passport.authenticate('google', {
     failureRedirect: '/auth/google',
-    successRedirect: '/oauth/verify/oauth',
+    successRedirect: '/auth/verify/oauth',
   }));
 
 /**
@@ -125,7 +125,7 @@ router.get('/github', passport.authenticate('github', { scope: ['profile', 'user
 router.get('/github/callback',
   passport.authenticate('github', {
     failureRedirect: '/auth/github',
-    successRedirect: '/oauth/verify/oauth',
+    successRedirect: '/auth/verify/oauth',
   }));
 
 /**

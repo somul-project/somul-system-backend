@@ -48,7 +48,6 @@ describe('auth', () => {
     sinon.restore();
   });
 
-
   it('is the case if an account already exists <registerHandler>', async () => {
     const req = httpMocks.createRequest();
     const res = httpMocks.createResponse();
@@ -103,5 +102,43 @@ describe('auth', () => {
 
     await AuthHandler.registerHandler(req, res);
     expect(res._getData()).toEqual({ statusCode: '1', errorMessage: errorHandler.CustomError.MESSAGE['1'] });
+  });
+
+  it('is a successful case <registerHandler>', async () => {
+    const req = httpMocks.createRequest();
+    const res = httpMocks.createResponse();
+    req.body = {
+      email: 'test2@gmail.com',
+      name: 'donghyeon',
+      phonenumber: '0100000000',
+      password: 'assdasdasd',
+    };
+
+    await AuthHandler.registerHandler(req, res);
+    expect(res._getData()).toEqual({ statusCode: '0' });
+  });
+
+  it('succeed to find emailToken <verifyRegisterHandler> ', async () => {
+    const req = httpMocks.createRequest();
+    const res = httpMocks.createResponse();
+    req.query = {
+      email: 'test@gmail.com',
+      token: 'testToken',
+    };
+
+    await AuthHandler.verifyRegisterHandler(req, res);
+    expect(res._getRedirectUrl()).toEqual('?statusCode=0');
+  });
+
+  it('failed to find emailToken <verifyRegisterHandler> ', async () => {
+    const req = httpMocks.createRequest();
+    const res = httpMocks.createResponse();
+    req.query = {
+      email: 'notEmail@gmail.com',
+      token: 'testToken',
+    };
+
+    await AuthHandler.verifyRegisterHandler(req, res);
+    expect(res._getRedirectUrl()).toEqual('?statusCode=101');
   });
 });
