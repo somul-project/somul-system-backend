@@ -242,7 +242,7 @@ export default class AuthHandler {
 
   static validateCheck(password?: string, phonenumber?: string, email?: string) {
     if (password && !(password
-      && (/^(?=.*?[A-Za-z])(?=.*?[0-9])(?=.*[A-Za-z!@#$%^&+=_]).{8,15}$/.test(password)))) {
+      && (/^(?=.*?[A-Za-z])(?=.*?[0-9])(?=.*[A-Za-z!@#$%^&+=_]).{8,100}$/.test(password)))) {
       throw new errorHandler.CustomError(errorHandler.STATUS_CODE.invalidPassword);
     }
 
