@@ -20,6 +20,7 @@ module.exports = {
     }
   },
   'rules': {
+    'dot-notation': 0,
     'import/no-unresolved': 0,
     'no-underscore-dangle': 0,
     'max-classes-per-file': 0,

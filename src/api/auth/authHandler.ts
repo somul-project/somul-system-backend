@@ -30,6 +30,15 @@ export default class AuthHandler {
     return result;
   };
 
+  static getLoginSession = (req: express.Request) => {
+    try {
+      const result = JSON.parse(Object.values(req['sessionStore']['sessions'])[0] as string)['passport']['user'];
+      return result;
+    } catch (error) {
+      return undefined;
+    }
+  };
+
   static getSession = (req: express.Request) => {
     const result = (req.session) ? req.session : undefined;
     return result;
@@ -179,7 +188,7 @@ export default class AuthHandler {
   };
 
   static verifyLocalLogin = (req: express.Request, res: express.Response) => {
-    const session = AuthHandler.getPassportSession(req);
+    const session = AuthHandler.getLoginSession(req);
 
     if (session && session.statusCode !== errorHandler.STATUS_CODE.success) {
       res.send({ statusCode: session.statusCode, errorMessage: session.errorMessage });
@@ -189,7 +198,7 @@ export default class AuthHandler {
   }
 
   static verifyOauthLogin = (req: express.Request, res: express.Response) => {
-    const session = AuthHandler.getPassportSession(req);
+    const session = AuthHandler.getLoginSession(req);
     if (session && session.statusCode !== errorHandler.STATUS_CODE.success) {
       // notVerifyEmail
       res.redirect(`${constants.CLIENT_DOMAIN}/signUp?email=${req.session!.passport.user.email}`);
@@ -210,7 +219,8 @@ export default class AuthHandler {
 
   static verifyRegister = async (req: express.Request, res: express.Response) => {
     try {
-      const { email, token } = req.query;
+      const email = String(req.query.email);
+      const token = String(req.query.token);
       const result = await EmailToken.findOne({ where: { email, token } });
       if (result) {
         await EmailToken.destroy({

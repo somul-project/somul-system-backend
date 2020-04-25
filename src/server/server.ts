@@ -22,7 +22,7 @@ export default class Server {
 
   public async start() {
     await this.addEvent();
-    this.app.listen(constants.SERVER_PORT,
+    this.app.listen(Number(constants.SERVER_PORT), '0.0.0.0',
       async () => {
         log.info(`Example app listening on port ${constants.SERVER_PORT}!`);
         await Slack.send('info', `Example app listening on port ${constants.SERVER_PORT}!`);
@@ -70,6 +70,8 @@ export default class Server {
      *        - application/json
      */
     this.app.use('/graphql', this.authenticateUser, graphQlserver);
-    this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs.default));
+    if (constants.EXPOSE_API_DOCS === 'true') {
+      this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs.default));
+    }
   }
 }

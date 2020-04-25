@@ -129,6 +129,7 @@ sockets
 .env
 .env.development
 .env.production
+.env.prod
 .DS_Store
 
 package-lock.json
