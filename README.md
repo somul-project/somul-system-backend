@@ -8,7 +8,7 @@ sudo docker push somul/backend:{tag}
 
 # 서버 도커 컨테이너 실행
 ```
-sudo docker run -d -v {env_path}:/somul-server/.env somul/backend:{tag}
+sudo docker run --name somul -p {SERVER PORT}:{SERVER PORT} -d -v {Env Path}:/somul-server/.env somul/backend:{Tag}
 ```
 - ubuntu 18.04 환경에서 배포를 권장.
 - 도커 설치는 다음 url 참고 (https://blog.cosmosfarm.com/archives/248/%EC%9A%B0%EB%B6%84%ED%88%AC-18-04-%EB%8F%84%EC%BB%A4-docker-%EC%84%A4%EC%B9%98-%EB%B0%A9%EB%B2%95/)

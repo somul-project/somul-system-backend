@@ -5,7 +5,6 @@ import githubPassport from 'passport-github';
 import express from 'express';
 import * as constants from '../../common/constants';
 import AuthHandler from './authHandler';
-import * as errorHandler from '../../common/error';
 
 const router = express.Router();
 const LocalStrategy = localPassport.Strategy;
@@ -29,13 +28,13 @@ passport.use(new LocalStrategy({
 passport.use(new GoogleStrategy({
   clientID: constants.GOOGLE_CLIENT_ID,
   clientSecret: constants.GOOGLE_CLIENT_SECRET,
-  callbackURL: `http://${constants.SERVER_DOMAIN}:${constants.SERVER_PORT}/auth/google/callback`,
+  callbackURL: `${constants.SERVER_DOMAIN}/auth/google/callback`,
 }, AuthHandler.googleLogin));
 
 passport.use(new GithubStrategy({
   clientID: constants.GITHUB_CLIENT_ID,
   clientSecret: constants.GITHUB_CLIENT_SECRET,
-  callbackURL: `http://${constants.SERVER_DOMAIN}:${constants.SERVER_PORT}/auth/github/callback`,
+  callbackURL: `${constants.SERVER_DOMAIN}/auth/github/callback`,
   scope: ['user:email'],
 }, AuthHandler.githubLogin));
 

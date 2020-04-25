@@ -32,6 +32,8 @@ export const {
   AWS_SECRET_ACCESS_KEY,
   // slack
   SLACK_WEBHOOK_URL,
+  // docs
+  EXPOSE_API_DOCS,
 } = envDev;
 
 export const USE_SLACK = (envDev.USE_SLACK === 'true');
