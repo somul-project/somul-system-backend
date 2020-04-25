@@ -181,7 +181,7 @@ export default class AuthHandler {
   static verifyLocalLogin = (req: express.Request, res: express.Response) => {
     const session = AuthHandler.getPassportSession(req);
 
-    if (session.statusCode !== errorHandler.STATUS_CODE.success) {
+    if (session && session.statusCode !== errorHandler.STATUS_CODE.success) {
       res.send({ statusCode: session.statusCode, errorMessage: session.errorMessage });
       return;
     }
