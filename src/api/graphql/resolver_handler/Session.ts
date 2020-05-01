@@ -62,11 +62,13 @@ export const createSession = async (args: SessionTypes.SessionCreateArgs) => {
   try {
     const release = await mutex.acquire();
     try {
-      const result = await Session.findAll({
-        where: { library_id: args.library_id },
-      });
-      if (result.length >= 2) {
-        throw new errorHandler.CustomError(errorHandler.STATUS_CODE.sessionFull);
+      if (args.library_id) {
+        const result = await Session.findAll({
+          where: { library_id: args.library_id },
+        });
+        if (result.length >= 2) {
+          throw new errorHandler.CustomError(errorHandler.STATUS_CODE.sessionFull);
+        }
       }
 
       release();
