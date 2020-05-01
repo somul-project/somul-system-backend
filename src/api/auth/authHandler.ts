@@ -164,12 +164,6 @@ export default class AuthHandler {
           .replace('{query}', `DELETE FROM Users WHERE (email = "${email}");`);
         await db.query(query);
       }
-      if (req.session) {
-        req.session.register = true;
-        req.session.email = email;
-      }
-
-      res.send({ statusCode: '0' });
       // for resending token request
       if (req.session) {
         req.session.register = true;
