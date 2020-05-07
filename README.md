@@ -16,7 +16,8 @@ sudo docker run --name somul -p {SERVER PORT}:{SERVER PORT} -d -v {Env Path}:/so
 
 # 호스트 머신에서 실행
 ```
-// (0) .env 파일 추가
+// (0) .env.sample를 참고하여 .env 파일 추가
+yarn
 yarn start
 ```
 
