@@ -45,10 +45,13 @@ export default class Server {
   private async addEvent() {
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: true }));
-    this.app.use(cors());
+    this.app.use(cors({
+      origin: constants.CLIENT_DOMAIN,
+      credentials: true,
+    }));
     this.app.use(session({
       secret: constants.SECRET_CODE,
-      cookie: { maxAge: 60 * 60 * 1000 },
+      cookie: { maxAge: 60 * 60 * 1000, secure: false },
       resave: true,
       saveUninitialized: false,
     }));
@@ -58,7 +61,6 @@ export default class Server {
     });
     this.app.use('/auth', authRouter);
     const graphQlserver = await getGraphQlserver();
-
     /**
      * @swagger
      * /graphql:
@@ -70,6 +72,7 @@ export default class Server {
      *        - application/json
      */
     this.app.use('/graphql', this.authenticateUser, graphQlserver);
+
     if (constants.EXPOSE_API_DOCS === 'true') {
       this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs.default));
     }

@@ -26,7 +26,7 @@ const SCHEDULE_TEMPLATE = {
 
 export default class AuthHandler {
   static getPassportSession = (req: express.Request) => {
-    const result = (req.session && req.session.passport) ? req.session.passport.user : undefined;
+    const result = req.user;
     return result;
   };
 
@@ -121,7 +121,7 @@ export default class AuthHandler {
       email, name, phonenumber, password,
     } = req.body;
     const passportUser = AuthHandler.getPassportSession(req);
-    const passportEmail = (passportUser) ? passportUser.email : undefined;
+    const passportEmail = (passportUser) ? passportUser['email'] : undefined;
 
     try {
       if (passportEmail) {
@@ -182,23 +182,29 @@ export default class AuthHandler {
   };
 
   static verifyLocalLogin = (req: express.Request, res: express.Response) => {
-    const session = AuthHandler.getLoginSession(req);
-
-    if (session && session.statusCode !== errorHandler.STATUS_CODE.success) {
-      res.send({ statusCode: session.statusCode, errorMessage: session.errorMessage });
+    const session = AuthHandler.getPassportSession(req);
+    if (session) {
+      if (session['statusCode'] && session['statusCode'] !== errorHandler.STATUS_CODE.success) {
+        res.send({ statusCode: session['statusCode'], errorMessage: session['errorMessage'] });
+      } else {
+        res.send({ statusCode: errorHandler.STATUS_CODE.success });
+      }
       return;
     }
-    res.send({ statusCode: errorHandler.STATUS_CODE.success });
+    res.send({ statusCode: errorHandler.STATUS_CODE.insufficientPermission });
   }
 
   static verifyOauthLogin = (req: express.Request, res: express.Response) => {
-    const session = AuthHandler.getLoginSession(req);
-    if (session && session.statusCode !== errorHandler.STATUS_CODE.success) {
-      // notVerifyEmail
-      res.redirect(`${constants.CLIENT_DOMAIN}/signUp?email=${req.session!.passport.user.email}`);
-    } else if (session) {
-      res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=${session.statusCode}`);
+    const session = AuthHandler.getPassportSession(req);
+    if (session) {
+      if (session['statusCode']) {
+        res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=${session['statusCode']}`);
+      } else {
+        res.redirect(`${constants.CLIENT_DOMAIN}/signUp?email=${session['email']}`);
+      }
+      return;
     }
+    res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=${errorHandler.STATUS_CODE.insufficientPermission}`);
   }
 
   static logout = (req: express.Request, res: express.Response) => {
@@ -303,7 +309,7 @@ export default class AuthHandler {
 
   static withdraw = async (req: express.Request, res: express.Response) => {
     const passportUser = AuthHandler.getPassportSession(req);
-    const passportEmail = (passportUser) ? passportUser.email : undefined;
+    const passportEmail = (passportUser) ? passportUser['email'] : undefined;
     try {
       if (passportEmail) {
         await Users.destroy({
@@ -367,9 +373,9 @@ export default class AuthHandler {
     try {
       if (newPassword) {
         const passportUser = AuthHandler.getPassportSession(req);
-        const passportEmail = (passportUser) ? passportUser.email : undefined;
+        const passportEmail = (passportUser) ? passportUser['email'] : undefined;
         AuthHandler.validateCheck(String(newPassword));
-        if (!passportUser || !passportUser.local) {
+        if (!passportUser || !passportUser['local']) {
           throw new errorHandler.CustomError(errorHandler.STATUS_CODE.insufficientPermission);
         }
         await Users.update({
