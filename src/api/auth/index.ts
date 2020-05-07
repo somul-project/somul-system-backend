@@ -22,6 +22,7 @@ passport.deserializeUser((user, done) => {
 passport.use(new LocalStrategy({
   usernameField: 'email',
   passwordField: 'password',
+  session: true,
   passReqToCallback: true,
 }, AuthHandler.localLogin));
 
@@ -177,7 +178,7 @@ router.get('/send/token', AuthHandler.sendToken);
  *        200:
  *          description: '{ statusCode: string, errorMessage: string }'
  */
-router.get('/resend', AuthHandler.resendTokenMessage);
+router.get('/resend', AuthHandler.sendToken);
 
 /**
  * @swagger
