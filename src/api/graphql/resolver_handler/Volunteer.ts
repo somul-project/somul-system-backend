@@ -58,7 +58,7 @@ export const createVolunteer = async (args: VolunteerTypes.VolunteerCreateArgs) 
       return error.getData();
     }
     log.error(error);
-    await Slack.send('error', error);
+    await Slack.send('error', JSON.stringify(error));
     return { statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] };
   }
 };
@@ -86,7 +86,7 @@ export const updateVolunteer = async (
       return error.getData();
     }
     log.error(error);
-    await Slack.send('error', error);
+    await Slack.send('error', JSON.stringify(error));
     return { statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] };
   }
 };
@@ -108,7 +108,7 @@ export const deleteVolunteer = async (args: VolunteerTypes.VolunteerArgs, contex
       return error.getData();
     }
     log.error(error);
-    await Slack.send('error', error);
+    await Slack.send('error', JSON.stringify(error));
     return { statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] };
   }
 };
