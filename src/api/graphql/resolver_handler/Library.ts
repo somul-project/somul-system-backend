@@ -60,7 +60,7 @@ export const createLibrary = async (args: LibraryTypes.LibraryCreateArgs) => {
       return error.getData();
     }
     log.error(error);
-    await Slack.send('error', error);
+    await Slack.send('error', JSON.stringify(error));
     return { statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] };
   }
 };
@@ -87,7 +87,7 @@ export const updateLibrary = async (
       return error.getData();
     }
     log.error(error);
-    await Slack.send('error', error);
+    await Slack.send('error', JSON.stringify(error));
     return { statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] };
   }
 };
@@ -109,7 +109,7 @@ export const deleteLibrary = async (args: LibraryTypes.LibraryArgs, context: any
       return error.getData();
     }
     log.error(error);
-    await Slack.send('error', error);
+    await Slack.send('error', JSON.stringify(error));
     return { statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] };
   }
 };

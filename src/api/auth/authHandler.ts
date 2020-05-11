@@ -175,7 +175,7 @@ export default class AuthHandler {
         res.send(error.getData());
       } else {
         log.error(error);
-        await Slack.send('error', error);
+        await Slack.send('error', JSON.stringify(error));
         res.send({ statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] });
       }
     }
@@ -244,7 +244,7 @@ export default class AuthHandler {
         res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=${errorInfo.statusCode}`);
       } else {
         log.error(error);
-        await Slack.send('error', error);
+        await Slack.send('error', JSON.stringify(error));
         res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=500`);
       }
     }
@@ -297,7 +297,7 @@ export default class AuthHandler {
           res.send(error.getData());
         } else {
           log.error(error);
-          await Slack.send('error', error);
+          await Slack.send('error', JSON.stringify(error));
           res.send({ statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] });
         }
       }
@@ -325,7 +325,7 @@ export default class AuthHandler {
         res.send(error.getData());
       } else {
         log.error(error);
-        await Slack.send('error', error);
+        await Slack.send('error', JSON.stringify(error));
         res.send({ statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] });
       }
     }
@@ -359,7 +359,7 @@ export default class AuthHandler {
         res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=${error.getData().statusCode}`);
       } else {
         log.error(error);
-        await Slack.send('error', error);
+        await Slack.send('error', JSON.stringify(error));
         res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=500`);
       }
     }
@@ -432,7 +432,7 @@ export default class AuthHandler {
         res.send(error.getData());
       } else {
         log.error(error);
-        await Slack.send('error', error);
+        await Slack.send('error', JSON.stringify(error));
         res.send({ statusCode: '500', errorMessage: errorHandler.CustomError.MESSAGE['500'] });
       }
     }
