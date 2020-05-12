@@ -279,7 +279,7 @@ export default class AuthHandler {
           throw new errorHandler.CustomError(errorHandler.STATUS_CODE.sendLimitExceeded);
         }
         await EmailToken.update({
-          count: result.send_count + 1,
+          send_count: result.send_count + 1,
         }, {
           where: { email: result.email },
         });
@@ -400,7 +400,7 @@ export default class AuthHandler {
           throw new errorHandler.CustomError(errorHandler.STATUS_CODE.sendLimitExceeded);
         }
         await EmailToken.update({
-          EmailToken: tokenResult.send_count + 1,
+          send_count: tokenResult.send_count + 1,
         }, {
           where: { email: result.email },
         });

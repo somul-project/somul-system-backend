@@ -156,7 +156,7 @@ router.get('/verify/register', AuthHandler.verifyRegister);
 
 /**
  * @swagger
- * /auth/send/token:
+ * /auth/resend/token:
  *    get:
  *      tags:
  *          - Register
@@ -165,20 +165,7 @@ router.get('/verify/register', AuthHandler.verifyRegister);
  *        200:
  *          description: '{ statusCode: string, errorMessage: string }'
  */
-router.get('/send/token', AuthHandler.sendToken);
-
-/**
- * @swagger
- * /auth/resend:
- *    get:
- *      tags:
- *          - register
- *      summary: request to resend.
- *      responses:
- *        200:
- *          description: '{ statusCode: string, errorMessage: string }'
- */
-router.get('/resend', AuthHandler.sendToken);
+router.get('/resend/token', AuthHandler.sendToken);
 
 /**
  * @swagger
