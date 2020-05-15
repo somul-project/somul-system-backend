@@ -30,15 +30,6 @@ export default class AuthHandler {
     return result;
   };
 
-  static getLoginSession = (req: express.Request) => {
-    try {
-      const result = JSON.parse(Object.values(req['sessionStore']['sessions'])[0] as string)['passport']['user'];
-      return result;
-    } catch (error) {
-      return undefined;
-    }
-  };
-
   static getSession = (req: express.Request) => {
     const result = (req.session) ? req.session : undefined;
     return result;
@@ -198,7 +189,7 @@ export default class AuthHandler {
     const session = AuthHandler.getPassportSession(req);
     if (session) {
       if (session['statusCode']) {
-        res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=${session['statusCode']}`);
+        res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=${session['statusCode']}&email=${session['email']}`);
       } else {
         res.redirect(`${constants.CLIENT_DOMAIN}/signUp?email=${session['email']}`);
       }
@@ -237,7 +228,7 @@ export default class AuthHandler {
       } else {
         throw new errorHandler.CustomError(errorHandler.STATUS_CODE.failedToVerify);
       }
-      res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=0`);
+      res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=0&email=${email}`);
     } catch (error) {
       if (error instanceof errorHandler.CustomError) {
         const errorInfo = error.getData();
@@ -353,7 +344,7 @@ export default class AuthHandler {
       const query = SCHEDULE_TEMPLATE.delete
         .replace('{eventName}', `${result.email.replace('@', '_').replace('.', '_')}_token`);
       await db.query(query);
-      res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=0`);
+      res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=0&email=${result.email}`);
     } catch (error) {
       if (error instanceof errorHandler.CustomError) {
         res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=${error.getData().statusCode}`);
