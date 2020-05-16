@@ -44,7 +44,7 @@ export default class SessionResolver {
   }
 
   @Mutation(() => ResultType)
-  async updateUser(
+  async updateSession(
     @Args() changeValues: SessionTypes.SessionArgs,
     @Args() args: SessionTypes.SessionArgs,
     @Ctx() context: any,
@@ -54,7 +54,7 @@ export default class SessionResolver {
   }
 
   @Mutation(() => ResultType)
-  async deleteUser(
+  async deleteSession(
     @Args() args: SessionTypes.SessionArgs,
     @Ctx() context: any,
   ): Promise<ResultType> {
