@@ -14,7 +14,6 @@ const sessionDatas = [
     session_name: 'testSession',
     session_time: '10:30',
     introduce: 'temp',
-    history: 'temp',
     session_explainer: 'temp',
     document: 'temp',
     admin_approved: '3',
@@ -26,7 +25,6 @@ const sessionDatas = [
     session_name: 'testSession',
     session_time: '10:30',
     introduce: 'temp',
-    history: 'temp',
     session_explainer: 'temp',
     document: 'temp',
     admin_approved: '0',
@@ -113,7 +111,6 @@ describe('resolver_handler [Session]', () => {
       session_name: 'testSession',
       session_time: '10:30',
       introduce: 'temp',
-      history: 'temp',
       session_explainer: 'temp',
       document: 'temp',
     });
@@ -127,7 +124,6 @@ describe('resolver_handler [Session]', () => {
       session_name: 'testSession',
       session_time: '10:30',
       introduce: 'temp',
-      history: 'temp',
       session_explainer: 'temp',
       document: 'temp',
     });
