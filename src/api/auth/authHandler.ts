@@ -45,7 +45,7 @@ export default class AuthHandler {
       if (!userInfo) {
         throw new errorHandler.CustomError(errorHandler.STATUS_CODE.notRegistered);
       } else if (!userInfo.verify_email) {
-        throw new errorHandler.CustomError(errorHandler.STATUS_CODE.notVerifyEmail);
+        throw new errorHandler.CustomError(errorHandler.STATUS_CODE.emailNotVerified);
       }
       const {
         admin, name, phonenumber, verify_email,

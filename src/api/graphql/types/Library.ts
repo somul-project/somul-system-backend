@@ -41,7 +41,7 @@ export class LibraryObject {
   fac_need_volunteer?: boolean;
 
   @Field({ nullable: true })
-  fac_beam_screan?: boolean;
+  fac_beam_screen?: boolean;
 
   @Field({ nullable: true })
   latitude?: number;
@@ -95,7 +95,7 @@ export class LibraryArgs {
   fac_need_volunteer?: boolean;
 
   @Field({ nullable: true })
-  fac_beam_screan?: boolean;
+  fac_beam_screen?: boolean;
 
   @Field({ nullable: true })
   latitude?: number;
@@ -140,7 +140,7 @@ export class LibraryCreateArgs {
   fac_need_volunteer: boolean;
 
   @Field()
-  fac_beam_screan: boolean;
+  fac_beam_screen: boolean;
 
   @Field()
   latitude: number;

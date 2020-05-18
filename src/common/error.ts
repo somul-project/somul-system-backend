@@ -13,7 +13,7 @@ export const enum STATUS_CODE {
   invalidPhonenumber = '109',
   tokenNotExist = '110',
   sendLimitExceeded = '111',
-  notVerifyEmail = '112',
+  emailNotVerified = '112',
   unexpected = '500',
 }
 
