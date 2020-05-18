@@ -22,9 +22,6 @@ export class SessionObject {
   introduce?: string;
 
   @Field({ nullable: true })
-  session_explainer?: string;
-
-  @Field({ nullable: true })
   document?: string;
 
   @Field({ nullable: true })
@@ -58,9 +55,6 @@ export class SessionArgs {
   introduce?: string;
 
   @Field({ nullable: true })
-  session_explainer?: string;
-
-  @Field({ nullable: true })
   document?: string;
 
   @Field({ nullable: true })
@@ -84,9 +78,6 @@ export class SessionCreateArgs {
 
   @Field({ nullable: true })
   introduce?: string;
-
-  @Field({ nullable: true })
-  session_explainer?: string;
 
   @Field({ nullable: true })
   document?: string;
