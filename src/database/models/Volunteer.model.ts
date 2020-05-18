@@ -32,11 +32,6 @@ export default class Volunteer extends Model<Volunteer> {
 
   @AllowNull(true)
   @Column
-  history?: string;
-
-
-  @AllowNull(true)
-  @Column
   admin_approved?: '0' | '1' | '2' | '3' ;
 
 

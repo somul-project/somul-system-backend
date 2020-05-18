@@ -34,10 +34,6 @@ export default class Session extends Model<Session> {
   @Column
   introduce?: string;
 
-  @AllowNull(true)
-  @Column
-  session_explainer?: string;
-
   @AllowNull(false)
   @Column
   document: string;

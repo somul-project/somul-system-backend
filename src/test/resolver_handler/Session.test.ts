@@ -14,7 +14,6 @@ const sessionDatas = [
     session_name: 'testSession',
     session_time: '10:30',
     introduce: 'temp',
-    session_explainer: 'temp',
     document: 'temp',
     admin_approved: '3',
   },
@@ -25,7 +24,6 @@ const sessionDatas = [
     session_name: 'testSession',
     session_time: '10:30',
     introduce: 'temp',
-    session_explainer: 'temp',
     document: 'temp',
     admin_approved: '0',
   },
@@ -111,7 +109,6 @@ describe('resolver_handler [Session]', () => {
       session_name: 'testSession',
       session_time: '10:30',
       introduce: 'temp',
-      session_explainer: 'temp',
       document: 'temp',
     });
     expect({ statusCode: '0' }).toEqual(result);
@@ -124,7 +121,6 @@ describe('resolver_handler [Session]', () => {
       session_name: 'testSession',
       session_time: '10:30',
       introduce: 'temp',
-      session_explainer: 'temp',
       document: 'temp',
     });
     expect({ statusCode: '106', errorMessage: errorHandler.CustomError.MESSAGE['106'] }).toEqual(result);

@@ -11,7 +11,6 @@ const volunteerDatas = [
     library_id: 1,
     user_email: 'test@gmail.com',
     session_name: 'testSession',
-    history: 'temp',
     admin_approved: '3',
   },
   {
@@ -19,7 +18,6 @@ const volunteerDatas = [
     library_id: 1,
     user_email: 'test@gmail.com',
     introduce: 'temp',
-    history: 'temp',
     admin_approved: '0',
   },
 ];
@@ -99,7 +97,6 @@ describe('resolver_handler [Volunteer]', () => {
       library_id: 2,
       user_email: 'test@gmail.com',
       introduce: 'temp',
-      history: 'temp',
     });
     expect({ statusCode: '0' }).toEqual(result);
   });

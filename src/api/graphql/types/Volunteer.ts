@@ -16,9 +16,6 @@ export class VolunteerObject {
   introduce?: string;
 
   @Field({ nullable: true })
-  history?: string;
-
-  @Field({ nullable: true })
   admin_approved?: '0' | '1' | '2' | '3';
 
   @Field({ nullable: true })
@@ -43,9 +40,6 @@ export class VolunteerArgs {
   introduce?: string;
 
   @Field({ nullable: true })
-  history?: string;
-
-  @Field({ nullable: true })
   admin_approved?: '0' | '1' | '2' | '3';
 }
 
@@ -59,9 +53,6 @@ export class VolunteerCreateArgs {
 
   @Field()
   introduce: string;
-
-  @Field()
-  history: string;
 
   @Field({ nullable: true })
   admin_approved?: '0' | '1' | '2' | '3';
