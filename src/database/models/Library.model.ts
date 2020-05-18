@@ -37,7 +37,7 @@ export default class Library extends Model<Library> {
 
   @AllowNull(false)
   @Column
-  fac_beam_screan: boolean;
+  fac_beam_screen: boolean;
 
   @AllowNull(false)
   @Column

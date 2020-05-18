@@ -28,7 +28,7 @@ CREATE TABLE Library (
     location_number TEXT NOT NULL,
     location_detail TEXT NOT NULL,
     manager_email VARCHAR(50) NOT NULL,
-    fac_beam_screan BOOLEAN NOT NULL,
+    fac_beam_screen BOOLEAN NOT NULL,
     fac_sound BOOLEAN NOT NULL,
     fac_record BOOLEAN NOT NULL,
     fac_placard BOOLEAN NOT NULL,

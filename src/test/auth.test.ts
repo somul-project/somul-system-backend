@@ -221,7 +221,7 @@ describe('auth', () => {
       return result;
     };
     const result = await AuthHandler.localLogin(req, userData.email, userData.password, done);
-    expect(result.statusCode).toEqual(errorHandler.STATUS_CODE.notVerifyEmail);
+    expect(result.statusCode).toEqual(errorHandler.STATUS_CODE.emailNotVerified);
   });
 
   it('is a successful case <login:oauth>', async () => {
