@@ -3,6 +3,7 @@ FROM node:10.0.0-alpine AS build
 # copy server code.
 RUN mkdir /somul-server
 WORKDIR /somul-server
+ADD yarn.lock /somul-server
 ADD package.json /somul-server
 ADD ./tsconfig.json /somul-server/tsconfig.json
 ADD ./src /somul-server/src
@@ -16,6 +17,7 @@ FROM node:10.0.0-alpine
 RUN mkdir /somul-server
 ADD ./src /somul-server/src
 ADD package.json /somul-server
+ADD yarn.lock /somul-server
 COPY --from=build /somul-server/dist /somul-server/dist
 WORKDIR /somul-server
 RUN npm install --only=prod
