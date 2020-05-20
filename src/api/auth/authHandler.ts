@@ -121,7 +121,7 @@ export default class AuthHandler {
         AuthHandler.validateCheck(String(password), String(phonenumber), String(email));
       }
 
-      const updateDate = {
+      const updateData = {
         email: (!passportEmail) ? email : passportEmail,
         name,
         phonenumber,
@@ -129,11 +129,11 @@ export default class AuthHandler {
         password: (!passportEmail) ? sha256(password) : undefined,
         admin: false,
       };
-      const result = await Users.findOne({ where: { email: updateDate.email } });
+      const result = await Users.findOne({ where: { email: updateData.email } });
       if (result) {
         throw new errorHandler.CustomError(errorHandler.STATUS_CODE.alreadyRegistered);
       }
-      await Users.create(updateDate);
+      await Users.create(updateData);
       // local register
       if (!passportEmail) {
         const token = randomstring.generate();
@@ -324,11 +324,12 @@ export default class AuthHandler {
 
   static verifyResetPwd = async (req: express.Request, res: express.Response) => {
     const { password } = req.body;
-
+    const email = String(req.query.email);
+    const token = String(req.query.token);
     try {
       AuthHandler.validateCheck(String(password));
 
-      const result = await EmailToken.findOne({ where: { ...req.query } });
+      const result = await EmailToken.findOne({ where: { email, token } });
       if (result) {
         await EmailToken.destroy({
           where: { email: result.email },
