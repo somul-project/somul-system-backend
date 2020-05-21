@@ -207,4 +207,20 @@ router.post('/reset_password', AuthHandler.resetPwd);
 
 router.post('/verify/reset_password', AuthHandler.verifyResetPwd);
 
+/**
+ * @swagger
+ * /auth/get_userInfo:
+ *    get:
+ *      tags:
+ *          - User
+ *      summary: request to get user information
+ *      responses:
+ *        200:
+ *          description: '{} || {email: string}
+ *            || { email: string, admin: boolean, name: string,
+ *                 phonenumber: string, verify_email: boolean,
+ *                 statusCode: string, local: boolean }'
+ */
+router.get('/get_userInfo', AuthHandler.getSessionInfo);
+
 export default router;
