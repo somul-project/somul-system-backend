@@ -17,13 +17,19 @@ import * as UsersHandlers from '../resolver_handler/User';
 import * as VolunteerHandlers from '../resolver_handler/Volunteer';
 import * as SessionHandlers from '../resolver_handler/Session';
 import * as LibraryHandlers from '../resolver_handler/Library';
+import * as errorHandler from '../../../common/error';
 
 @Resolver((of) => UsersTypes.UserObject)
 export default class UserResolver {
   @Query(() => UsersTypes.UserObject)
   async user(
     @Arg('email') email: string,
+    @Ctx() context: any,
   ): Promise<UsersTypes.UserObject> {
+    const admin = !!context.request.session?.passport?.user.admin;
+    if (!admin) {
+      throw errorHandler.CustomError.MESSAGE[errorHandler.STATUS_CODE.insufficientPermission];
+    }
     const result = await UsersHandlers.queryUser(email);
     return result;
   }
@@ -33,6 +39,10 @@ export default class UserResolver {
     @Args() args: UsersTypes.UserArgs,
     @Ctx() context: any,
   ): Promise<UsersTypes.UserObject[]> {
+    const admin = !!context.request.session?.passport?.user.admin;
+    if (!admin) {
+      throw errorHandler.CustomError.MESSAGE[errorHandler.STATUS_CODE.insufficientPermission];
+    }
     const result = await UsersHandlers.queryUsers(args, context);
     return result;
   }

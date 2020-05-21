@@ -77,7 +77,13 @@ export default class AuthHandler {
         admin, name, phonenumber, verify_email,
       } = userInfo;
       return cb(undefined, {
-        email, admin, name, phonenumber, verify_email, statusCode: errorHandler.STATUS_CODE.success,
+        email,
+        admin,
+        name,
+        phonenumber,
+        verify_email,
+        statusCode: errorHandler.STATUS_CODE.success,
+        local: false,
       });
     } catch (error) {
       return cb(undefined, {});
@@ -100,7 +106,13 @@ export default class AuthHandler {
         admin, name, phonenumber, verify_email,
       } = userInfo;
       return cb(undefined, {
-        email, admin, name, phonenumber, verify_email,
+        email,
+        admin,
+        name,
+        phonenumber,
+        verify_email,
+        local: false,
+        statusCode: errorHandler.STATUS_CODE.success,
       });
     } catch (error) {
       return cb(undefined, {});
@@ -429,4 +441,9 @@ export default class AuthHandler {
       }
     }
   };
+
+  static getSessionInfo = async (req: express.Request, res: express.Response) => {
+    const sessionInfo = req.user || {};
+    res.send(sessionInfo);
+  }
 }
