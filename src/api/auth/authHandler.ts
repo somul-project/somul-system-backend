@@ -201,9 +201,9 @@ export default class AuthHandler {
     const session = AuthHandler.getPassportSession(req);
     if (session) {
       if (session['statusCode']) {
-        res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=${session['statusCode']}&email=${session['email']}`);
+        res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=${session['statusCode']}`);
       } else {
-        res.redirect(`${constants.CLIENT_DOMAIN}/signUp?email=${session['email']}`);
+        res.redirect(`${constants.CLIENT_DOMAIN}/signUp`);
       }
       return;
     }
@@ -240,7 +240,7 @@ export default class AuthHandler {
       } else {
         throw new errorHandler.CustomError(errorHandler.STATUS_CODE.failedToVerify);
       }
-      res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=0&email=${email}`);
+      res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=0`);
     } catch (error) {
       if (error instanceof errorHandler.CustomError) {
         const errorInfo = error.getData();
@@ -357,7 +357,7 @@ export default class AuthHandler {
       const query = SCHEDULE_TEMPLATE.delete
         .replace('{eventName}', `${result.email.replace('@', '_').replace('.', '_')}_token`);
       await db.query(query);
-      res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=0&email=${result.email}`);
+      res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=0`);
     } catch (error) {
       if (error instanceof errorHandler.CustomError) {
         res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=${error.getData().statusCode}`);
