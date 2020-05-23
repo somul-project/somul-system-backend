@@ -12,6 +12,7 @@
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.20.1",
+    "husky": "^4.2.5",
     "jest": "^24.8.0",
     "ts-jest": "^24.0.2",
     "typescript": "^3.4.5"
@@ -76,7 +77,12 @@
     "watch-node": "node dist/index.js",
     "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript, Node\" -c \"yello.bold, cyan.bold\" \"yarn run watch-ts\" \"yarn run watch-nodemon\"",
     "start": "tsc && node dist/index.js serve",
-    "lint": "eslint src/**/*.ts",
+    "lint": "eslint src/*.ts src/**/*.ts src/**/**/*.ts src/**/**/**/*.ts",
     "lint:fix": "eslint --fix src/*.ts src/**/*.ts src/**/**/*.ts src/**/**/**/*.ts"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "NODE_ENV=sample yarn test && yarn lint"
+    }
   }
 }

@@ -24,7 +24,7 @@
 - master 브랜치 다이렉트 푸시는 절대 허용되지 않으며, 무조건 PR 로부터 머지되어야 합니다.
 - 모든 작업은 브랜치를 파서 작업해주시고, 작업이 완료될 경우 PR 을 보내주세요!
   - 브랜치 이름의 규칙은 아래와 같습니다.
-    - 작업자이름/변경사항명 (예 : {feature/fix...}/sanghun/fix-padding-for-modal-component)
+    - 작업자이름/변경사항명 (예 : {feature/fix...}/donghyeon/graphql)
 - 모든 작업에는 테스트 코드가 필요합니다.
 - 모든 PR 은 1명 이상 Approve 되어야 머지됩니다.         
 - 모든 PR 은 CI 를 통과해야 리뷰를 시작합니다.

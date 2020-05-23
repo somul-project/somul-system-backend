@@ -203,7 +203,7 @@ export default class AuthHandler {
       if (session['statusCode']) {
         res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=${session['statusCode']}`);
       } else {
-        res.redirect(`${constants.CLIENT_DOMAIN}/signUp`);
+        res.redirect(`${constants.CLIENT_DOMAIN}/signup/start`);
       }
       return;
     }
