@@ -49,11 +49,11 @@ export default class UserResolver {
 
   @Mutation(() => ResultType)
   async updateUser(
-    @Args() changeValues: UsersTypes.UserArgs,
-    @Args() args: UsersTypes.UserArgs,
+    @Arg('changeValues') changeValues: UsersTypes.UserArgs,
+    @Arg('where') where: UsersTypes.UserArgs,
     @Ctx() context: any,
   ): Promise<ResultType> {
-    const result = await UsersHandlers.updateUser(changeValues, args, context);
+    const result = await UsersHandlers.updateUser(changeValues, where, context);
     return result;
   }
 

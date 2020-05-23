@@ -11,6 +11,7 @@ import SessionResolver from './resolvers/Session';
 async function getRouter() {
   const router = express.Router();
   const { typeDefs, resolvers } = await buildTypeDefsAndResolvers({
+    validate: false,
     resolvers: [UserResolver, LibraryResolver, VolunteerResolver, SessionResolver],
   });
 

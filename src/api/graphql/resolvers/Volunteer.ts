@@ -45,11 +45,15 @@ export default class VolunteerResolver {
 
   @Mutation(() => ResultType)
   async updateVolunteer(
-    @Args() changeValues: VolunteerTypes.VolunteerArgs,
-    @Args() args: VolunteerTypes.VolunteerArgs,
+    @Arg('changeValues') changeValues: VolunteerTypes.VolunteerArgs,
+    @Arg('where') where: VolunteerTypes.VolunteerArgs,
     @Ctx() context: any,
   ): Promise<ResultType> {
-    const result = await VolunteerHandlers.updateVolunteer(changeValues, args, context);
+    const result = await VolunteerHandlers.updateVolunteer(
+      changeValues,
+      where,
+      context,
+    );
     return result;
   }
 

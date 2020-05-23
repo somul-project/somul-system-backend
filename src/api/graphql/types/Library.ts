@@ -2,6 +2,7 @@ import {
   ObjectType,
   Field,
   ArgsType,
+  InputType,
 } from 'type-graphql';
 import 'reflect-metadata';
 
@@ -59,6 +60,7 @@ export class LibraryObject {
   updateAt?: Date;
 }
 
+@InputType()
 @ArgsType()
 export class LibraryArgs {
   @Field({ nullable: true })

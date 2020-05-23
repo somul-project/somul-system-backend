@@ -133,3 +133,5 @@ sockets
 .DS_Store
 
 package-lock.json
+
+schema

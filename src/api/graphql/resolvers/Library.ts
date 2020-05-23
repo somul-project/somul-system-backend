@@ -47,11 +47,11 @@ export default class LibraryResolver {
 
   @Mutation(() => ResultType)
   async updateLibrary(
-    @Args() changeValues: LibraryTypes.LibraryArgs,
-    @Args() args: LibraryTypes.LibraryArgs,
+    @Arg('changeValues') changeValues: LibraryTypes.LibraryArgs,
+    @Arg('where') where: LibraryTypes.LibraryArgs,
     @Ctx() context: any,
   ): Promise<ResultType> {
-    const result = await LibraryHandlers.updateLibrary(changeValues, args, context);
+    const result = await LibraryHandlers.updateLibrary(changeValues, where, context);
     return result;
   }
 

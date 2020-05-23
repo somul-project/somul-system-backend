@@ -45,11 +45,11 @@ export default class SessionResolver {
 
   @Mutation(() => ResultType)
   async updateSession(
-    @Args() changeValues: SessionTypes.SessionArgs,
-    @Args() args: SessionTypes.SessionArgs,
+    @Arg('changeValues') changeValues: SessionTypes.SessionArgs,
+    @Arg('where') where: SessionTypes.SessionArgs,
     @Ctx() context: any,
   ): Promise<ResultType> {
-    const result = await SessionHandlers.updateSession(changeValues, args, context);
+    const result = await SessionHandlers.updateSession(changeValues, where, context);
     return result;
   }
 
