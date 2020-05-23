@@ -1,4 +1,9 @@
-import { ObjectType, Field, ArgsType } from 'type-graphql';
+import {
+  ObjectType,
+  Field,
+  ArgsType,
+  InputType,
+} from 'type-graphql';
 import 'reflect-metadata';
 
 @ObjectType()
@@ -25,6 +30,7 @@ export class VolunteerObject {
   updateAt?: Date;
 }
 
+@InputType()
 @ArgsType()
 export class VolunteerArgs {
   @Field({ nullable: true })
