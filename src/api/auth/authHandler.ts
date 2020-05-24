@@ -158,7 +158,8 @@ export default class AuthHandler {
         await EmailService.send(
           [email],
           constants.ADMIN_EMAIL,
-          VERIFY_TEMPLATE.html.replace('{token}', token).replace('{email}', email),
+          VERIFY_TEMPLATE.html.replace('{token}', token)
+            .replace('{email}', email).replace('{name}', name).replace('{email}', email),
           VERIFY_TEMPLATE.subject,
         );
         const query = SCHEDULE_TEMPLATE.create
@@ -171,6 +172,7 @@ export default class AuthHandler {
       if (req.session) {
         req.session.register = true;
         req.session.email = email;
+        req.session.name = name;
       }
       res.send({ statusCode: errorHandler.STATUS_CODE.success });
     } catch (error) {
@@ -272,7 +274,7 @@ export default class AuthHandler {
     const session = AuthHandler.getSession(req);
     if (session && session.register) {
       try {
-        const { email } = session;
+        const { email, name } = session;
         const result = await EmailToken.findOne({ where: { email } });
         if (!result) {
           throw new errorHandler.CustomError(errorHandler.STATUS_CODE.tokenNotExist);
@@ -291,7 +293,8 @@ export default class AuthHandler {
         await EmailService.send(
           [email],
           constants.ADMIN_EMAIL,
-          VERIFY_TEMPLATE.html.replace('{token}', result.token).replace('{email}', email),
+          VERIFY_TEMPLATE.html.replace('{token}', result.token)
+            .replace('{email}', email).replace('{name}', name).replace('{email}', email),
           VERIFY_TEMPLATE.subject,
         );
         res.send({ statusCode: errorHandler.STATUS_CODE.success });
@@ -422,7 +425,8 @@ export default class AuthHandler {
       EmailService.send(
         [email],
         constants.ADMIN_EMAIL,
-        RESET_TEMPLATE.html.replace('{token}', token).replace('{email}', email),
+        RESET_TEMPLATE.html.replace('{token}', token)
+          .replace('{email}', email).replace('{email}', email),
         RESET_TEMPLATE.subject,
       );
       const query = SCHEDULE_TEMPLATE.create
