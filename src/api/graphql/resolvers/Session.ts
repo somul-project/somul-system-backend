@@ -66,10 +66,11 @@ export default class SessionResolver {
   async user(
     @Root() session: SessionTypes.SessionArgs,
   ): Promise<UsersTypes.UserObject> {
-    if (!session.user_email) {
+    const data = session['dataValues'];
+    if (!data.user_email) {
       return {};
     }
-    const result = await UsersHandlers.queryUser(session.user_email);
+    const result = await UsersHandlers.queryUser(data.user_email);
     return result;
   }
 
@@ -77,10 +78,11 @@ export default class SessionResolver {
   async library(
     @Root() session: SessionTypes.SessionArgs,
   ): Promise<LibraryTypes.LibraryObject> {
-    if (!session.library_id) {
+    const data = session['dataValues'];
+    if (!data.library_id) {
       return {};
     }
-    const result = await LibraryHandlers.queryLibrary(session.library_id);
+    const result = await LibraryHandlers.queryLibrary(data.library_id);
     return result;
   }
 }

@@ -50,6 +50,7 @@ CREATE TABLE Session (
     session_name VARCHAR(50) NOT NULL,
     session_time VARCHAR(10) NOT NULL,
     introduce TEXT,
+    session_explainer: TEXT;
     document VARCHAR(50),
     admin_approved ENUM('0','1','2','3') NOT NULL,
     createdAt TIMESTAMP NOT NULL,

@@ -68,10 +68,11 @@ export default class LibraryResolver {
   async user(
     @Root() library: LibraryTypes.LibraryArgs,
   ): Promise<UsersTypes.UserObject> {
-    if (!library.manager_email) {
+    const data = library['dataValues'];
+    if (!data.manager_email) {
       return {};
     }
-    const result = await UsersHandlers.queryUser(library.manager_email);
+    const result = await UsersHandlers.queryUser(data.manager_email);
     return result;
   }
 
@@ -80,7 +81,8 @@ export default class LibraryResolver {
     @Root() library: LibraryTypes.LibraryArgs,
     @Ctx() context: any,
   ): Promise<SessionTypes.SessionObject[]> {
-    const result = await SessionHandlers.querySessions({ library_id: library.id }, context);
+    const data = library['dataValues'];
+    const result = await SessionHandlers.querySessions({ library_id: data.id }, context);
     return result;
   }
 
@@ -89,7 +91,8 @@ export default class LibraryResolver {
     @Root() library: LibraryTypes.LibraryArgs,
     @Ctx() context: any,
   ): Promise<VolunteerTypes.VolunteerObject[]> {
-    const result = await VolunteerHandlers.queryVolunteers({ library_id: library.id }, context);
+    const data = library['dataValues'];
+    const result = await VolunteerHandlers.queryVolunteers({ library_id: data.id }, context);
     return result;
   }
 }

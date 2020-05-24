@@ -70,10 +70,11 @@ export default class VolunteerResolver {
   async user(
     @Root() volunteer: VolunteerTypes.VolunteerArgs,
   ): Promise<UsersTypes.UserObject> {
-    if (!volunteer.user_email) {
+    const data = volunteer['dataValues'];
+    if (!data.user_email) {
       return {};
     }
-    const result = await UsersHandlers.queryUser(volunteer.user_email);
+    const result = await UsersHandlers.queryUser(data.user_email);
     return result;
   }
 
@@ -81,10 +82,11 @@ export default class VolunteerResolver {
   async library(
     @Root() volunteer: VolunteerTypes.VolunteerArgs,
   ): Promise<LibraryTypes.LibraryObject> {
-    if (!volunteer.library_id) {
+    const data = volunteer['dataValues'];
+    if (!data.library_id) {
       return {};
     }
-    const result = await LibraryHandlers.queryLibrary(volunteer.library_id);
+    const result = await LibraryHandlers.queryLibrary(data.library_id);
     return result;
   }
 }

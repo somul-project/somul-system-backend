@@ -71,7 +71,8 @@ export default class UserResolver {
     @Root() user: UsersTypes.UserArgs,
     @Ctx() context: any,
   ): Promise<LibraryTypes.LibraryObject[]> {
-    const result = await LibraryHandlers.queryLibraries({ manager_email: user.email }, context);
+    const data = user['dataValues'];
+    const result = await LibraryHandlers.queryLibraries({ manager_email: data.email }, context);
     return result;
   }
 
@@ -80,7 +81,8 @@ export default class UserResolver {
     @Root() user: UsersTypes.UserArgs,
     @Ctx() context: any,
   ): Promise<SessionTypes.SessionObject[]> {
-    const result = await SessionHandlers.querySessions({ user_email: user.email }, context);
+    const data = user['dataValues'];
+    const result = await SessionHandlers.querySessions({ user_email: data.email }, context);
     return result;
   }
 
@@ -89,7 +91,8 @@ export default class UserResolver {
     @Root() user: UsersTypes.UserArgs,
     @Ctx() context: any,
   ): Promise<VolunteerTypes.VolunteerObject[]> {
-    const result = await VolunteerHandlers.queryVolunteers({ user_email: user.email }, context);
+    const data = user['dataValues'];
+    const result = await VolunteerHandlers.queryVolunteers({ user_email: data.email }, context);
     return result;
   }
 }
