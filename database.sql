@@ -51,7 +51,7 @@ CREATE TABLE Session (
     session_time VARCHAR(10) NOT NULL,
     introduce TEXT,
     session_explainer: TEXT;
-    document VARCHAR(50),
+    document TEXT,
     admin_approved ENUM('0','1','2','3') NOT NULL,
     createdAt TIMESTAMP NOT NULL,
     updatedAt TIMESTAMP NOT NULL,
