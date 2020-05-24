@@ -24,6 +24,11 @@ const SCHEDULE_TEMPLATE = {
   delete: 'DROP EVENT {eventName};',
 };
 
+const replaceAll = (str: string, searchStr: string, replaceStr: string) => {
+  const result = str.split(searchStr).join(replaceStr);
+  return result;
+};
+
 export default class AuthHandler {
   static getPassportSession = (req: express.Request) => {
     const result = req.user;
@@ -158,12 +163,11 @@ export default class AuthHandler {
         await EmailService.send(
           [email],
           constants.ADMIN_EMAIL,
-          VERIFY_TEMPLATE.html.replace('{token}', token)
-            .replace('{email}', email).replace('{name}', name).replace('{email}', email),
+          replaceAll(VERIFY_TEMPLATE.html.replace('{token}', token).replace('{name}', name), '{email}', email),
           VERIFY_TEMPLATE.subject,
         );
         const query = SCHEDULE_TEMPLATE.create
-          .replace('{eventName}', `${email.replace('@', '_').replace('.', '_')}`)
+          .replace('{eventName}', `${replaceAll(email.replace('@', '_'), '.', '_')}`)
           .replace('{days}', '2')
           .replace('{query}', `DELETE FROM Users WHERE (email = "${email}");`);
         await db.query(query);
@@ -237,7 +241,7 @@ export default class AuthHandler {
           where: { email: result.email },
         });
         const query = SCHEDULE_TEMPLATE.delete
-          .replace('{eventName}', `${email.replace('@', '_').replace('.', '_')}`);
+          .replace('{eventName}', `${replaceAll(email.replace('@', '_'), '.', '_')}`);
         await db.query(query);
       } else {
         throw new errorHandler.CustomError(errorHandler.STATUS_CODE.failedToVerify);
@@ -293,8 +297,7 @@ export default class AuthHandler {
         await EmailService.send(
           [email],
           constants.ADMIN_EMAIL,
-          VERIFY_TEMPLATE.html.replace('{token}', result.token)
-            .replace('{email}', email).replace('{name}', name).replace('{email}', email),
+          replaceAll(VERIFY_TEMPLATE.html.replace('{token}', result.token).replace('{name}', name), '{email}', email),
           VERIFY_TEMPLATE.subject,
         );
         res.send({ statusCode: errorHandler.STATUS_CODE.success });
@@ -358,7 +361,7 @@ export default class AuthHandler {
         where: { email: result.email },
       });
       const query = SCHEDULE_TEMPLATE.delete
-        .replace('{eventName}', `${result.email.replace('@', '_').replace('.', '_')}_token`);
+        .replace('{eventName}', `${replaceAll(email.replace('@', '_'), '.', '_')}_token`);
       await db.query(query);
       res.redirect(`${constants.CLIENT_DOMAIN}?statusCode=0`);
     } catch (error) {
@@ -425,12 +428,11 @@ export default class AuthHandler {
       EmailService.send(
         [email],
         constants.ADMIN_EMAIL,
-        RESET_TEMPLATE.html.replace('{token}', token)
-          .replace('{email}', email).replace('{email}', email),
+        replaceAll(RESET_TEMPLATE.html.replace('{token}', token), '{email}', email),
         RESET_TEMPLATE.subject,
       );
       const query = SCHEDULE_TEMPLATE.create
-        .replace('{eventName}', `${email.replace('@', '_').replace('.', '_')}_token`)
+        .replace('{eventName}', `${replaceAll(email.replace('@', '_'), '.', '_')}_token`)
         .replace('{days}', '2')
         .replace('{query}', `DELETE FROM Email_Token WHERE (email = "${email}");`);
       await db.query(query);
