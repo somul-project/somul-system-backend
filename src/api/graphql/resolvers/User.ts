@@ -23,14 +23,16 @@ import * as errorHandler from '../../../common/error';
 export default class UserResolver {
   @Query(() => UsersTypes.UserObject)
   async user(
-    @Arg('email') email: string,
     @Ctx() context: any,
+    @Arg('email', { nullable: true }) email?: string,
   ): Promise<UsersTypes.UserObject> {
     const admin = !!context.request.session?.passport?.user.admin;
-    if (!admin) {
+    const sessionEmail = context.request.session?.passport?.user.email;
+    if (!sessionEmail) {
       throw errorHandler.CustomError.MESSAGE[errorHandler.STATUS_CODE.insufficientPermission];
     }
-    const result = await UsersHandlers.queryUser(email);
+    const key = (admin) ? email || sessionEmail : sessionEmail;
+    const result = await UsersHandlers.queryUser(key);
     return result;
   }
 
