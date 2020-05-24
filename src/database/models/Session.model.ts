@@ -40,6 +40,10 @@ export default class Session extends Model<Session> {
 
   @AllowNull(true)
   @Column
+  session_explainer: string;
+
+  @AllowNull(true)
+  @Column
   admin_approved?: '0' | '1' | '2' | '3' ;
 
   @AllowNull(false)
