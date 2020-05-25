@@ -46,7 +46,7 @@ export default class Server {
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: true }));
     this.app.use(cors({
-      origin: constants.CLIENT_DOMAIN,
+      origin: [constants.CLIENT_DOMAIN, `https://www.${constants.CLIENT_DOMAIN.split('//')[1]}`],
       credentials: true,
     }));
     this.app.use(session({
