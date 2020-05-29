@@ -56,11 +56,10 @@ export default class Server {
       saveUninitialized: false,
     }));
 
-    this.app.get('/', this.authenticateUser, async (req, res) => {
-      res.send({ statusCode: '0' });
-    });
     this.app.use('/auth', authRouter);
+
     const graphQlserver = await getGraphQlserver();
+
     /**
      * @swagger
      * /graphql:
@@ -71,10 +70,14 @@ export default class Server {
      *      consumes:
      *        - application/json
      */
-    this.app.use('/graphql', this.authenticateUser, graphQlserver);
+    this.app.use('/graphql', graphQlserver);
 
     if (constants.EXPOSE_API_DOCS === 'true') {
       this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs.default));
     }
+
+    this.app.get('*', async (_, res) => {
+      res.redirect(constants.CLIENT_DOMAIN);
+    });
   }
 }

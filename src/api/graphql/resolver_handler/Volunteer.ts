@@ -6,6 +6,7 @@ import getDatabase from '../../../database';
 import * as VolunteerTypes from '../types/Volunteer';
 
 const Volunteer = getDatabase().getVolunteer();
+const Library = getDatabase().getLibrary();
 const log = Logger.createLogger('graphql.resolver_handler.Volunteer');
 export const queryVolunteer = async (id: number) => {
   try {
@@ -27,15 +28,9 @@ export const queryVolunteer = async (id: number) => {
   }
 };
 
-export const queryVolunteers = async (args: VolunteerTypes.VolunteerArgs, context: any) => {
+export const queryVolunteers = async (args: VolunteerTypes.VolunteerArgs) => {
   try {
-    const admin = !!context.request.session?.passport?.user.admin;
-    const email = context.request.session?.passport?.user.email;
     const where = JSON.parse(JSON.stringify(args));
-    const admin_approved = (!admin
-      && (args.user_email && args.user_email !== email))
-      ? constants.ADMIN_APPROVED.APPROVAL : args.admin_approved;
-    if (admin_approved) where.admin_approved = admin_approved;
     const result = await Volunteer.findAll({
       where,
     });
@@ -51,6 +46,12 @@ export const queryVolunteers = async (args: VolunteerTypes.VolunteerArgs, contex
 
 export const createVolunteer = async (args: VolunteerTypes.VolunteerCreateArgs) => {
   try {
+    const resultLibrary = await Library.findOne({
+      where: { id: args.library_id, admin_approved: constants.ADMIN_APPROVED.APPROVAL },
+    });
+    if (!resultLibrary) {
+      throw new errorHandler.CustomError(errorHandler.STATUS_CODE.invalidParams);
+    }
     await Volunteer.create({ ...args, admin_approved: constants.ADMIN_APPROVED.PROCESS });
     return { statusCode: '0' };
   } catch (error) {
@@ -64,19 +65,9 @@ export const createVolunteer = async (args: VolunteerTypes.VolunteerCreateArgs) 
 };
 
 export const updateVolunteer = async (
-  changeValues: VolunteerTypes.VolunteerArgs, args: VolunteerTypes.VolunteerArgs, context: any) => {
+  changeValues: VolunteerTypes.VolunteerArgs, args: VolunteerTypes.VolunteerArgs) => {
   try {
-    const admin = !!context.request.session?.passport?.user.admin;
-    const email = context.request.session?.passport?.user.email;
-
-    if (!admin && (args.user_email && args.user_email !== email)) {
-      throw new errorHandler.CustomError(errorHandler.STATUS_CODE.insufficientPermission);
-    }
-
     const where = JSON.parse(JSON.stringify(args));
-    if (!admin && changeValues.admin_approved) {
-      delete where.admin_approved;
-    }
     await Volunteer.update(changeValues, {
       where,
     });
@@ -91,13 +82,8 @@ export const updateVolunteer = async (
   }
 };
 
-export const deleteVolunteer = async (args: VolunteerTypes.VolunteerArgs, context: any) => {
+export const deleteVolunteer = async (args: VolunteerTypes.VolunteerArgs) => {
   try {
-    const admin = !!context.request.session.passport.user.admin;
-    const email = context.request.session?.passport?.user.email;
-    if (!admin && (args.user_email && args.user_email !== email)) {
-      throw new errorHandler.CustomError(errorHandler.STATUS_CODE.insufficientPermission);
-    }
     const where = JSON.parse(JSON.stringify(args));
     await Volunteer.destroy({
       where,

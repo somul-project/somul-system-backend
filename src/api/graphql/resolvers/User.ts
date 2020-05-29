@@ -9,6 +9,7 @@ import {
   Args,
 } from 'type-graphql';
 import ResultType from '../types/Result';
+import * as constants from '../../../common/constants';
 import * as UsersTypes from '../types/User';
 import * as VolunteerTypes from '../types/Volunteer';
 import * as SessionTypes from '../types/Session';
@@ -45,7 +46,7 @@ export default class UserResolver {
     if (!admin) {
       throw errorHandler.CustomError.MESSAGE[errorHandler.STATUS_CODE.insufficientPermission];
     }
-    const result = await UsersHandlers.queryUsers(args, context);
+    const result = await UsersHandlers.queryUsers(args);
     return result;
   }
 
@@ -55,7 +56,14 @@ export default class UserResolver {
     @Arg('where') where: UsersTypes.UserArgs,
     @Ctx() context: any,
   ): Promise<ResultType> {
-    const result = await UsersHandlers.updateUser(changeValues, where, context);
+    const admin = !!context.request.session?.passport?.user.admin;
+    const email = context.request.session?.passport?.user.email;
+    const verifyEmail = context.request.session?.passport?.user.verify_email;
+
+    if (!admin && !verifyEmail && (!where.email || where.email !== email)) {
+      throw new errorHandler.CustomError(errorHandler.STATUS_CODE.insufficientPermission);
+    }
+    const result = await UsersHandlers.updateUser(changeValues, where);
     return result;
   }
 
@@ -64,7 +72,12 @@ export default class UserResolver {
     @Args() args: UsersTypes.UserArgs,
     @Ctx() context: any,
   ): Promise<ResultType> {
-    const result = await UsersHandlers.deleteUser(args, context);
+    const admin = !!context.request.session?.passport?.user.admin;
+
+    if (!admin) {
+      throw new errorHandler.CustomError(errorHandler.STATUS_CODE.insufficientPermission);
+    }
+    const result = await UsersHandlers.deleteUser(args);
     return result;
   }
 
@@ -74,7 +87,13 @@ export default class UserResolver {
     @Ctx() context: any,
   ): Promise<LibraryTypes.LibraryObject[]> {
     const data = user['dataValues'];
-    const result = await LibraryHandlers.queryLibraries({ manager_email: data.email }, context);
+    const admin = !!context.request.session?.passport?.user.admin;
+    const email = context.request.session?.passport?.user.email;
+    const result = await LibraryHandlers.queryLibraries({
+      manager_email: data.email,
+      admin_approved: (!admin && (data.email !== email))
+        ? constants.ADMIN_APPROVED.APPROVAL : undefined,
+    });
     return result;
   }
 
@@ -84,7 +103,17 @@ export default class UserResolver {
     @Ctx() context: any,
   ): Promise<SessionTypes.SessionObject[]> {
     const data = user['dataValues'];
-    const result = await SessionHandlers.querySessions({ user_email: data.email }, context);
+    if (!data.email) {
+      return [];
+    }
+    const admin = !!context.request.session?.passport?.user.admin;
+    const email = context.request.session?.passport?.user.email;
+
+    const result = await SessionHandlers.querySessions({
+      user_email: data.email,
+      admin_approved: (!admin && (data.email !== email))
+        ? constants.ADMIN_APPROVED.APPROVAL : undefined,
+    });
     return result;
   }
 
@@ -94,7 +123,16 @@ export default class UserResolver {
     @Ctx() context: any,
   ): Promise<VolunteerTypes.VolunteerObject[]> {
     const data = user['dataValues'];
-    const result = await VolunteerHandlers.queryVolunteers({ user_email: data.email }, context);
+    if (!data.email) {
+      return [];
+    }
+    const admin = !!context.request.session?.passport?.user.admin;
+    const email = context.request.session?.passport?.user.email;
+    const result = await VolunteerHandlers.queryVolunteers({
+      user_email: data.email,
+      admin_approved: (!admin && (data.email !== email))
+        ? constants.ADMIN_APPROVED.APPROVAL : undefined,
+    });
     return result;
   }
 }

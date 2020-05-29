@@ -7,6 +7,7 @@ import getDatabase from '../../../database';
 import * as SessionTypes from '../types/Session';
 
 const Session = getDatabase().getSession();
+const Library = getDatabase().getLibrary();
 const db = getDatabase().getInstance();
 const log = Logger.createLogger('graphql.resolver_handler.Session');
 const mutex = new Mutex();
@@ -36,17 +37,10 @@ export const querySession = async (id: number) => {
   }
 };
 
-export const querySessions = async (args: SessionTypes.SessionArgs, context: any) => {
+export const querySessions = async (args: SessionTypes.SessionArgs) => {
   try {
-    const admin = !!context.request.session?.passport?.user.admin;
-    const email = context.request.session?.passport?.user.email;
-    const where = JSON.parse(JSON.stringify(args));
-    const admin_approved = (!admin
-      && (args.user_email && args.user_email !== email))
-      ? constants.ADMIN_APPROVED.APPROVAL : args.admin_approved;
-    if (admin_approved) where.admin_approved = admin_approved;
     const result = await Session.findAll({
-      where,
+      where: JSON.parse(JSON.stringify(args)),
     });
     if (!result) {
       return [];
@@ -63,11 +57,17 @@ export const createSession = async (args: SessionTypes.SessionCreateArgs) => {
     const release = await mutex.acquire();
     try {
       if (args.library_id) {
-        const result = await Session.findAll({
+        const resultSession = await Session.findAll({
           where: { library_id: args.library_id },
         });
-        if (result.length >= 2) {
+        if (resultSession.length >= 2) {
           throw new errorHandler.CustomError(errorHandler.STATUS_CODE.sessionFull);
+        }
+        const resultLibrary = await Library.findOne({
+          where: { id: args.library_id, admin_approved: constants.ADMIN_APPROVED.APPROVAL },
+        });
+        if (!resultLibrary) {
+          throw new errorHandler.CustomError(errorHandler.STATUS_CODE.invalidParams);
         }
       }
 
@@ -96,20 +96,11 @@ export const createSession = async (args: SessionTypes.SessionCreateArgs) => {
 };
 
 export const updateSession = async (
-  changeValues: SessionTypes.SessionArgs, args: SessionTypes.SessionArgs, context: any) => {
+  changeValues: SessionTypes.SessionArgs, where: SessionTypes.SessionArgs) => {
   try {
-    const admin = !!context.request.session?.passport?.user.admin;
-    const email = context.request.session?.passport?.user.email;
-
-    if (!admin && (args.user_email && args.user_email !== email)) {
-      throw new errorHandler.CustomError(errorHandler.STATUS_CODE.insufficientPermission);
-    }
-    const where = JSON.parse(JSON.stringify(args));
-    if (!admin && changeValues.admin_approved) {
-      delete where.admin_approved;
-    }
+    const args = JSON.parse(JSON.stringify(where));
     await Session.update(changeValues, {
-      where,
+      where: args,
     });
     if (args.document) {
       const query = SCHEDULE_TEMPLATE.delete
@@ -127,13 +118,8 @@ export const updateSession = async (
   }
 };
 
-export const deleteSession = async (args: SessionTypes.SessionArgs, context: any) => {
+export const deleteSession = async (args: SessionTypes.SessionArgs) => {
   try {
-    const admin = !!context.request.session.passport.user.admin;
-    const email = context.request.session?.passport?.user.email;
-    if (!admin && (args.user_email && args.user_email !== email)) {
-      throw new errorHandler.CustomError(errorHandler.STATUS_CODE.insufficientPermission);
-    }
     const where = JSON.parse(JSON.stringify(args));
     await Session.destroy({
       where,

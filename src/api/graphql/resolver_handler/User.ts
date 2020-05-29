@@ -22,7 +22,7 @@ export const queryUser = async (email: string) => {
   }
 };
 
-export const queryUsers = async (args: UserTypes.UserArgs, context: any) => {
+export const queryUsers = async (args: UserTypes.UserArgs) => {
   try {
     const where = JSON.parse(JSON.stringify(args));
     const result = await Users.findAll({
@@ -39,16 +39,9 @@ export const queryUsers = async (args: UserTypes.UserArgs, context: any) => {
 };
 
 export const updateUser = async (
-  changeValues: UserTypes.UserArgs, args: UserTypes.UserArgs, context: any) => {
+  changeValues: UserTypes.UserArgs, args: UserTypes.UserArgs) => {
   try {
-    const admin = !!context.request.session?.passport?.user.admin;
-    const email = context.request.session?.passport?.user.email;
-
-    if (!admin && (!args.email || args.email !== email)) {
-      throw new errorHandler.CustomError(errorHandler.STATUS_CODE.insufficientPermission);
-    }
     const where = JSON.parse(JSON.stringify(args));
-
     await Users.update(changeValues, {
       where,
     });
@@ -63,13 +56,8 @@ export const updateUser = async (
   }
 };
 
-export const deleteUser = async (args: UserTypes.UserArgs, context: any) => {
+export const deleteUser = async (args: UserTypes.UserArgs) => {
   try {
-    const admin = !!context.request.session?.passport?.user.admin;
-
-    if (!admin) {
-      throw new errorHandler.CustomError(errorHandler.STATUS_CODE.insufficientPermission);
-    }
     const where = JSON.parse(JSON.stringify(args));
     await Users.destroy({
       where,

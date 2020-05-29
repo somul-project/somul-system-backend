@@ -29,15 +29,9 @@ export const queryLibrary = async (id: number) => {
   }
 };
 
-export const queryLibraries = async (args: LibraryTypes.LibraryArgs, context: any) => {
+export const queryLibraries = async (args: LibraryTypes.LibraryArgs) => {
   try {
-    const admin = !!context.request.session?.passport?.user.admin;
-    const email = context.request.session?.passport?.user.email;
     const where = JSON.parse(JSON.stringify(args));
-    const admin_approved = (!admin
-      && (args.manager_email && args.manager_email !== email))
-      ? constants.ADMIN_APPROVED.APPROVAL : args.admin_approved;
-    if (admin_approved) where.admin_approved = admin_approved;
     const result = await Library.findAll({
       where,
     });
@@ -66,18 +60,9 @@ export const createLibrary = async (args: LibraryTypes.LibraryCreateArgs) => {
 };
 
 export const updateLibrary = async (
-  changeValues: LibraryTypes.LibraryArgs, args: LibraryTypes.LibraryArgs, context: any) => {
+  changeValues: LibraryTypes.LibraryArgs, args: LibraryTypes.LibraryArgs) => {
   try {
-    const admin = !!context.request.session?.passport?.user.admin;
-    const email = context.request.session?.passport?.user.email;
-
-    if (!admin && (args.manager_email && args.manager_email !== email)) {
-      throw new errorHandler.CustomError(errorHandler.STATUS_CODE.insufficientPermission);
-    }
     const where = JSON.parse(JSON.stringify(args));
-    if (!admin && changeValues.admin_approved) {
-      delete where.admin_approved;
-    }
     await Library.update(changeValues, {
       where,
     });
@@ -92,13 +77,8 @@ export const updateLibrary = async (
   }
 };
 
-export const deleteLibrary = async (args: LibraryTypes.LibraryArgs, context: any) => {
+export const deleteLibrary = async (args: LibraryTypes.LibraryArgs) => {
   try {
-    const admin = !!context.request.session.passport.user.admin;
-    const email = context.request.session?.passport?.user.email;
-    if (!admin && (args.manager_email && args.manager_email !== email)) {
-      throw new errorHandler.CustomError(errorHandler.STATUS_CODE.insufficientPermission);
-    }
     const where = JSON.parse(JSON.stringify(args));
     await Library.destroy({
       where,
