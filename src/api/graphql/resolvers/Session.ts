@@ -43,7 +43,7 @@ export default class SessionResolver {
     const verifyEmail = context.request.session?.passport?.user.verify_email;
     const where = JSON.parse(JSON.stringify(args));
     const admin_approved = (!admin
-      && (!verifyEmail || (args.user_email && args.user_email !== email)))
+      && (!verifyEmail || !args.user_email || (args.user_email && args.user_email !== email)))
       ? constants.ADMIN_APPROVED.APPROVAL : args.admin_approved;
     if (admin_approved) where.admin_approved = admin_approved;
     const result = await SessionHandlers.querySessions(where);

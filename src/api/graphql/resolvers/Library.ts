@@ -46,7 +46,8 @@ export default class LibraryResolver {
 
     const where = JSON.parse(JSON.stringify(args));
     const admin_approved = (!admin
-      && (!verifyEmail || (args.manager_email && args.manager_email !== email)))
+      && (!verifyEmail || !args.manager_email
+        || (args.manager_email && args.manager_email !== email)))
       ? constants.ADMIN_APPROVED.APPROVAL : args.admin_approved;
     if (admin_approved) where.admin_approved = admin_approved;
     const result = await LibraryHandlers.queryLibraries(where);

@@ -2,10 +2,10 @@ import express from 'express';
 import httpMocks from 'node-mocks-http';
 import sinon from 'sinon';
 import googlePassport from 'passport-google-oauth20';
-import getDatabase from '../database';
-import AuthHandler from '../api/auth/authHandler';
-import * as errorHandler from '../common/error';
-import EmailService from '../util/emailService';
+import getDatabase from '../../database';
+import AuthHandler from '../../api/auth/authHandler';
+import * as errorHandler from '../../common/error';
+import EmailService from '../../util/emailService';
 
 const database = getDatabase(true);
 const db = getDatabase().getInstance();
